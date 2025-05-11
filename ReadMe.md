@@ -173,6 +173,10 @@ Install this Git hook to prevent bad commit messages:
 ```bash
 cp hooks/commit-msg .git/hooks/commit-msg
 chmod +x .git/hooks/commit-msg
+
+cp hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
+chmod +x .git/hooks/prepare-commit-msg
+
 ```
 
 ---
