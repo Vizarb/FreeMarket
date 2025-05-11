@@ -26,7 +26,11 @@ desktop.ini
 .docker/
 docker-compose.override.yml
 Dockerfile.*
+# Ignore all compose variations
 docker-compose*.yml
+
+# But do track the main file
+!docker-compose.yml
 
 # ===================================
 # 🔧 Misc

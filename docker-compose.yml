@@ -1,0 +1,58 @@
+networks:
+  freemarket-network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:16.6
+    restart: unless-stopped
+    env_file:
+      - .env 
+    ports:
+      - "${DB_EXTERNAL_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - freemarket-network
+
+  backend:
+    restart: unless-stopped
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    image: vizarb/backend:${BACKEND_TAG:-latest}
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./Backend:/app
+      - media_data:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Backend/.env.backend
+    depends_on:
+      - db
+    networks:
+      - freemarket-network
+
+  frontend:
+    restart: unless-stopped
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    image: vizarb/frontend:${FRONTEND_TAG:-latest}
+    command: yarn dev
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./Frontend/.env.frontend
+    depends_on:
+      - backend
+    networks:
+      - freemarket-network
+
+volumes:
+  postgres_data:
+  media_data:
