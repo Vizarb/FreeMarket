@@ -16,7 +16,7 @@ export type ThunkApiConfig = {
   rejectValue: string;
 };
 
-// Fetch Cart Overview (filtered by user)
+// Fetch Cart Overview
 export const fetchCartOverview = createAsyncThunk<
   CartOverviewResponse[],
   void,
@@ -25,128 +25,113 @@ export const fetchCartOverview = createAsyncThunk<
   'cart/fetchCartOverview',
   async (_, { getState, rejectWithValue }) => {
     const state = getState();
-    const loggedInUserId = state.auth.user?.id;
+    const userId = state.auth.user?.id;
 
-    if (!loggedInUserId) {
-      return rejectWithValue("User not authenticated.");
-    }
+    if (!userId) return rejectWithValue("User not authenticated.");
 
     try {
-      const response = await api.get<PaginatedResponse<CartOverviewResponse>>('/api/cart-overview/');
-      const userCartItems = response.data.results.filter(cart => cart.user_id === loggedInUserId);
-      if (!userCartItems.length) {
-        return rejectWithValue("No cart found for the current user.");
+      const res = await api.get<PaginatedResponse<CartOverviewResponse>>('/api/cart-overview/');
+      const userItems = res.data.results.filter(item => item.user_id === userId);
+      return userItems;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data?.detail || err.message || "Failed to fetch cart.");
       }
-      return userCartItems;
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.detail || error.message || "Failed to fetch cart.");
-      }
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
+      if (err instanceof Error) return rejectWithValue(err.message);
       return rejectWithValue("Failed to fetch cart.");
     }
   }
 );
 
-// Helper to refresh the cart
+// Refresh Cart if needed
 export const refreshCart = () => async (dispatch: AppDispatch) => {
   return await dispatch(fetchCartOverview());
 };
 
-// Add Item to Cart
+// Add Item to Cart (returns full CartOverviewResponse)
 export const addToCart = createAsyncThunk<
-  void,
+  CartOverviewResponse,
   { item_id: number; quantity: number },
   ThunkApiConfig
 >(
   'cart/addToCart',
-  async ({ item_id, quantity }, { dispatch, rejectWithValue }) => {
+  async ({ item_id, quantity }, { rejectWithValue }) => {
     if (!getAccessToken()) {
       toast.error('You must be logged in to use the cart');
       return rejectWithValue("Authentication required.");
     }
 
     try {
-      await api.post('/api/cart-items/', { item_id, quantity });
-      await dispatch(refreshCart());
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || "Failed to add item to cart.");
+      const res = await api.post<CartOverviewResponse>('/api/cart-items/', { item_id, quantity });
+      return res.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data || "Failed to add item.");
       }
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Failed to add item to cart.");
+      if (err instanceof Error) return rejectWithValue(err.message);
+      return rejectWithValue("Failed to add item.");
     }
   }
 );
 
 // Update Cart Item
 export const updateCartItem = createAsyncThunk<
-  void,
+  CartOverviewResponse,
   { cart_item_id: number; quantity: number },
   ThunkApiConfig
 >(
   'cart/updateCartItem',
-  async ({ cart_item_id, quantity }, { dispatch, rejectWithValue }) => {
+  async ({ cart_item_id, quantity }, { rejectWithValue }) => {
     try {
-      await api.put(`/api/cart-items/${cart_item_id}/`, { quantity });
-      await dispatch(fetchCartOverview());
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || 'Failed to update cart item');
+      const res = await api.put<CartOverviewResponse>(`/api/cart-items/${cart_item_id}/`, { quantity });
+      return res.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data || 'Failed to update cart item');
       }
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
+      if (err instanceof Error) return rejectWithValue(err.message);
       return rejectWithValue('Failed to update cart item');
     }
   }
 );
 
+
 // Remove Item from Cart
 export const removeFromCart = createAsyncThunk<
-  void,
+  number,
   number,
   ThunkApiConfig
 >(
   'cart/removeFromCart',
-  async (cart_item_id, { dispatch, rejectWithValue }) => {
+  async (cart_item_id, { rejectWithValue }) => {
     try {
       await api.delete(`/api/cart-items/${cart_item_id}/`);
-      await dispatch(fetchCartOverview());
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.detail || 'Failed to remove cart item');
+      return cart_item_id;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data?.detail || 'Failed to remove item');
       }
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('Failed to remove cart item');
+      if (err instanceof Error) return rejectWithValue(err.message);
+      return rejectWithValue('Failed to remove item');
     }
   }
 );
 
-// Clear Cart
+// Clear Entire Cart
 export const clearCart = createAsyncThunk<
   void,
   void,
   ThunkApiConfig
 >(
   'cart/clearCart',
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       await api.delete('/api/cart/');
-      await dispatch(refreshCart());
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data || "Failed to clear cart.");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return rejectWithValue(err.response?.data || "Failed to clear cart.");
       }
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
+      if (err instanceof Error) return rejectWithValue(err.message);
       return rejectWithValue("Failed to clear cart.");
     }
   }
@@ -164,14 +149,62 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // ✅ Fulfilled cases
       .addCase(fetchCartOverview.fulfilled, (state, action) => {
         state.cart = action.payload;
         state.loading = false;
       })
-      .addCase(fetchCartOverview.rejected, (state, action) => {
+      .addCase(addToCart.fulfilled, (state, action) => {
+        const newItem = action.payload;
+        const existing = state.cart.find(item => item.cart_item_id === newItem.cart_item_id);
+
+        if (existing) {
+          existing.total_quantity = newItem.total_quantity;
+        } else {
+          state.cart.push(newItem);
+        }
+
+        state.cart.sort((a, b) => a.item_name.localeCompare(b.item_name));
         state.loading = false;
-        state.error = action.payload as string;
       })
+      .addCase(updateCartItem.fulfilled, (state, action) => {
+        const updatedItem = action.payload;
+        const existing = state.cart.find(item => item.cart_item_id === updatedItem.cart_item_id);
+
+        if (existing) {
+          Object.assign(existing, updatedItem); // Safely replace all fields
+        } else {
+          state.cart.push(updatedItem); // Fallback (shouldn't happen)
+        }
+
+        state.cart.sort((a, b) => a.item_name.localeCompare(b.item_name));
+        state.loading = false;
+      })
+      .addCase(removeFromCart.fulfilled, (state, action) => {
+        state.cart = state.cart.filter(item => item.cart_item_id !== action.payload);
+        state.loading = false;
+      })
+      .addCase(clearCart.fulfilled, (state) => {
+        state.cart = [];
+        state.loading = false;
+      })
+
+      // ❌ Rejected
+      .addMatcher(
+        isAnyOf(
+          fetchCartOverview.rejected,
+          addToCart.rejected,
+          updateCartItem.rejected,
+          removeFromCart.rejected,
+          clearCart.rejected
+        ),
+        (state, action) => {
+          state.loading = false;
+          state.error = action.payload as string;
+        }
+      )
+
+      // 🔄 Pending
       .addMatcher(
         isAnyOf(
           fetchCartOverview.pending,
@@ -184,31 +217,8 @@ const cartSlice = createSlice({
           state.loading = true;
           state.error = null;
         }
-      )
-      .addMatcher(
-        isAnyOf(
-          addToCart.fulfilled,
-          updateCartItem.fulfilled,
-          removeFromCart.fulfilled,
-          clearCart.fulfilled
-        ),
-        (state) => {
-          state.loading = false;
-        }
-      )
-      .addMatcher(
-        isAnyOf(
-          addToCart.rejected,
-          updateCartItem.rejected,
-          removeFromCart.rejected,
-          clearCart.rejected
-        ),
-        (state, action) => {
-          state.loading = false;
-          state.error = action.payload as string;
-        }
       );
-  }
+  },
 });
 
 export const selectCart = (state: RootState) => state.cart.cart;

@@ -26,7 +26,7 @@ export const useCart = () => {
 
   const addItem = async (item_id: number) => {
     try {
-      await dispatch(addToCart({ item_id, quantity: 1 })).unwrap();
+      dispatch(addToCart({ item_id, quantity: 1 })).unwrap();
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message);

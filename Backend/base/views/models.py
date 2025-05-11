@@ -8,6 +8,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from base.models.views import CartOverview
+from base.serializers.views import CartOverviewSerializer
 from base.permissions import HasRole, IsOwnerOrAdmin, ReadOnlyOrOwner
 from base.views.baseviews import BaseReadOnlyViewSet, BaseViewSet
 from base.models.item import Product, Service, Item
@@ -154,28 +156,46 @@ class CartItemViewSet(BaseViewSet):
         user = request.user
         item_id = request.data.get('item_id')
         quantity = request.data.get('quantity', 1)
+
         if not item_id:
             return Response({"error": "Item ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             item = Item.objects.get(id=item_id)
             cart, _ = Cart.objects.get_or_create(user=user)
+
+            # Add or update item in cart
             cart.add_item(item, quantity)
             cart.save()
+
+            # Retrieve the corresponding CartOverview row
             cart_item = CartItem.objects.get(cart=cart, item=item)
-            serializer = self.get_serializer(cart_item)
+            overview = CartOverview.objects.get(cart_item_id=cart_item.id)
+
+            # Serialize CartOverview (instead of CartItem)
+            serializer = CartOverviewSerializer(overview)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         except Item.DoesNotExist:
             return Response({"error": "Item does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except CartOverview.DoesNotExist:
+            return Response({"error": "Cart overview not found after adding item."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def update(self, request, *args, **kwargs):
         user = request.user
         try:
             cart_item = self.get_object()
             cart = Cart.objects.get(user=user)
+
             cart.update_quantity(cart_item.item, request.data.get('quantity', 1))
             cart.save()
-            serializer = CartItemSerializer(cart_item)
+
+            # ✅ Return CartOverview instead of CartItem
+            overview_item = CartOverview.objects.get(cart_item_id=cart_item.id)
+            serializer = CartOverviewSerializer(overview_item)
             return Response(serializer.data)
+
         except Cart.DoesNotExist:
             return Response({"error": "Cart does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 

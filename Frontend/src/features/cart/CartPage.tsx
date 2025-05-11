@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
 import {
   createOrderFromCart,
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart, useCartSummary } from '@/store/hooks/useCart';
 import { selectCart } from './cartSlice';
 import { selectAuthLoaded } from '../auth/authSlice';
+import CartItemCard from './CartItemCard';
 
 const CartPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -25,16 +26,24 @@ const CartPage: React.FC = () => {
     decrementItem,
     reloadCart,
   } = useCart();
-  
+
   const items = useAppSelector(selectCart);
   const authLoaded = useAppSelector(selectAuthLoaded);
 
+  const hasReloaded = useRef(false);
+
   useEffect(() => {
-    if (authLoaded) {
+    if (authLoaded && !hasReloaded.current) {
       reloadCart();
+      hasReloaded.current = true;
     }
   }, [authLoaded, reloadCart]);
-  
+
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => a.item_name.localeCompare(b.item_name)),
+    [items]
+  );
+
   const handleCheckout = async () => {
     const result = await dispatch(createOrderFromCart());
     if (createOrderFromCart.fulfilled.match(result)) {
@@ -46,36 +55,49 @@ const CartPage: React.FC = () => {
   if (error) return <p>Error: {error}</p>;
   if (orderError) return <p>Error: {orderError}</p>;
 
-  return (
-    <div>
-      <h2>Your Cart</h2>
-      {!items || items.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <ul>
-          {items.map((item) => (
-            <li key={item.cart_item_id || Math.random()} style={{ borderBottom: '1px solid #ccc', padding: '1rem 0' }}>
-              <h4>{item.item_name}</h4>
-              <p>Price: ${(item.latest_price / 100).toFixed(2)}</p>
-              <p>Quantity: {item.total_quantity}</p>
-              <p>Subtotal: ${((item.latest_price * item.total_quantity) / 100).toFixed(2)}</p>
+return (
+  <div className="max-w-3xl mx-auto px-4">
+    <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
 
-              {/* Add buttons */}
-              <button onClick={() => addItem(item.item_id)}>Add More</button>
-              <button onClick={() => decrementItem(item)}>
-                {item.total_quantity > 1 ? 'Decrease' : 'Remove'}
-              </button>
-            </li>
+    {sortedItems.length === 0 ? (
+      <p className="text-gray-600">Your cart is empty.</p>
+    ) : (
+      <>
+        <div className="space-y-4">
+          {sortedItems.map((item) => (
+            <div
+              key={item.cart_item_id}
+              className="transition-all duration-200 ease-in-out"
+            >
+              <CartItemCard
+                item={item}
+                onAdd={addItem}
+                onDecrement={decrementItem}
+              />
+            </div>
           ))}
-        </ul>
-      )}
+        </div>
 
-      <hr />
-      <h3>Total Items: {itemCount}</h3>
-      <h3>Total Price: ${(total / 100).toFixed(2)}</h3>
-      <button onClick={handleCheckout}>Pay</button>
-    </div>
-  );
-};
+        <hr className="my-6" />
+
+        <div className="flex flex-col items-start gap-2">
+          <h3 className="text-lg font-semibold">Total Items: {itemCount}</h3>
+          <h3 className="text-lg font-semibold">
+            Total Price: ${(total / 100).toFixed(2)}
+          </h3>
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleCheckout}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl w-full max-w-sm"
+          >
+            Pay Now
+          </button>
+        </div>
+      </>
+    )}
+  </div>
+)};
 
 export default CartPage;
