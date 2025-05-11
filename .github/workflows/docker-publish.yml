@@ -1,12 +1,13 @@
 name: Build & Push Docker Images
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["Auto Tag Commits"]
+    types: [completed]
 
 jobs:
-  docker:
+  build_and_push:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
