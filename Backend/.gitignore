@@ -1,0 +1,51 @@
+# 🔐 Environment Files
+.env
+.env.*
+!.env*.example
+
+# 🐍 Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+
+# 📦 Virtual Envs
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 🧪 Test Artifacts & Coverage
+.coverage
+.coveragerc
+coverage.xml
+htmlcov/
+pytest-report.xml
+pytest.log
+junit.xml
+.pytest_cache/
+coverage-final.json
+coverage-badge.svg
+
+# 🗃 Django Specific
+*.db
+/static/
+media/
+**/migrations/
+**/migrations/*.pyc
+**/migrations/*.py
+
+# 🧾 Logs
+*.log
+logs/
+
+# 💻 IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.tmp
+*.bak
+*.iml

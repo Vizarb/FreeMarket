@@ -1,0 +1,18 @@
+#!/bin/sh
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip TAG commits
+case "$COMMIT_MSG" in
+  TAG*) exit 0 ;;
+esac
+
+REGEX="^(feat|fix|chore|docs|refactor|style|test|perf|ci|build|revert|wip)(\([a-zA-Z0-9_-]+\))?: .+"
+
+echo "$COMMIT_MSG" | grep -Eiq "$REGEX" || {
+  echo "Invalid commit message format." >&2
+  echo "Use: <type>(scope): message" >&2
+  echo "Example: feat(cart): add remove-from-cart button" >&2
+  exit 1
+}

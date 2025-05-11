@@ -1,0 +1,39 @@
+# ===================================
+# 🔐 Global Env Files
+# ===================================
+.env
+.env.*
+!.env*.example
+
+# ===================================
+# 🔄 System & Editor Files
+# ===================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+.vscode/
+.idea/
+*.swp
+*.tmp
+*.bak
+*.iml
+
+# ===================================
+# 🐳 Global Docker Files
+# ===================================
+.docker/
+docker-compose.override.yml
+Dockerfile.*
+docker-compose*.yml
+
+# ===================================
+# 🔧 Misc
+*.log
+*.pid
+*.zip
+*.tar.gz
+*.workflow.log
+.github/workflows/temp*
+__pycache__/

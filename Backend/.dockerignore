@@ -1,0 +1,77 @@
+# =====================================
+# 🔐 Environment Files
+# =====================================
+.env
+.env.*
+!.env.example
+
+# =====================================
+# 🐍 Python Bytecode and Caches
+# =====================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+*.log
+
+# =====================================
+# 📦 Virtual Environments
+# =====================================
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# =====================================
+# 📊 Coverage and Test Artifacts
+# =====================================
+.coverage
+.coveragerc
+coverage.xml
+htmlcov/
+pytest-report.xml
+pytest.log
+.pytest_cache/
+junit.xml
+*.zip
+*.tar.gz
+
+# =====================================
+# 🐳 Docker
+# =====================================
+.docker/
+*.pid
+*.sock
+
+# =====================================
+# 📝 Logs
+# =====================================
+logs/
+*.log
+
+# =====================================
+# 🧪 Migrations (optional if you generate them inside container)
+# =====================================
+**/migrations/*.py
+**/migrations/*.pyc
+
+# =====================================
+# 💻 IDE/Editor Configs
+# =====================================
+.vscode/
+.idea/
+*.iml
+
+# =====================================
+# 🗑 System Files
+# =====================================
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.tmp

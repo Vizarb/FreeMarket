@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Skip merge and squash
+if [ "$2" = "merge" ] || [ "$2" = "squash" ]; then
+  exit 0
+fi
+
+# Skip TAG commits
+if grep -q "^TAG" "$1"; then
+  exit 0
+fi
+
+# Append template if there's no user-written line (i.e., only comments or whitespace)
+if ! grep -qE '^[^#[:space:]]' "$1"; then
+  cat <<EOF >> "$1"
+
+# Commit message template:
+# -------------------------
+# <type>(scope): brief description
+#
+# Allowed types:
+#   feat      - New feature
+#   fix       - Bug fix
+#   chore     - Misc maintenance (deps, configs, etc.)
+#   docs      - Documentation changes
+#   refactor  - Code restructuring (no behavior change)
+#   style     - Formatting only (spaces, semicolons, etc.)
+#   test      - Adding or fixing tests
+#   perf      - Performance improvements
+#   ci        - CI/CD config (GitHub Actions, etc.)
+#   build     - Build tools or dependencies (Docker, bundlers)
+#   revert    - Reverting a previous commit
+#   wip       - Work in progress (temporary)
+#
+# Special case:
+#   TAG: patch  - Bump patch version (e.g. v1.2.3 → v1.2.4)
+#   TAG: minor  - Bump minor version (e.g. v1.2.3 → v1.3.0)
+#   TAG: major  - Bump major version (e.g. v1.2.3 → v2.0.0)
+#
+# Examples:
+#   feat(cart): add remove-from-cart button
+#   TAG: patch
+#   TAG: minor
+#   TAG: major
+EOF
+fi

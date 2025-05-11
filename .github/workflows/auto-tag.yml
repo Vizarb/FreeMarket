@@ -1,0 +1,69 @@
+name: Auto Tag Commits
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Detect TAG Type in Commit
+        id: tag_check
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Last commit: $COMMIT_MSG"
+
+          if [[ "$COMMIT_MSG" != TAG* ]]; then
+            echo "No TAG prefix found, skipping tag."
+            exit 1
+          fi
+
+          # Default bump = patch
+          if echo "$COMMIT_MSG" | grep -qi "TAG: *major"; then
+            echo "BUMP_TYPE=major" >> $GITHUB_ENV
+          elif echo "$COMMIT_MSG" | grep -qi "TAG: *minor"; then
+            echo "BUMP_TYPE=minor" >> $GITHUB_ENV
+          else
+            echo "BUMP_TYPE=patch" >> $GITHUB_ENV
+          fi
+
+      - name: Generate Next Tag
+        id: version
+        run: |
+          git fetch --tags
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          IFS='.' read MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
+
+          case "$BUMP_TYPE" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "New tag will be: $NEW_TAG"
+
+      - name: Create and Push Tag
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a $NEW_TAG -m "Release $NEW_TAG"
+          git push origin $NEW_TAG

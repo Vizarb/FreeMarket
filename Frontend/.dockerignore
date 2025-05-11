@@ -1,0 +1,58 @@
+# =====================================
+# 📦 Node/Yarn Artifacts
+# =====================================
+node_modules/
+.pnp/
+.yarn/
+.yarnrc.yml
+.pnpm-debug.log
+package-lock.json
+yarn-error.log
+
+# =====================================
+# 🧪 Build & Cache
+# =====================================
+dist/
+build/
+.vite/
+.cache/
+coverage/
+coverage-final.json
+coverage-report.zip
+*.lcov
+
+# =====================================
+# 🧪 Test Output
+# =====================================
+__tests__/
+*.test.*
+*.spec.*
+.nyc_output/
+jest.config.js
+.vitest/
+.vitest-output/
+
+# =====================================
+# 🔐 Env
+# =====================================
+.env
+.env.*
+!.env.example
+
+# =====================================
+# 💻 Editor/IDE
+# =====================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =====================================
+# 🗑 System Files
+# =====================================
+.DS_Store
+Thumbs.db
+*.log
+*.local
+*.swp
+*.bak

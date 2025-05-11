@@ -1,0 +1,56 @@
+# 🔐 Environment Files
+.env
+.env.*
+!.env*.example
+
+# 📦 Node/Yarn
+node_modules/
+.pnp/
+.pnp.js
+.yarn/
+.yarnrc.yml
+package-lock.json
+yarn-error.log
+
+# 🔨 Build & Dev Caches
+dist/
+build/
+.vite/
+.cache/
+public/build/
+
+# 🧪 Tests & Coverage
+coverage/
+coverage-report.zip
+*.lcov
+.vitest/
+.vitest-output/
+.nyc_output/
+__tests__/
+*.test.*
+*.spec.*
+
+# 🎨 Tailwind/PostCSS (if generated)
+*.css.map
+*.postcss
+*.generated.css
+.temp/
+temp/
+generated/
+
+# 📓 Logs
+*.log
+logs/
+
+# 💻 IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.tmp
+*.bak
+*.iml
+
+# 🗑 OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
