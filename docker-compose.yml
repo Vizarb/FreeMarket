@@ -20,7 +20,7 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-    image: vizarb/backend:${BACKEND_TAG:-latest}
+    image: vizarb/backend:latest
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./Backend:/app
@@ -39,7 +39,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-    image: vizarb/frontend:${FRONTEND_TAG:-latest}
+    image: vizarb/frontend:latest
     command: yarn dev
     volumes:
       - ./Frontend:/app
