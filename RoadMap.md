@@ -87,9 +87,3 @@
 > 💡 Deliverable: A unique, powerful resume project that demonstrates initiative and creativity.
 
 ---
-
-## 🛠️ Tips
-- Use `#backend`, `#frontend`, `#infra`, `#redis` tags in Notion if using as a Kanban board
-- Link each task to a GitHub issue or PR if working in a repo
-- Prioritize features that align with your job goals (e.g. backend engineering, DevOps, etc.)
-- Don’t overbuild. Done > Perfect.
