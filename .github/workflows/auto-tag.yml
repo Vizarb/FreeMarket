@@ -8,50 +8,50 @@ permissions:
   contents: write
 
 jobs:
-  auto-tag:
-    name: Auto Tag if Commit Message Contains TAG
+  tag:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # use PAT below
 
-    - name: Check for TAG in Commit Message
-      id: check_tag
-      run: |
-        COMMIT_MSG=$(git log -1 --pretty=%B)
-        echo "Latest commit message: $COMMIT_MSG"
-        if [[ "$COMMIT_MSG" != TAG* ]]; then
-          echo "Commit message does not start with TAG. Exiting."
-          exit 1
-        fi
-        echo "TAG prefix detected. Proceeding..."
-        echo "AUTO_TAG=true" >> $GITHUB_ENV
-
-    - name: Determine Next Available Tag
-      id: next_tag
-      run: |
-        git fetch --tags
-        LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
-        IFS='.' read -r MAJOR MINOR PATCH <<< "${LATEST_TAG#v}"
-
-        # bump patch by default; loop until unused
-        while true; do
-          PATCH=$((PATCH + 1))
-          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
-          if git rev-parse "$NEW_TAG" >/dev/null 2>&1; then
-            echo "Tag $NEW_TAG already exists, trying next..."
-          else
-            echo "Found available tag: $NEW_TAG"
-            echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-            break
+      - name: Detect TAG Type in Commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Last commit: $COMMIT_MSG"
+          if [[ "$COMMIT_MSG" != TAG* ]]; then
+            echo "No TAG prefix found, skipping tag."
+            exit 1
           fi
-        done
 
-    - name: Create and Push **Annotated** Tag
-      run: |
-        git config user.name  "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        # <<-- the -a makes it an *annotated* tag
-        git tag -a $NEW_TAG -m "Release $NEW_TAG"
-        git push origin $NEW_TAG
+          if echo "$COMMIT_MSG" | grep -qi "TAG: *major"; then
+            echo "BUMP_TYPE=major" >> $GITHUB_ENV
+          elif echo "$COMMIT_MSG" | grep -qi "TAG: *minor"; then
+            echo "BUMP_TYPE=minor" >> $GITHUB_ENV
+          else
+            echo "BUMP_TYPE=patch" >> $GITHUB_ENV
+          fi
+
+      - name: Generate Next Tag
+        run: |
+          git fetch --tags
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          IFS='.' read MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
+
+          case "$BUMP_TYPE" in
+            major) MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR+1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH+1)) ;;
+          esac
+
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "New tag: $NEW_TAG"
+
+      - name: Create and Push Annotated Tag with PAT
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag -a $NEW_TAG -m "Release $NEW_TAG"
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }} $NEW_TAG
