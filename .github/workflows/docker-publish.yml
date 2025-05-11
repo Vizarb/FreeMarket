@@ -30,7 +30,8 @@ jobs:
 
       - name: Build & Push
         run: |
-          docker compose --env-file .env build
+          # explicitly tell Compose where the file is
+          docker compose -f ./docker-compose.yml --env-file .env build
           docker tag vizarb/backend:$TAG vizarb/backend:latest
           docker tag vizarb/frontend:$TAG vizarb/frontend:latest
 
