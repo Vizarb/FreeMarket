@@ -90,6 +90,7 @@ class ItemDetailsViewSet(BaseReadOnlyViewSet):
     queryset           = ItemDetails.objects.all()
     serializer_class   = ItemDetailsSerializer
     filterset_fields   = ['currency', 'seller', 'categories']
+    lookup_field = 'slug'
 
 
 class UserOrderHistoryViewSet(BaseReadOnlyViewSet):
