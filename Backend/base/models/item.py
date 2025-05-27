@@ -5,6 +5,7 @@ from .base_modle import BaseModel
 from .category import Category
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex, BTreeIndex
+from django.utils.text import slugify
 
 class Currency(models.TextChoices):
     USD = "USD", "US Dollar"
@@ -28,6 +29,7 @@ class Item(BaseModel):
     search_vector = SearchVectorField(null=True, editable=False)
     metadata = models.JSONField(null=True, blank=True)
     image = models.ImageField(upload_to='items/', null=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
 
     class Meta:
         indexes = [
@@ -39,6 +41,18 @@ class Item(BaseModel):
     def __str__(self):
         return self.name
     
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Item.all_objects.filter(slug=slug).exclude(id=self.id).exists():
+                counter += 1
+                slug = f"{base_slug}-{counter}"
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
 class Product(Item):
     """
     Represents a physical product derived from an Item.

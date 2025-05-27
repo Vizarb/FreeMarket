@@ -2,6 +2,7 @@ from django.db import models
 
 class ItemDetails(models.Model):
     item_id = models.IntegerField(primary_key=True)  # Views do not auto-generate primary keys
+    slug = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     price_cents = models.BigIntegerField()

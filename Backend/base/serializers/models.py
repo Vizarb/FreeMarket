@@ -99,7 +99,19 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            'slug',
+            'description',
+            'price_cents',
+            'currency',
+            'image',
+            'seller',
+            'created_at',
+            'updated_at',
+        ]
+
 
 # Product Serializer
 class ProductSerializer(serializers.ModelSerializer):

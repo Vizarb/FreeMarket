@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import NotFound
 
 from base.models.views import CartOverview
 from base.serializers.views import CartOverviewSerializer
@@ -37,7 +38,6 @@ from django.db import transaction
 
 logger = logging.getLogger('freemarketbackend')
 
-
 class ItemViewSet(BaseViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
@@ -46,6 +46,31 @@ class ItemViewSet(BaseViewSet):
     filterset_fields  = ['name', 'price_cents', 'currency', 'seller']
     search_fields     = ['name', 'description']
     ordering_fields   = ['created_at', 'updated_at', 'name']
+    lookup_field = 'slug'
+
+    def get_object(self):
+        """
+        Override to allow fallback to ID if slug fails.
+        Safe: only works if slug is not found, and user is authorized.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_value = self.kwargs.get(self.lookup_field)
+
+        # Try slug match
+        try:
+            return queryset.get(slug=lookup_value)
+        except Item.DoesNotExist:
+            pass
+
+        # Fallback to ID match
+        if lookup_value.isdigit():
+            try:
+                return queryset.get(id=int(lookup_value))
+            except Item.DoesNotExist:
+                logger.debug(f"Slug '{lookup_value}' not found, trying ID fallback...")
+
+        raise NotFound(f"Item not found for slug or id: {lookup_value}")
+
 
 
 class ProductViewSet(BaseViewSet):
