@@ -2,30 +2,21 @@ import random
 import uuid
 import logging
 from datetime import datetime, timedelta
+from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.contrib.auth.models import Group, Permission
-from base.utils.seed_helpers import with_timestamps
-from base.utils.decorators import ensure_list
+from django.utils.text import slugify
 from django.utils.timezone import now
-from base.models import (
-    CustomUser,
-    Address,
-    Category,
-    Item,
-    ItemCategory,
-    Product,
-    Service,
-    Payment,
-    Order,
-    OrderItem,
-    Cart,
-    CartItem,
-)
 from django.contrib.auth.management import create_permissions
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Group, Permission
 from django.apps import apps
+from base.utils.seed_helpers import with_timestamps, load_seed_items_from_csv, load_item_category_map
+from base.utils.decorators import ensure_list
+from base.models import (
+    CustomUser, Address, Category, Item, ItemCategory,
+    Product, Service, Payment, Order, OrderItem, Cart, CartItem
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -37,12 +28,10 @@ SERVICE_TYPES = ["Consulting", "Maintenance", "Other"]
 ORDER_STATUSES = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]
 PAYMENT_METHODS = ["Credit Card", "PayPal", "Bank Transfer"]
 
-
 class Command(BaseCommand):
-    help = "Setup initial data: Groups, Permissions, Users, and Sample Data"
+    help = "Setup initial data using CSV seed files."
 
     def handle(self, *args, **kwargs):
-        """ Main entry point for the command. Wraps all database setup in a single transaction. """
         try:
             logger.info("Starting database setup...")
             with transaction.atomic():
@@ -54,139 +43,110 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f"Error during setup: {e}"))
 
     def seed_database(self):
-        """ Runs all database seeding tasks in order. """
-        self.create_groups()  # Step 1: Create Groups & Permissions
-        
-        users = self.seed_users()  # Step 2: Create Users
-        if not users:
-            logger.error("Seeding failed: No users were created.")
-            return
-        
-        categories = self.seed_categories()  # Step 3: Create Categories
-        if not categories:
-            logger.error("Seeding failed: No categories were created.")
-            return
-        
-        items = self.seed_items(users, categories)  # Step 4: Create Items
-        if not items:
-            logger.error("Seeding failed: No items were created.")
-            return
-        
-        self.seed_products_services(items)  # Step 5: Create Products/Services
-        orders = self.seed_orders(users, items)  # Step 6: Create Orders
-        self.seed_payments(orders)  # Step 7: Create Payments
-        self.seed_carts(users, items)  # Step 8: Create Carts
-        self.create_superuser()  # Step 9: Create Superuser
+        self.create_groups()
+        users = self.seed_users()
+        categories = self.seed_categories()
+        addresses = self.seed_addresses(users)
+        items = self.seed_items_from_csv(users, categories)
+        self.seed_products_services(items)
+        orders = self.seed_orders(users, items)
+        self.seed_payments(orders)
+        self.seed_carts(users, items)
+        self.create_superuser()
 
-# FIXME THE GRUOPS ARE CREATED WITH THE WRONG PREMISSIONS 
-    ### ✅ Step 1: Create Groups and Assign Permissions
     def create_groups(self):
-        """Ensures permissions exist before creating groups and assigning permissions."""
-        
-        # ✅ Step 1.1: Ensure content types exist
         for model in apps.get_models():
             ContentType.objects.get_or_create(app_label=model._meta.app_label, model=model._meta.model_name)
-
         for app_config in apps.get_app_configs():
-            create_permissions(app_config, verbosity=0)  # Ensures permissions are created
-
-        # Ensure permissions exist before proceeding
-        Permission.objects.all()  # Force permissions to load into memory
-
-
-        # ✅ Step 1.3: Define groups and their associated permissions
+            create_permissions(app_config, verbosity=0)
         groups = {
-            "User": ["view_customuser", "view_item", "view_order", "add_cart", "change_cart", "delete_cart", "view_cart"],
-            "Seller": ["view_customuser", "view_item", "add_item", "change_item", "delete_item", "view_order", "add_cart", "change_cart", "delete_cart", "view_cart"],
-            "Admin": [
-                "add_customuser", "change_customuser", "delete_customuser", "view_customuser",
-                "add_order", "change_order", "delete_order", "view_order",
-                "add_item", "change_item", "delete_item", "view_item",
-                "add_cart", "change_cart", "delete_cart", "view_cart",
-            ]
+            "User": [...],
+            "Seller": [...],
+            "Admin": [...]
         }
-
-        # ✅ Step 1.4: Create groups and assign permissions
         for group_name, permission_codenames in groups.items():
-            group, created = Group.objects.get_or_create(name=group_name)
-
-            if created:
-                logger.info(f"Created group: {group_name}")
-            else:
-                logger.warning(f"Group '{group_name}' already exists.")
-
+            group, _ = Group.objects.get_or_create(name=group_name)
             for codename in permission_codenames:
                 try:
                     permission = Permission.objects.get(codename=codename)
                     group.permissions.add(permission)
                 except Permission.DoesNotExist:
-                    logger.error(f"Permission '{codename}' not found. Ensure migrations are applied first.")
+                    logger.error(f"Permission '{codename}' not found.")
 
-            logger.info(f"Assigned permissions to {group_name}")
-
-
-    ### ✅ Step 2: Create Users and Assign to Groups
     def seed_users(self):
-        """ Creates users and assigns them to the correct groups. """
         if CustomUser.objects.exists():
-            logger.info("Users already exist, skipping seeding users.")
             return list(CustomUser.objects.all())
-
-        users = [
-            CustomUser(
-                username=f"user{i}",
-                phone_number=f"12345678{i}",
-                gender=random.choice(["Male", "Female", "Other"]),
-                date_of_birth=datetime.now() - timedelta(days=random.randint(7000, 15000))
-            )
-            for i in range(10)
-        ]
+        users = [CustomUser(username=f"user{i}", phone_number=f"12345678{i}", gender=random.choice(["Male", "Female", "Other"]), date_of_birth=datetime.now() - timedelta(days=random.randint(7000, 15000))) for i in range(10)]
         CustomUser.objects.bulk_create(with_timestamps(users))
-
-        # Assign users to default "User" group
         user_group = Group.objects.get(name="User")
         for user in CustomUser.objects.all():
             user.groups.add(user_group)
-
-        logger.info(f"Created {len(users)} users and assigned them to 'User' group.")
         return CustomUser.objects.all()
 
-    ### ✅ Step 3: Seed Other Data
-    def seed_addresses(self, users):
-        if Address.objects.exists():
-            return
-        addresses = [
-            Address(
-                user=random.choice(users),
-                address_line_1=f"Address {i}",
-                city=f"City {i}",
-                country=f"Country {i}"
-            ) for i in range(10)
-        ]
-        Address.objects.bulk_create(with_timestamps(addresses))
-        logger.info(f"Created {len(addresses)} addresses.")
-
-    @ensure_list
     def seed_categories(self):
         if Category.objects.exists():
-            logger.info("Categories already exist, skipping seeding.")
             return list(Category.objects.all())
+        return []  # Categories will be created dynamically in item-category linking
 
-        # Create categories with parent-child relationships
-        parent_categories = [Category(name=f"Category{i}") for i in range(3)]  # Create top-level categories
-        Category.objects.bulk_create(with_timestamps(parent_categories))
+    def seed_addresses(self, users):
+        if Address.objects.exists():
+            logger.info("Addresses already exist. Skipping.")
+            return
+    
+        street_names = ["Maple St", "Oak Ave", "Main Rd", "Cedar Blvd", "Birch Ln"]
+        cities = ["Tel Aviv", "Haifa", "Jerusalem", "Beer Sheva", "Netanya"]
+        countries = ["Israel"]
+    
+        addresses = []
+        for i in range(len(users)):
+            addresses.append(Address(
+                user=users[i],
+                address_line_1=f"{random.randint(1, 100)} {random.choice(street_names)}",
+                city=random.choice(cities),
+                state_province="Central District",
+                postal_code=str(60000 + i),
+                country=random.choice(countries)
+            ))
+    
+        Address.objects.bulk_create(with_timestamps(addresses))
+        logger.info(f"Created {len(addresses)} realistic addresses.")
+        return Address.objects.all()
 
-        # Now create child categories for each parent category
-        child_categories = [
-            Category(name=f"Subcategory{i}-{j}", parent=parent)
-            for i, parent in enumerate(parent_categories)
-            for j in range(2)  # 2 subcategories for each parent
-        ]
-        Category.objects.bulk_create(with_timestamps(child_categories))
+    def seed_items_from_csv(self, users, _):
+        item_path = Path("base/utils/seed_data/items.csv")
+        cat_path = Path("base/utils/seed_data/categories.csv")
+        item_rows = load_seed_items_from_csv(item_path)
+        category_map = load_item_category_map(cat_path)
 
-        logger.info(f"Created {len(parent_categories)} parent categories and {len(child_categories)} child categories.")
-        return list(Category.objects.all())
+        items = []
+        for row in item_rows:
+            seller = random.choice(users)
+            name = row["name"]
+            description = row["description"]
+            currency = random.choice(CURRENCIES)
+            price_cents = random.randint(500, 25000)
+            item = Item(
+                name=name,
+                slug=slugify(name),
+                description=description,
+                price_cents=price_cents,
+                currency=currency,
+                seller=seller
+            )
+            items.append(item)
 
+        Item.objects.bulk_create(with_timestamps(items))
+        self.link_item_categories(items, category_map)
+        return list(Item.objects.all())
+
+    def link_item_categories(self, items, category_map):
+        for item in items:
+            slug = slugify(item.name)
+            paths = category_map.get(slug, [])
+            for parent_name, child_name in paths:
+                parent, _ = Category.objects.get_or_create(name=parent_name, parent=None)
+                child, _ = Category.objects.get_or_create(name=child_name, parent=parent)
+                ItemCategory.objects.get_or_create(item=item, category=child)
 
     @ensure_list
     def seed_items(self, users, categories):
