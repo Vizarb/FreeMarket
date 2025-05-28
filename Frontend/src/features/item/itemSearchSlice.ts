@@ -19,18 +19,30 @@ export const fetchAutocompleteSuggestions = createAsyncThunk<string[], string>(
   }
 );
 
+export const fetchItemBySlug = createAsyncThunk(
+  'item/fetchBySlug',
+  async (slug: string) => {
+    const response = await api.get(`/api/item-details/${slug}`);
+    return response.data;
+  }
+);
+
+
 interface ItemSearchState {
   results: UnifiedItemResult[];
   suggestions: string[];
   loading: boolean;
   error: string | null;
+  selectedItem: UnifiedItemResult | null;
 }
+
 
 const initialState: ItemSearchState = {
   results: [],
   suggestions: [],
   loading: false,
   error: null,
+  selectedItem: null,
 };
 
 const itemSearchSlice = createSlice({
@@ -59,6 +71,19 @@ const itemSearchSlice = createSlice({
       })
       .addCase(fetchAutocompleteSuggestions.fulfilled, (state, action: PayloadAction<string[]>) => {
         state.suggestions = action.payload;
+      })
+      .addCase(fetchItemBySlug.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.selectedItem = null;
+      })
+      .addCase(fetchItemBySlug.fulfilled, (state, action: PayloadAction<UnifiedItemResult>) => {
+        state.selectedItem = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchItemBySlug.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? 'Failed to fetch item by slug';
       });
   },
 });
@@ -69,5 +94,6 @@ export const selectItemResults = (state: RootState) => state.itemSearch.results;
 export const selectSuggestions = (state: RootState) => state.itemSearch.suggestions;
 export const selectSearchLoading = (state: RootState) => state.itemSearch.loading;
 export const selectSearchError = (state: RootState) => state.itemSearch.error ?? '';
+export const selectSelectedItem = (state: RootState) => state.itemSearch.selectedItem;
 
 export default itemSearchSlice.reducer;

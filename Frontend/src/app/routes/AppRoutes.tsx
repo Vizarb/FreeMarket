@@ -23,7 +23,7 @@ const AppRoutes: React.FC = () => {
         </RoleProtectedRoute>
       }
     >
-      <Route index element={<Component />} />
+      <Route path={path} element={<Component />} />
     </Route>
   ))}
 </Routes>

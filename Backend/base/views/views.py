@@ -12,7 +12,7 @@ from base.views.baseviews import BaseReadOnlyViewSet
 from base.permissions import HasRole
 from base.models import Item, Category
 from base.models.views import (
-    ItemDetails, OrderDetails, OrderItemDetails, UserOrderHistory,
+    ItemDetails, ItemSearchView, OrderDetails, OrderItemDetails, UserOrderHistory,
     CartOverview, TopSellingProducts, MostActiveUsers
 )
 from base.serializers.item_search import ItemSearchSerializer
@@ -30,10 +30,10 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
     """
     permission_classes = [IsAuthenticated, HasRole]
     required_roles    = ['Buyer', 'Seller']
-    queryset          = Item.objects.select_related('seller').prefetch_related('categories', 'product', 'service')
+    queryset          = ItemSearchView.objects.all()
     serializer_class  = ItemSearchSerializer
-    filterset_fields  = ['currency', 'seller']
-    ordering_fields   = ['price_cents']
+    filterset_fields  = ['currency', 'seller', 'item_type']
+    ordering_fields   = ['price_cents', 'name']
     ordering          = ['-price_cents']
     search_field      = 'search_vector'
 
@@ -52,33 +52,25 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
         return Response([])
 
     def get_queryset(self):
-        # start with BaseReadOnlyViewSet’s soft-delete filter
-        qs = super().get_queryset().select_related('product', 'service').prefetch_related('categories')
+        qs = super().get_queryset()
 
         search_term = self.request.query_params.get("search")
         if search_term:
-            vector = self.search_field
             sq = SearchQuery(search_term, search_type="plain")
-            qs = qs.annotate(rank=SearchRank(F(vector), sq))
-            fts = qs.filter(**{vector: sq}).order_by("-rank")
-            if fts.exists():
-                return fts
-            # fallback
-            return qs.filter(
-                Q(name__icontains=search_term) |
-                Q(description__icontains=search_term)
-            )
+            qs = qs.annotate(rank=SearchRank(F(self.search_field), sq))
+            return qs.filter(search_vector=sq).order_by("-rank")
 
         cat_id = self.request.query_params.get('category_id')
         if cat_id:
             try:
                 cat = Category.objects.prefetch_related('subcategories').get(id=cat_id)
                 ids = get_descendant_ids(cat)
-                qs = qs.filter(categories__id__in=ids)
+                qs = qs.filter(categories__iregex=r'\m(' + '|'.join(map(str, ids)) + r')\M')
             except Category.DoesNotExist:
                 pass
 
         return qs
+
 
 
 class ItemDetailsViewSet(BaseReadOnlyViewSet):
