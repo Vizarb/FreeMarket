@@ -40,10 +40,9 @@ services:
       context: ./Frontend
       dockerfile: Dockerfile
     image: vizarb/frontend:latest
-    command: yarn dev
+    command: sh -c "yarn install && yarn dev"
     volumes:
-      - ./Frontend:/app
-      - /app/node_modules
+      - ./Frontend:/app:cached
     ports:
       - "5173:5173"
     env_file:
