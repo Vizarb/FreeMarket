@@ -1,7 +1,7 @@
 import { Currency } from "./enums";
 
 export interface UnifiedItemResult {
-  id: number;
+  item_id: number;
   name: string;
   description: string | null;
   price_cents: number;
@@ -10,6 +10,7 @@ export interface UnifiedItemResult {
   item_type: 'product' | 'service';
   categories: string[];
   image?: string;
+  slug: string;
 
   quantity?: number; // product-only
   service_duration?: number; // service-only

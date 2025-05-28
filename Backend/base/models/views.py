@@ -15,6 +15,25 @@ class ItemDetails(models.Model):
         managed = False  # Django won't manage this table (it's a DB view)
         db_table = "item_details"
 
+class ItemSearchView(models.Model):
+    item_id = models.IntegerField(primary_key=True)
+    slug = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    price_cents = models.BigIntegerField()
+    currency = models.CharField(max_length=10)
+    seller = models.CharField(max_length=255)
+    item_type = models.CharField(max_length=20)
+    categories = models.TextField()
+    quantity = models.IntegerField(null=True, blank=True)
+    service_duration = models.IntegerField(null=True, blank=True)
+    service_type = models.CharField(max_length=255, null=True, blank=True)
+    search_vector = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = "item_search_view"
+
 class UserOrderHistory(models.Model):
     order_id = models.IntegerField(primary_key=True)
     user_id = models.IntegerField()

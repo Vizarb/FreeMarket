@@ -17,7 +17,7 @@ const ItemList: React.FC = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
       {items.map((item: UnifiedItemResult) => (
         // Ensure `item.id` is a valid, unique key
-        <ItemCard key={item.id} item={item} />
+        <ItemCard key={item.item_id} item={item} />
       ))}
     </div>
   );

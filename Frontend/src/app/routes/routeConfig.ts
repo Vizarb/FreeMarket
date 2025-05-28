@@ -11,6 +11,7 @@ import CartPage from "@/features/cart/CartPage";
 import MarketplacePage from "@/components/pages/MarketplacePage";
 import ForbiddenPage from "@/components/pages/ForbiddenPage";
 import OrderConfirmation from "@/features/order/OrderConfirmation";
+import ItemDetailPage from "@/features/item/ItemDetailPage";
 
 // === Shared Route Type ===
 export interface AppRoute {
@@ -40,4 +41,5 @@ export const roleBasedRoutes: RoleProtectedRoute[] = [
   { path: "/orders", name: "Order History", component: OrderHistory, roles: ["Buyer", "Admin"] },
   { path: "/order-confirmation", name: "Order Confirmation", component: OrderConfirmation, roles: ["Buyer", "Admin"] },
   { path: "/seller", name: "Seller Dashboard", component: SellerDashboard, roles: ["Seller", "Admin"] },
+  { path: "/items/:slug",name: "Item Detail", component: ItemDetailPage, roles: ["Buyer", "Admin", "Seller"] },
 ];

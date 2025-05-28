@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../../store/hooks/hooks';
 import { addToCart } from '../cart/cartSlice';
 import { Currency } from '../../types/enums';
@@ -12,7 +13,7 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
   const dispatch = useAppDispatch();
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ item_id: item.id, quantity: 1 }));
+    dispatch(addToCart({ item_id: item.item_id, quantity: 1 }));
   };
 
   const imageUrl = item.image
@@ -27,7 +28,9 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
         className="w-full h-48 object-cover rounded-lg mb-4"
         onError={(e) => (e.currentTarget.src = '/placeholder.jpg')}
       />
-      <h3 className="text-lg font-bold">{item.name}</h3>
+      <Link to={`/items/${item.slug}`} className="text-lg font-bold text-blue-600 hover:underline">
+        {item.name}
+      </Link>
       <p className="text-sm text-gray-700">{item.description || 'No description available'}</p>
       <p className="font-semibold mt-2">
         ${(item.price_cents / 100).toFixed(2)} {Currency[item.currency]}

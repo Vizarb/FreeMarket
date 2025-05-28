@@ -1,6 +1,6 @@
 // src/types/apiResponseType.ts
 
-import { Currency } from "./enums";
+// import { Currency } from "./enums";
 
 export interface PaginatedResponse<T> {
   count: number;
@@ -9,39 +9,39 @@ export interface PaginatedResponse<T> {
   results: T[];
 }
 
-export interface ItemDetailsResponse {
-  item_id: number;
-  name: string;
-  description: string | null; 
-  price_cents: number;
-  currency: Currency;
-  seller: string;
-  categories: string[];
-}
+// export interface ItemDetailsResponse {
+//   item_id: number;
+//   name: string;
+//   description: string | null; 
+//   price_cents: number;
+//   currency: Currency;
+//   seller: string;
+//   categories: string[];
+// }
 
 
-export interface ProductDetailsResponse {
-  item_id: number;
-  name: string;
-  description: string | null;
-  price_cents: number;
-  currency: Currency;
-  seller: string;
-  categories: string[];  // ✅ Change to string instead of string[]
-  quantity: number;
-}
+// export interface ProductDetailsResponse {
+//   item_id: number;
+//   name: string;
+//   description: string | null;
+//   price_cents: number;
+//   currency: Currency;
+//   seller: string;
+//   categories: string[];  // ✅ Change to string instead of string[]
+//   quantity: number;
+// }
   
-export interface ServiceDetailsResponse {
-  item_id: number;
-  name: string;
-  description: string | null;
-  price_cents: number;
-  currency: Currency;
-  seller: string;
-  categories: string[];
-  service_duration: number;
-  service_type: string;
-}
+// export interface ServiceDetailsResponse {
+//   item_id: number;
+//   name: string;
+//   description: string | null;
+//   price_cents: number;
+//   currency: Currency;
+//   seller: string;
+//   categories: string[];
+//   service_duration: number;
+//   service_type: string;
+// }
 
 export interface CartOverviewResponse {
   cart_item_id: number;
