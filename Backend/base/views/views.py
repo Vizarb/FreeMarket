@@ -1,5 +1,6 @@
 # views/item_views.py
 
+import logging
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -23,6 +24,7 @@ from base.serializers.views import (
 )
 from base.utils.category_utils import get_descendant_ids
 
+logger = logging.getLogger(__name__)
 
 class ItemSearchViewSet(BaseReadOnlyViewSet):
     """
@@ -53,13 +55,30 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        search_term = self.request.query_params.get("q")
 
-        search_term = self.request.query_params.get("search")
+        # Full-text search with fallback
         if search_term:
-            sq = SearchQuery(search_term, search_type="plain")
-            qs = qs.annotate(rank=SearchRank(F(self.search_field), sq))
-            return qs.filter(search_vector=sq).order_by("-rank")
+            try:
+                sq = SearchQuery(search_term, search_type='plain')
+                fts_qs = qs.exclude(search_vector__isnull=True)\
+                           .annotate(rank=SearchRank(F(self.search_field), sq))\
+                           .filter(search_vector=sq)\
+                           .order_by("-rank")
 
+                if fts_qs.exists():
+                    return fts_qs
+            except Exception as e:
+                logger.warning(f"FTS failed for search='{search_term}': {e}")
+
+            # Fallback to partial matches
+            return qs.filter(
+                Q(name__icontains=search_term) |
+                Q(description__icontains=search_term) |
+                Q(slug__icontains=search_term)
+            ).order_by("name")
+
+        # Category filtering
         cat_id = self.request.query_params.get('category_id')
         if cat_id:
             try:

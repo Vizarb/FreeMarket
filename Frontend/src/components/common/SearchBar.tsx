@@ -29,6 +29,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       } else {
         navigate(`/search?q=${encodeURIComponent(query)}`); // 🔁 fallback default
       }
+      setQuery('')
     }
   };
 

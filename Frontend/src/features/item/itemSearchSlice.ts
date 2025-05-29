@@ -6,7 +6,7 @@ import { RootState } from '../../store/rootReducer';
 export const fetchUnifiedItemResults = createAsyncThunk<UnifiedItemResult[], string>(
   'itemSearch/fetchUnifiedItemResults',
   async (query: string) => {
-    const response = await api.get(`/api/item-search/?search=${encodeURIComponent(query)}`);
+    const response = await api.get(`/api/item-search/?q=${encodeURIComponent(query)}`);
     return response.data.results;
   }
 );
