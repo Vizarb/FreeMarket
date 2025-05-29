@@ -11,10 +11,15 @@ export const fetchUnifiedItemResults = createAsyncThunk<UnifiedItemResult[], str
   }
 );
 
-export const fetchAutocompleteSuggestions = createAsyncThunk<string[], string>(
+interface Suggestion {
+  name: string;
+  slug: string;
+}
+
+export const fetchAutocompleteSuggestions = createAsyncThunk<Suggestion[], string>(
   'itemSearch/fetchAutocompleteSuggestions',
   async (partial: string) => {
-    const response = await api.get(`/api/item-details/autocomplete/?q=${encodeURIComponent(partial)}`);
+    const response = await api.get(`/api/item-search/autocomplete/?q=${encodeURIComponent(partial)}`);
     return response.data;
   }
 );
@@ -30,7 +35,7 @@ export const fetchItemBySlug = createAsyncThunk(
 
 interface ItemSearchState {
   results: UnifiedItemResult[];
-  suggestions: string[];
+  suggestions: Suggestion[];
   loading: boolean;
   error: string | null;
   selectedItem: UnifiedItemResult | null;
@@ -69,7 +74,7 @@ const itemSearchSlice = createSlice({
         state.loading = false;
         state.error = action.error.message ?? 'Failed to fetch search results';
       })
-      .addCase(fetchAutocompleteSuggestions.fulfilled, (state, action: PayloadAction<string[]>) => {
+      .addCase(fetchAutocompleteSuggestions.fulfilled, (state, action: PayloadAction<Suggestion[]>) => {
         state.suggestions = action.payload;
       })
       .addCase(fetchItemBySlug.pending, (state) => {

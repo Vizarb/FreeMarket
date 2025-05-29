@@ -12,21 +12,21 @@ const AppRoutes: React.FC = () => {
     <Route key={path} path={path} element={<Component />} />
   ))}
 
-  {/* All Role-Based Routes (includes all authenticated pages) */}
-  {roleBasedRoutes.map(({ path, component: Component, roles }) => (
-    <Route
-      key={path}
-      path={path}
-      element={
-        <RoleProtectedRoute allowedRoles={roles}>
-          <Layout />
-        </RoleProtectedRoute>
-      }
-    >
-      <Route path={path} element={<Component />} />
-    </Route>
-  ))}
+  {/* Role-Based Protected Routes */}
+  <Route
+    path="/"
+    element={
+      <RoleProtectedRoute allowedRoles={["Buyer", "Admin", "Seller"]}>
+        <Layout />
+      </RoleProtectedRoute>
+    }
+  >
+    {roleBasedRoutes.map(({ path, component: Component }) => (
+      <Route key={path} path={path} element={<Component />} />
+    ))}
+  </Route>
 </Routes>
+
 
   );
 };
