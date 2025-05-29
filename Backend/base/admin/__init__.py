@@ -8,3 +8,5 @@ from .user_activity_log_admin import *
 from .cart_admin import *
 from .address_admin import *
 from .category_admin import *
+from .SellerApplicationAdmin import *
+from .cart_activity_log_admin import *

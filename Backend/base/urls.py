@@ -25,6 +25,7 @@ router.register('order-items', OrderItemViewSet, basename='order-item')
 router.register('payments', PaymentViewSet, basename='payment')
 router.register('seller-applications',SellerApplicationViewSet,basename="seller-application")
 
+
 # Views paths
 router.register('item-search', ItemSearchViewSet, basename='item-search')
 router.register('item-details', ItemDetailsViewSet, basename='item-details')

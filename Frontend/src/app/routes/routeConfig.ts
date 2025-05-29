@@ -13,6 +13,8 @@ import ForbiddenPage from "@/components/pages/ForbiddenPage";
 import OrderConfirmation from "@/features/order/OrderConfirmation";
 import ItemDetailPage from "@/features/item/ItemDetailPage";
 import SearchResultsPage from "@/components/common/SearchResultsPage";
+import BecomeSellerForm from "@/components/forms/BecomeSellerForm";
+import AdminSellerApplicationsPage from "@/features/user/AdminSellerApplicationsPage";
 
 // === Shared Route Type ===
 export interface AppRoute {
@@ -44,4 +46,6 @@ export const roleBasedRoutes: RoleProtectedRoute[] = [
   { path: "/seller", name: "Seller Dashboard", component: SellerDashboard, roles: ["Seller", "Admin"] },
   { path: "/items/:slug",name: "Item Detail", component: ItemDetailPage, roles: ["Buyer", "Admin", "Seller"] },
   { path: "/search", name: "Search Results", component: SearchResultsPage, roles: ["Buyer", "Admin", "Seller"] },
+  { path: "/become-seller", name: "Become Seller", component: BecomeSellerForm, roles: ["Buyer", "Admin"] },
+  { path: "/admin/seller-applications", name: "Review Seller Applications", component: AdminSellerApplicationsPage, roles: ["Admin"] },
 ];

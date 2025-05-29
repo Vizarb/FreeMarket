@@ -3,48 +3,32 @@ from functools import wraps
 from django.utils.timezone import now
 from django.db import transaction
 
+from base.models.logs.user_activity_logs import UserActivityLog
+
 logger = logging.getLogger('freemarketbackend')
 
-def log_user_activity(actions_metadata, status='success', log_to_db=True):
+def log_user_activity(action: str, status='success', metadata_func=None):
     """
-    Decorator to log multiple user activities with different metadata functions.
-
-    Parameters:
-    - actions_metadata (dict): A dictionary where keys are action types (e.g., 'add_product') and values are corresponding metadata functions.
-    - status (str): Status of the action ('success', 'failed', 'pending').
-    - log_to_db (bool): Whether to log to the database.
+    Logs a single action per view method, optionally generating metadata.
     """
-
-def log_user_activity(actions_metadata, status='success', log_to_db=True):
     def decorator(func):
         @wraps(func)
-        def wrapper(*args, **kwargs):
-            from django.apps import apps
-            UserActivityLog = apps.get_model('base', 'UserActivityLog')
+        def wrapper(self, request, *args, **kwargs):
+            response = func(self, request, *args, **kwargs)
 
-            request = args[0].request if hasattr(args[0], 'request') else args[0]
-            user = request.user if request.user.is_authenticated else None
-            ip_address = request.META.get('REMOTE_ADDR', 'Unknown')
-            timestamp = now()
-
-            response = func(*args, **kwargs)
-
-            for action, metadata_func in actions_metadata.items():
+            # Only log if successful
+            if response.status_code < 400:
                 metadata = metadata_func(request, *args, **kwargs) if metadata_func else {}
-                description = f"Action '{action}' performed by {user.username if user else 'Anonymous'}"
-                log_data = {
-                    'user': user,
-                    'action': action,
-                    'description': description,
-                    'metadata': metadata,
-                    'status': status,
-                    'ip_address': ip_address,
-                    'created_at': timestamp
-                }
-                logger.info(description, extra=log_data)
-                if log_to_db:
-                    UserActivityLog.objects.create(**log_data)
 
+                UserActivityLog.objects.create(
+                    user=request.user if request.user.is_authenticated else None,
+                    action=action,
+                    status=status,
+                    description=f"User {request.user} performed {action}",
+                    metadata=metadata,
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                    created_at=now()
+                )
             return response
         return wrapper
     return decorator

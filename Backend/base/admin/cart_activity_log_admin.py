@@ -1,7 +1,7 @@
 from django.contrib import admin
-from base.models.logs import cart_activity_log
+from base.models.logs.cart_activity_log import CartActivityLog
 
-@admin.register(cart_activity_log)
+@admin.register(CartActivityLog)
 class CartLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'action', 'item', 'quantity', 'timestamp')
     list_filter = ('action', 'timestamp')

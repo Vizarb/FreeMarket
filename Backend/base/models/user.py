@@ -66,7 +66,7 @@ class CustomUserManager(UserManager):
 
 class CustomUser(AbstractUser):
     phone_number  = models.CharField(max_length=20)
-    gender        = models.CharField(max_length=20, choices=Gender.choices)
+    gender        = models.CharField(max_length=20, choices=Gender.choices, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
     objects = CustomUserManager()
