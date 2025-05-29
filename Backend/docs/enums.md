@@ -1,0 +1,2 @@
+# FreeMarket PostgreSQL ENUM Types
+
