@@ -1,6 +1,6 @@
 // src/components/Header.tsx
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCartSummary } from '../../store/hooks/useCart';
 import AuthLinks from './Authlinks';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import { ShoppingCart, Package, ShieldCheck, User2, Moon, Sun } from 'lucide-rea
 const Header: React.FC = () => {
   const { itemCount } = useCartSummary();
   const { isAuthenticated, isBuyer, isSeller, isAdmin } = useAuth();
+  const navigate = useNavigate()
 
   const [isDark, setIsDark] = useState(false);
 
@@ -50,6 +51,15 @@ const Header: React.FC = () => {
         <Link to="/marketplace" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
           FreeMarket
         </Link>
+
+        <Button onClick={() => navigate("/become-seller")}>
+          Apply to Become a Seller
+        </Button>
+
+        <Button onClick={() => navigate("/admin/seller-applications")}>
+          Review Seller Applications
+        </Button>
+
 
         {/* Search Bar */}
         <div className="flex-1 mx-8">

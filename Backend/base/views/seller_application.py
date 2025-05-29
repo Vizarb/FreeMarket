@@ -1,13 +1,16 @@
-from django.utils import timezone
-from django.contrib.auth.models import Group
+# base/views/seller_application.py
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.utils import timezone
+from django.contrib.auth.models import Group
 
 from base.models.seller_application import SellerApplication
 from base.serializers.seller_application import SellerApplicationSerializer
-from base.permissions import HasRole  # your RBAC permission
+from base.permissions import HasRole
+
 
 class SellerApplicationViewSet(viewsets.ModelViewSet):
     """
@@ -22,19 +25,16 @@ class SellerApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = SellerApplicationSerializer
 
     def get_permissions(self):
-        # Create: any authenticated user
         if self.action == "create":
             return [IsAuthenticated()]
-        # Approve/Reject: admin only
         if self.action in ("approve", "reject"):
             return [IsAuthenticated(), HasRole()]
-        # List/Retrieve: staff/admin see all; users see theirs
         return [IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_staff or user.is_superuser:
-            return super().get_queryset()
+            return SellerApplication.objects.all()
         return SellerApplication.objects.filter(user=user)
 
     def perform_create(self, serializer):
@@ -49,9 +49,11 @@ class SellerApplicationViewSet(viewsets.ModelViewSet):
         app.reviewed_at = timezone.now()
         app.reviewer = request.user
         app.save()
-        # add user to Seller group
-        grp, _ = Group.objects.get_or_create(name="Seller")
-        app.user.groups.add(grp)
+
+        # Add to Seller group
+        seller_group, _ = Group.objects.get_or_create(name="Seller")
+        app.user.groups.add(seller_group)
+
         return Response({"status": app.status})
 
     @action(detail=True, methods=["post"])

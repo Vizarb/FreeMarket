@@ -9,6 +9,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import NotFound
 
+from base.enums import ActionStatus, UserAction
+from base.utils.decorators import log_user_activity
+from base.utils.metadata import generate_order_metadata
 from base.models.views import CartOverview
 from base.serializers.views import CartOverviewSerializer
 from base.permissions import HasRole, IsOwnerOrAdmin, ReadOnlyOrOwner
@@ -111,6 +114,12 @@ class UserViewSet(BaseViewSet):
     def me(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=["POST"], permission_classes=[IsAuthenticated])
+    def promote_to_seller(self, request, pk=None):
+        user = self.get_object()
+        CustomUser.objects.promote_to_seller(user)
+        return Response({"message": f"{user.username} promoted to Seller."}, status=status.HTTP_200_OK)
 
 
 class AddressViewSet(BaseViewSet):
@@ -251,6 +260,11 @@ class OrderViewSet(BaseViewSet):
         )
 
     @transaction.atomic
+    @log_user_activity(
+        action=UserAction.CREATE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def create(self, request, *args, **kwargs):
         user = request.user
         try:
@@ -281,12 +295,22 @@ class OrderViewSet(BaseViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_user_activity(
+        action=UserAction.UPDATE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def update(self, request, *args, **kwargs):
         order = self.get_object()
         if order.status in ['PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED']:
             return Response({"error": "Cannot update an order that is already processed."}, status=status.HTTP_400_BAD_REQUEST)
         return super().update(request, *args, **kwargs)
 
+    @log_user_activity(
+        action=UserAction.DELETE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def destroy(self, request, *args, **kwargs):
         order = self.get_object()
         if order.status in ['PAID', 'SHIPPED', 'DELIVERED']:
@@ -314,15 +338,31 @@ class OrderItemViewSet(BaseViewSet):
                  .distinct()
         )
 
+    @transaction.atomic
+    @log_user_activity(
+        action=UserAction.CREATE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def create(self, request, *args, **kwargs):
         return Response({"error": "OrderItems can only be created through the Order endpoint."}, status=status.HTTP_400_BAD_REQUEST)
 
+    @log_user_activity(
+        action=UserAction.UPDATE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def update(self, request, *args, **kwargs):
         order_item = self.get_object()
         if order_item.order.status in ['PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED']:
             return Response({"error": "Cannot update an item in an already processed order."}, status=status.HTTP_400_BAD_REQUEST)
         return super().update(request, *args, **kwargs)
 
+    @log_user_activity(
+        action=UserAction.UPDATE_ORDER,
+        status=ActionStatus.SUCCESS,
+        metadata_func=generate_order_metadata
+    )
     def destroy(self, request, *args, **kwargs):
         order_item = self.get_object()
         if order_item.order.status in ['PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED']:
