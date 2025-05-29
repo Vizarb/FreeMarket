@@ -1,19 +1,20 @@
-// src/components/SearchBar.tsx
-import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
-import {
-  fetchUnifiedItemResults,
-  fetchAutocompleteSuggestions,
-  clearItemSearch,
-  selectSuggestions,
-} from '../../features/item/itemSearchSlice';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { clearItemSearch, fetchAutocompleteSuggestions, selectSuggestions } from "@/features/item/itemSearchSlice";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks/hooks";
+import { useNavigate } from "react-router-dom";
 
-const SearchBar: React.FC = () => {
+// SearchBar.tsx
+interface SearchBarProps {
+  onSearch?: (query: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
   const dispatch = useAppDispatch();
   const suggestions = useAppSelector(selectSuggestions);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (query.trim().length >= 2) {
@@ -21,7 +22,16 @@ const SearchBar: React.FC = () => {
     }
   }, [query, dispatch]);
 
-  const handleSearch = () => dispatch(fetchUnifiedItemResults(query));
+  const handleSearch = () => {
+    if (query.trim()) {
+      if (onSearch) {
+        onSearch(query); // 🔁 custom handler
+      } else {
+        navigate(`/search?q=${encodeURIComponent(query)}`); // 🔁 fallback default
+      }
+    }
+  };
+
   const handleClear = () => {
     setQuery('');
     dispatch(clearItemSearch());
@@ -34,6 +44,9 @@ const SearchBar: React.FC = () => {
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSearch();
+          }}
           placeholder="Search for items..."
           className="flex-1"
         />
@@ -47,12 +60,9 @@ const SearchBar: React.FC = () => {
             <li
               key={idx}
               className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                setQuery(s);
-                dispatch(fetchUnifiedItemResults(s));
-              }}
+              onClick={() => navigate(`/items/${s.slug}`)}
             >
-              {s}
+              {s.name}
             </li>
           ))}
         </ul>

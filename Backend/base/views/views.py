@@ -45,7 +45,7 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                 Item.objects
                     .filter(name__icontains=query)
                     .order_by("name")
-                    .values_list("name", flat=True)
+                    .values("name", "slug")
                     .distinct()[:10]
             )
             return Response(suggestions)

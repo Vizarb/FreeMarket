@@ -20,7 +20,7 @@ const MarketplacePage: React.FC = () => {
   return (
     <>
       <h2 className="text-2xl font-bold mb-4">Marketplace</h2>
-      <SearchBar />
+      <SearchBar onSearch={(q) => dispatch(fetchUnifiedItemResults(q))} />
 
       {loading && <p>Loading marketplace...</p>}
       {error && <p className="text-red-600">Error: {error}</p>}
