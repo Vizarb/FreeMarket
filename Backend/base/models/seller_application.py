@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
 from .base_modle import BaseModel  # or wherever your BaseModel lives
 
 class SellerApplication(BaseModel):
@@ -14,15 +13,24 @@ class SellerApplication(BaseModel):
         (STATUS_REJECTED, "Rejected"),
     ]
 
-    user         = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="seller_applications"
     )
-    data         = models.JSONField(
-        blank=True, null=True,
-        help_text="Optional extra info (e.g. bank details, docs)"
-    )
+
+    # Replace JSONField with strict fields
+    business_name        = models.CharField(max_length=255)
+    tax_id               = models.CharField(max_length=100)
+    phone_number         = models.CharField(max_length=20, blank=True, null=True)
+    description          = models.TextField(blank=True, null=True)
+    website              = models.URLField(blank=True, null=True)
+    country              = models.CharField(max_length=100)
+    bank_account_number  = models.CharField(max_length=100, blank=True, null=True)
+    bank_name            = models.CharField(max_length=100, blank=True, null=True)
+    bank_swift_code      = models.CharField(max_length=50, blank=True, null=True)
+    national_id          = models.CharField(max_length=100, blank=True, null=True)
+
     status       = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -39,7 +47,6 @@ class SellerApplication(BaseModel):
 
     class Meta:
         ordering = ["-submitted_at"]
-        # if you want to prevent multiple pending, enforce in view
 
     def __str__(self):
         return f"{self.user.username} → {self.status}"
