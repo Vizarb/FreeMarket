@@ -7,12 +7,10 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.contrib.auth.models import Group, Permission
 from django.utils.text import slugify
-from django.utils.timezone import now
 from django.contrib.auth.management import create_permissions
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
 from base.utils.seed_helpers import with_timestamps, load_seed_items_from_csv, load_item_category_map
-from base.utils.decorators import ensure_list
 from base.models import (
     CustomUser, Address, Category, Item, ItemCategory,
     Product, Service, Payment, Order, OrderItem, Cart, CartItem
@@ -147,38 +145,6 @@ class Command(BaseCommand):
                 parent, _ = Category.objects.get_or_create(name=parent_name, parent=None)
                 child, _ = Category.objects.get_or_create(name=child_name, parent=parent)
                 ItemCategory.objects.get_or_create(item=item, category=child)
-
-    @ensure_list
-    def seed_items(self, users, categories):
-        """Seeds items if they do not exist."""
-        if Item.objects.exists():
-            logger.info("Items already exist, skipping seeding.")
-            return list(Item.objects.all())
-
-        if not categories:
-            logger.error("No categories found! Ensure seed_categories() runs successfully.")
-            return []
-
-        items = [
-            Item(
-                name=f"Item{i}",
-                price_cents=random.randint(100, 10000),
-                currency=random.choice(CURRENCIES),
-                seller=random.choice(users),
-            )
-            for i in range(20)
-        ]
-        Item.objects.bulk_create(with_timestamps(items))
-
-        # Link items to random categories (both parent and child)
-        item_categories = [
-            ItemCategory(item=item, category=random.choice(categories)) for item in Item.objects.all()
-        ]
-        ItemCategory.objects.bulk_create(with_timestamps(item_categories))
-
-        logger.info(f"Created {len(items)} items and linked them to categories.")
-        return list(Item.objects.all())
-    
 
     def seed_products_services(self, items):
         if Product.objects.exists() or Service.objects.exists():

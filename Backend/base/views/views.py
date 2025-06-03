@@ -57,21 +57,19 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
         qs = super().get_queryset()
         search_term = self.request.query_params.get("q")
 
-        # Full-text search with fallback
         if search_term:
             try:
                 sq = SearchQuery(search_term, search_type='plain')
                 fts_qs = qs.exclude(search_vector__isnull=True)\
-                           .annotate(rank=SearchRank(F(self.search_field), sq))\
-                           .filter(search_vector=sq)\
-                           .order_by("-rank")
+                    .annotate(rank=SearchRank(F(self.search_field), sq))\
+                    .filter(search_vector=sq)\
+                    .order_by("-rank")
 
                 if fts_qs.exists():
                     return fts_qs
             except Exception as e:
                 logger.warning(f"FTS failed for search='{search_term}': {e}")
 
-            # Fallback to partial matches
             return qs.filter(
                 Q(name__icontains=search_term) |
                 Q(description__icontains=search_term) |
@@ -86,6 +84,22 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                 ids = get_descendant_ids(cat)
                 qs = qs.filter(categories__iregex=r'\m(' + '|'.join(map(str, ids)) + r')\M')
             except Category.DoesNotExist:
+                pass
+
+        # Price filtering
+        min_price = self.request.query_params.get('min_price')
+        max_price = self.request.query_params.get('max_price')
+
+        if min_price:
+            try:
+                qs = qs.filter(price_cents__gte=int(min_price))
+            except ValueError:
+                pass
+
+        if max_price:
+            try:
+                qs = qs.filter(price_cents__lte=int(max_price))
+            except ValueError:
                 pass
 
         return qs
