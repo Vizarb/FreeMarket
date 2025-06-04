@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import {
   fetchUnifiedItemResults,
   selectSearchLoading,
   selectSearchError,
-} from '../../features/item/itemSearchSlice';
+} from '@/features/item/itemSearchSlice';
 import SearchBar from '@/components/common/SearchBar';
-import ItemList from '../../features/item/ItemList';
+import ItemList from '@/features/item/ItemList';
 import FilterPanel from '@/components/common/FilterPanel';
 
 const defaultFilters = {
@@ -14,31 +14,56 @@ const defaultFilters = {
   item_type: '',
   min_price: 0,
   max_price: 10000,
-  category_id: ''
+  category_id: '',
 };
 
 const MarketplacePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const loading = useAppSelector(selectSearchLoading);
   const error = useAppSelector(selectSearchError);
+  const nextPage = useAppSelector((state) => state.itemSearch.nextPage);
 
-  const handleFilterChange = (filters: Partial<typeof defaultFilters>) => {
-    dispatch(fetchUnifiedItemResults(filters));
-  };
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     dispatch(fetchUnifiedItemResults(defaultFilters));
   }, [dispatch]);
+
+  const loadNextPage = useCallback(() => {
+    if (!nextPage) return;
+    const url = new URL(nextPage);
+    const params = Object.fromEntries(url.searchParams.entries()) as Record<string, string | number>;
+
+    dispatch(fetchUnifiedItemResults({ ...params, append: true }));
+  }, [dispatch, nextPage]);
+
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && nextPage && !loading) {
+          loadNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const current = observerRef.current;
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+    };
+  }, [loadNextPage, nextPage, loading]);
 
   return (
     <>
       <h2 className="text-2xl font-bold mb-4">Marketplace</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Filter Sidebar */}
         <aside className="md:col-span-1">
           <FilterPanel
-            onChange={handleFilterChange}
+            onChange={(filters) => dispatch(fetchUnifiedItemResults(filters))}
             defaultValues={defaultFilters}
             categories={[
               { id: '1', name: 'Electronics' },
@@ -48,16 +73,13 @@ const MarketplacePage: React.FC = () => {
           />
         </aside>
 
-        {/* Item Results */}
-        <main className="md:col-span-3">
+        <main className="md:col-span-3 space-y-4">
           <SearchBar onSearch={(q) => dispatch(fetchUnifiedItemResults({ q }))} />
-          {loading && <p>Loading marketplace...</p>}
+
           {error && <p className="text-red-600">Error: {error}</p>}
-          {!loading && !error && (
-            <section className="mt-6">
-              <ItemList />
-            </section>
-          )}
+          <ItemList />
+          <div ref={observerRef} className="h-8" />
+          {loading && <p className="text-center text-gray-500">Loading more items...</p>}
         </main>
       </div>
     </>
