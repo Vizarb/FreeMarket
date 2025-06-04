@@ -1,31 +1,31 @@
-name,description,type
-Wireless Mouse,Compact mouse with ergonomic design and 2.4GHz wireless connection.,product
-Bluetooth Speaker,Portable speaker with deep bass and 12-hour battery life.,product
-Ergonomic Chair,Adjustable chair designed for lumbar support and productivity.,product
-LED Desk Lamp,Modern lamp with brightness control and USB charging port.,product
-4K Webcam,Ultra HD webcam ideal for streaming and video conferencing.,product
-Laptop Stand,Aluminum stand that improves posture and airflow.,product
-Smartphone Tripod,Sturdy tripod for mobile photography and video recording.,product
-Noise Cancelling Headphones,Block out the world with immersive sound quality.,product
-Kitchen Blender,Multi-speed blender for smoothies and sauces.,product
-Stainless Steel Water Bottle,Double-walled and insulated for hot or cold drinks.,product
-Wireless Charger,Fast-charging pad compatible with all Qi devices.,product
-Graphic Tablet,Digital sketchpad for professional artists and designers.,product
-Gaming Keyboard,RGB mechanical keyboard with programmable keys.,product
-Fitness Tracker,"Track steps,, heart rate, and sleep with mobile sync.",product
-USB Hub,Expand your laptop ports with this sleek USB 3.0 hub.,product
-Online Tutoring Session,1-on-1 virtual tutoring session for math and science.,service
-Resume Review Service,Professional feedback and formatting for job resumes.,service
-Home Cleaning,Complete home cleaning by vetted professionals.,service
-Pet Walking,30-minute walk for dogs with GPS tracking.,service
-Tech Support,Remote technical troubleshooting for home electronics.,service
-Digital Marketing Audit,In-depth review of your online presence and strategy.,service
-Yoga Instruction,Guided yoga classes for flexibility and stress relief.,service
-Photography Session,1-hour professional photo shoot with editing.,service
-Virtual Assistant Hour,Administrative help for busy professionals.,service
-Language Coaching,Improve fluency and confidence with native tutors.,service
-Logo Design,Unique logo crafted to reflect your brand identity.,service
-Social Media Strategy,Custom plan to grow your brand's online presence.,service
-Plumbing Consultation,Remote or on-site diagnosis and advice.,service
-Web Development Hour,Hire a developer to build or update your website.,service
-Interior Design Session,"Get layout, color, and furniture advice from pros.",service
+name,description,type,price_cents,currency
+Wireless Mouse,Compact mouse with ergonomic design and 2.4GHz wireless connection.,product,2999,USD
+Bluetooth Speaker,Portable speaker with deep bass and 12-hour battery life.,product,4999,USD
+Ergonomic Chair,Adjustable chair designed for lumbar support and productivity.,product,15999,USD
+LED Desk Lamp,Modern lamp with brightness control and USB charging port.,product,3499,USD
+4K Webcam,Ultra HD webcam ideal for streaming and video conferencing.,product,8999,USD
+Laptop Stand,Aluminum stand that improves posture and airflow.,product,3999,USD
+Smartphone Tripod,Sturdy tripod for mobile photography and video recording.,product,2999,USD
+Noise Cancelling Headphones,Block out the world with immersive sound quality.,product,12999,USD
+Kitchen Blender,Multi-speed blender for smoothies and sauces.,product,5999,USD
+Stainless Steel Water Bottle,Double-walled and insulated for hot or cold drinks.,product,1999,USD
+Wireless Charger,Fast-charging pad compatible with all Qi devices.,product,3499,USD
+Graphic Tablet,Digital sketchpad for professional artists and designers.,product,21999,USD
+Gaming Keyboard,RGB mechanical keyboard with programmable keys.,product,10999,USD
+Fitness Tracker,"Track steps, heart rate, and sleep with mobile sync.",product,7999,USD
+USB Hub,Expand your laptop ports with this sleek USB 3.0 hub.,product,2499,USD
+Online Tutoring Session,1-on-1 virtual tutoring session for math and science.,service,15000,USD
+Resume Review Service,Professional feedback and formatting for job resumes.,service,8000,USD
+Home Cleaning,Complete home cleaning by vetted professionals.,service,20000,USD
+Pet Walking,30-minute walk for dogs with GPS tracking.,service,4500,USD
+Tech Support,Remote technical troubleshooting for home electronics.,service,7000,USD
+Digital Marketing Audit,In-depth review of your online presence and strategy.,service,18000,USD
+Yoga Instruction,Guided yoga classes for flexibility and stress relief.,service,10000,USD
+Photography Session,1-hour professional photo shoot with editing.,service,22000,USD
+Virtual Assistant Hour,Administrative help for busy professionals.,service,6000,USD
+Language Coaching,Improve fluency and confidence with native tutors.,service,12000,USD
+Logo Design,Unique logo crafted to reflect your brand identity.,service,10000,USD
+Social Media Strategy,Custom plan to grow your brand's online presence.,service,16000,USD
+Plumbing Consultation,Remote or on-site diagnosis and advice.,service,14000,USD
+Web Development Hour,Hire a developer to build or update your website.,service,18000,USD
+Interior Design Session,"Get layout, color, and furniture advice from pros.",service,20000,USD

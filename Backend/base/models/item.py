@@ -59,6 +59,10 @@ class Product(Item):
     """
     quantity = models.PositiveIntegerField(default=1)
 
+    @classmethod
+    def from_item(cls, item: Item, quantity: int):
+        return cls(id=item.id, quantity=quantity)
+
     class Meta:
         constraints = [
             CheckConstraint(condition=Q(quantity__gte=0), name="quantity_non_negative"),
@@ -73,6 +77,11 @@ class Service(Item):
     """
     service_duration = models.PositiveIntegerField(default=60)
     service_type = models.CharField(max_length=50, default="Other")
+
+    @classmethod
+    def from_item(cls, item: Item, service_duration: int, service_type: str):
+        return cls(id=item.id, service_duration=service_duration, service_type=service_type)
+
 
     class Meta:
         constraints = [
