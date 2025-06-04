@@ -7,15 +7,14 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.contrib.auth.models import Group, Permission
 from django.utils.text import slugify
-from django.utils.timezone import now
 from django.contrib.auth.management import create_permissions
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
-from base.utils.seed_helpers import with_timestamps, load_seed_items_from_csv, load_item_category_map
-from base.utils.decorators import ensure_list
+from base.utils.seed_data.Constants import ORDER_STATUSES, ROLE_PERMISSIONS, SERVICE_TYPES, PAYMENT_METHODS
+from base.utils.seed_data.seed_helpers import create_items_with_subtypes_from_csv, with_timestamps, load_seed_items_from_csv, load_item_category_map
 from base.models import (
-    CustomUser, Address, Category, Item, ItemCategory,
-    Product, Service, Payment, Order, OrderItem, Cart, CartItem
+    CustomUser, Address, Category, ItemCategory,
+     Payment, Order, OrderItem, Cart, CartItem
 )
 
 # Configure logging
@@ -23,10 +22,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Constants
-CURRENCIES = ["USD", "EUR", "GBP"]
-SERVICE_TYPES = ["Consulting", "Maintenance", "Other"]
-ORDER_STATUSES = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]
-PAYMENT_METHODS = ["Credit Card", "PayPal", "Bank Transfer"]
 
 class Command(BaseCommand):
     help = "Setup initial data using CSV seed files."
@@ -46,9 +41,8 @@ class Command(BaseCommand):
         self.create_groups()
         users = self.seed_users()
         categories = self.seed_categories()
-        addresses = self.seed_addresses(users)
+        self.seed_addresses(users)
         items = self.seed_items_from_csv(users, categories)
-        self.seed_products_services(items)
         orders = self.seed_orders(users, items)
         self.seed_payments(orders)
         self.seed_carts(users, items)
@@ -56,15 +50,18 @@ class Command(BaseCommand):
 
     def create_groups(self):
         for model in apps.get_models():
-            ContentType.objects.get_or_create(app_label=model._meta.app_label, model=model._meta.model_name)
+            ContentType.objects.get_or_create(
+                app_label=model._meta.app_label,
+                model=model._meta.model_name,
+            )
+
         for app_config in apps.get_app_configs():
-            create_permissions(app_config, verbosity=0)
-        groups = {
-            "User": [...],
-            "Seller": [...],
-            "Admin": [...]
-        }
-        for group_name, permission_codenames in groups.items():
+            try:
+                create_permissions(app_config, verbosity=0)
+            except Exception as e:
+                logger.warning(f"Skipping permissions for {app_config.name}: {e}")
+
+        for group_name, permission_codenames in ROLE_PERMISSIONS.items():
             group, _ = Group.objects.get_or_create(name=group_name)
             for codename in permission_codenames:
                 try:
@@ -78,9 +75,9 @@ class Command(BaseCommand):
             return list(CustomUser.objects.all())
         users = [CustomUser(username=f"user{i}", phone_number=f"12345678{i}", gender=random.choice(["Male", "Female", "Other"]), date_of_birth=datetime.now() - timedelta(days=random.randint(7000, 15000))) for i in range(10)]
         CustomUser.objects.bulk_create(with_timestamps(users))
-        user_group = Group.objects.get(name="User")
+        buyer_group = Group.objects.get(name="Buyer")
         for user in CustomUser.objects.all():
-            user.groups.add(user_group)
+            user.groups.add(buyer_group)
         return CustomUser.objects.all()
 
     def seed_categories(self):
@@ -118,26 +115,8 @@ class Command(BaseCommand):
         item_rows = load_seed_items_from_csv(item_path)
         category_map = load_item_category_map(cat_path)
 
-        items = []
-        for row in item_rows:
-            seller = random.choice(users)
-            name = row["name"]
-            description = row["description"]
-            currency = random.choice(CURRENCIES)
-            price_cents = random.randint(500, 25000)
-            item = Item(
-                name=name,
-                slug=slugify(name),
-                description=description,
-                price_cents=price_cents,
-                currency=currency,
-                seller=seller
-            )
-            items.append(item)
-
-        Item.objects.bulk_create(with_timestamps(items))
-        self.link_item_categories(items, category_map)
-        return list(Item.objects.all())
+        items = create_items_with_subtypes_from_csv(item_rows, category_map, users)
+        return items
 
     def link_item_categories(self, items, category_map):
         for item in items:
@@ -147,92 +126,6 @@ class Command(BaseCommand):
                 parent, _ = Category.objects.get_or_create(name=parent_name, parent=None)
                 child, _ = Category.objects.get_or_create(name=child_name, parent=parent)
                 ItemCategory.objects.get_or_create(item=item, category=child)
-
-    @ensure_list
-    def seed_items(self, users, categories):
-        """Seeds items if they do not exist."""
-        if Item.objects.exists():
-            logger.info("Items already exist, skipping seeding.")
-            return list(Item.objects.all())
-
-        if not categories:
-            logger.error("No categories found! Ensure seed_categories() runs successfully.")
-            return []
-
-        items = [
-            Item(
-                name=f"Item{i}",
-                price_cents=random.randint(100, 10000),
-                currency=random.choice(CURRENCIES),
-                seller=random.choice(users),
-            )
-            for i in range(20)
-        ]
-        Item.objects.bulk_create(with_timestamps(items))
-
-        # Link items to random categories (both parent and child)
-        item_categories = [
-            ItemCategory(item=item, category=random.choice(categories)) for item in Item.objects.all()
-        ]
-        ItemCategory.objects.bulk_create(with_timestamps(item_categories))
-
-        logger.info(f"Created {len(items)} items and linked them to categories.")
-        return list(Item.objects.all())
-    
-
-    def seed_products_services(self, items):
-        if Product.objects.exists() or Service.objects.exists():
-            logger.info("Products and Services already exist, skipping seeding.")
-            return
-
-        # Randomly split the list in two (50/50)
-        random.shuffle(items)
-        split_index = len(items) // 2
-        product_items = items[:split_index]
-        service_items = items[split_index:]
-
-        for item in product_items:
-            product = Product(
-                id=item.id,  # ✅ Link to existing Item using the same ID
-                name=item.name,
-                description=item.description,
-                price_cents=item.price_cents,
-                currency=item.currency,
-                seller=item.seller,
-                quantity=random.randint(1, 100),
-            )
-            product.save()
-            product.categories.set(item.categories.all())
-
-        for item in service_items:
-            service = Service(
-                id=item.id,  # ✅ Link to existing Item using the same ID
-                name=item.name,
-                description=item.description,
-                price_cents=item.price_cents,
-                currency=item.currency,
-                seller=item.seller,
-                service_duration=random.randint(30, 300),
-                service_type=random.choice(SERVICE_TYPES),
-            )
-            service.save()
-            service.categories.set(item.categories.all())
-
-        logger.info(f"Created {len(product_items)} products and {len(service_items)} services.")
-    
-        Item.objects.count()
-        Product.objects.count()
-        Service.objects.count()
-
-        # Sanity check for orphan items
-        orphan_count = Item.objects.exclude(id__in=Product.objects.values_list('id', flat=True))\
-                                .exclude(id__in=Service.objects.values_list('id', flat=True)).count()
-        if orphan_count > 0:
-            logger.warning(f"⚠️ Found {orphan_count} orphan Items! Some items have no subtype.")
-        else:
-            logger.info("✅ All items properly linked to subtypes.")
-
-
 
     def seed_orders(self, users, items):
         if Order.objects.exists():
@@ -316,7 +209,11 @@ class Command(BaseCommand):
         superuser_password = "Aa123456!"
 
         # Ensure the 'Admin' group exists before assigning it
-        admin_group, _ = Group.objects.get_or_create(name="Admin")
+        try:
+            admin_group = Group.objects.get(name="Admin")
+        except Group.DoesNotExist:
+            logger.error("Admin group was not found — did group creation fail?")
+            return
 
         if not CustomUser.objects.filter(username=superuser_username).exists():
             superuser = CustomUser.objects.create_superuser(

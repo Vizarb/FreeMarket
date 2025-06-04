@@ -5,16 +5,8 @@ import api from "@/api/apiService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import type { SellerApplication } from "@/types/sellerApplication";
 
-interface SellerApplication {
-  id: number;
-  user: { id: number; username: string };
-  data: any;
-  status: string;
-  submitted_at: string;
-  reviewed_at?: string;
-  reviewer?: { id: number; username: string };
-}
 
 const AdminSellerApplicationsPage: React.FC = () => {
   const [applications, setApplications] = useState<SellerApplication[]>([]);
@@ -25,7 +17,8 @@ const AdminSellerApplicationsPage: React.FC = () => {
       const response = await api.get("/api/seller-applications/");
       setApplications(response.data);
     } catch (error) {
-      toast.error("Failed to load seller applications.");
+        console.log(error);
+        toast.error("Failed to load seller applications.");
     } finally {
       setLoading(false);
     }
@@ -41,7 +34,8 @@ const AdminSellerApplicationsPage: React.FC = () => {
       toast.success(`Application ${action}d`);
       fetchApplications(); // Refresh list
     } catch (error) {
-      toast.error(`Failed to ${action} application.`);
+        console.log(error);
+        toast.error(`Failed to ${action} application.`);
     }
   };
 
@@ -75,9 +69,27 @@ const AdminSellerApplicationsPage: React.FC = () => {
                 <strong>Reviewed By:</strong> {app.reviewer.username}
               </div>
             )}
-            <div className="text-sm text-muted-foreground">
-              <pre>{JSON.stringify(app.data, null, 2)}</pre>
+            <div>
+            <strong>Business Name:</strong> {app.business_name}
             </div>
+            <div>
+            <strong>Tax ID:</strong> {app.tax_id}
+            </div>
+            {app.phone_number && (
+            <div>
+                <strong>Phone Number:</strong> {app.phone_number}
+            </div>
+            )}
+            {app.country && (
+            <div>
+                <strong>Country:</strong> {app.country}
+            </div>
+            )}
+            {app.description && (
+            <div>
+                <strong>Description:</strong> {app.description}
+            </div>
+            )}
 
             {app.status === "PENDING" && (
               <div className="flex gap-4 mt-2">

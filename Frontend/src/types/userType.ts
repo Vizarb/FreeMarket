@@ -8,6 +8,6 @@ export interface User extends BaseModel {
     groups: string[];
     phoneNumber?: string;
     gender?: Gender;
-    dateOfBirth?: string;
+    date_of_birth?: string;
   }
   

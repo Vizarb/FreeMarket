@@ -3,13 +3,22 @@ import api from '../../api/apiService';
 import { UnifiedItemResult } from '../../types/itemSearchTypes';
 import { RootState } from '../../store/rootReducer';
 
-export const fetchUnifiedItemResults = createAsyncThunk<UnifiedItemResult[], string>(
+export const fetchUnifiedItemResults = createAsyncThunk<UnifiedItemResult[], Partial<Record<string, string | number>>>(
   'itemSearch/fetchUnifiedItemResults',
-  async (query: string) => {
-    const response = await api.get(`/api/item-search/?q=${encodeURIComponent(query)}`);
+  async (filters) => {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== '' && value !== null && value !== undefined) {
+        params.append(key, String(value));
+      }
+    });
+
+    const response = await api.get(`/api/item-search/?${params.toString()}`);
     return response.data.results;
   }
 );
+
 
 interface Suggestion {
   name: string;
