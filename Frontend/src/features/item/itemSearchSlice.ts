@@ -2,28 +2,60 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../api/apiService';
 import { UnifiedItemResult } from '../../types/itemSearchTypes';
 import { RootState } from '../../store/rootReducer';
+import { buildSearchParams } from '@/utils/buildSearchParams';
+import { handlePagination } from '@/utils/handlePagination';
 
-export const fetchUnifiedItemResults = createAsyncThunk<UnifiedItemResult[], Partial<Record<string, string | number>>>(
-  'itemSearch/fetchUnifiedItemResults',
-  async (filters) => {
-    const params = new URLSearchParams();
+export interface ItemSearchParams {
+  append?: boolean;
+  [key: string]: string | number | boolean | undefined;
+}
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== '' && value !== null && value !== undefined) {
-        params.append(key, String(value));
-      }
-    });
 
-    const response = await api.get(`/api/item-search/?${params.toString()}`);
-    return response.data.results;
-  }
-);
-
+interface UnifiedItemResultsResponse {
+  results: UnifiedItemResult[];
+  next: string | null;
+}
 
 interface Suggestion {
   name: string;
   slug: string;
 }
+
+interface ItemSearchState {
+  results: UnifiedItemResult[];
+  suggestions: Suggestion[];
+  loading: boolean;
+  error: string | null;
+  selectedItem: UnifiedItemResult | null;
+  nextPage: string | null;
+}
+
+const initialState: ItemSearchState = {
+  results: [],
+  suggestions: [],
+  loading: false,
+  error: null,
+  selectedItem: null,
+  nextPage: null,
+};
+
+export const fetchUnifiedItemResults = createAsyncThunk<
+  UnifiedItemResultsResponse,
+  ItemSearchParams
+>('itemSearch/fetchUnifiedItemResults', async (filters) => {
+  const query = buildSearchParams(
+    Object.fromEntries(
+      Object.entries(filters).filter(([key]) => key !== 'append')
+    ) as Record<string, string | number>
+  );
+  const response = await api.get(`/api/item-search/?${query}`);
+
+  return {
+    results: response.data.results,
+    next: response.data.next,
+  };
+});
+
 
 export const fetchAutocompleteSuggestions = createAsyncThunk<Suggestion[], string>(
   'itemSearch/fetchAutocompleteSuggestions',
@@ -33,31 +65,13 @@ export const fetchAutocompleteSuggestions = createAsyncThunk<Suggestion[], strin
   }
 );
 
-export const fetchItemBySlug = createAsyncThunk(
+export const fetchItemBySlug = createAsyncThunk<UnifiedItemResult, string>(
   'item/fetchBySlug',
   async (slug: string) => {
     const response = await api.get(`/api/item-details/${slug}`);
     return response.data;
   }
 );
-
-
-interface ItemSearchState {
-  results: UnifiedItemResult[];
-  suggestions: Suggestion[];
-  loading: boolean;
-  error: string | null;
-  selectedItem: UnifiedItemResult | null;
-}
-
-
-const initialState: ItemSearchState = {
-  results: [],
-  suggestions: [],
-  loading: false,
-  error: null,
-  selectedItem: null,
-};
 
 const itemSearchSlice = createSlice({
   name: 'itemSearch',
@@ -75,8 +89,8 @@ const itemSearchSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUnifiedItemResults.fulfilled, (state, action: PayloadAction<UnifiedItemResult[]>) => {
-        state.results = action.payload;
+      .addCase(fetchUnifiedItemResults.fulfilled, (state, action) => {
+        handlePagination(state, action.payload, action.meta);
         state.loading = false;
       })
       .addCase(fetchUnifiedItemResults.rejected, (state, action) => {
