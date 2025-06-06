@@ -3,7 +3,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 from base.models.user import CustomUser
-from base.models.category import Category
+from Backend.base.models.category import Category
 from base.models.item import Product, Service
 from base.models.cart import Cart
 
