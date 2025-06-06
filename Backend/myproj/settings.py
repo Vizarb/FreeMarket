@@ -58,21 +58,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
-    'drf_spectacular',
-    'drf_spectacular_sidecar',
 
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-        'DEFAULT_FILTER_BACKENDS':[
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ],
+        'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 
 }
 
@@ -255,6 +248,7 @@ LOGGING = {
     },
 }
 
+feat-category-search-add-swagger
 SPECTACULAR_SETTINGS = {
     'TITLE': 'FreeMarket API',
     'DESCRIPTION': 'API documentation for the FreeMarket project.',
@@ -274,6 +268,4 @@ SPECTACULAR_SETTINGS = {
         }
     }
 }
-
-
 
