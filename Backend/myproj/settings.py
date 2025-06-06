@@ -248,7 +248,6 @@ LOGGING = {
     },
 }
 
-feat-category-search-add-swagger
 SPECTACULAR_SETTINGS = {
     'TITLE': 'FreeMarket API',
     'DESCRIPTION': 'API documentation for the FreeMarket project.',
