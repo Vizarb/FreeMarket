@@ -1,72 +1,85 @@
 # users/models.py  (or wherever your CustomUser lives)
 
-from django.contrib.auth.models import AbstractUser, UserManager, Group
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
 from django.db import models
+from base.models.base_modle import BaseModel, SoftDeleteManager
 from base.enums import Gender
 
-class CustomUserManager(UserManager):
+class CustomUserManager(SoftDeleteManager, BaseUserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
-        """Always create a Buyer by default."""
-        user = super().create_user(username, email, password, **extra_fields)
+        if not username:
+            raise ValueError("The username must be set")
+        email = self.normalize_email(email)
+        extra_fields.setdefault('is_active', True)
+
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+
+        # Add default group
         buyer_group, _ = Group.objects.get_or_create(name='Buyer')
         user.groups.add(buyer_group)
-        return user
 
+        return user
+    
     def create_seller(self, username, email=None, password=None, **extra_fields):
-        """New‐account flow: Buyer + Seller."""
         user = self.create_user(username, email, password, **extra_fields)
         seller_group, _ = Group.objects.get_or_create(name='Seller')
         user.groups.add(seller_group)
         return user
 
     def promote_to_seller(self, user):
-        """In‐place upgrade: keep Buyer, add Seller."""
         seller_group, _ = Group.objects.get_or_create(name='Seller')
         user.groups.add(seller_group)
         return user
 
     def create_support(self, username, email=None, password=None, **extra_fields):
-        """New‐account flow: Buyer + Support."""
         user = self.create_user(username, email, password, **extra_fields)
         support_group, _ = Group.objects.get_or_create(name='Support')
         user.groups.add(support_group)
         return user
 
     def promote_to_support(self, user):
-        """In‐place upgrade: keep Buyer, add Support."""
         support_group, _ = Group.objects.get_or_create(name='Support')
         user.groups.add(support_group)
         return user
 
     def create_manager(self, username, email=None, password=None, **extra_fields):
-        """New‐account flow: Buyer + Manager."""
         user = self.create_user(username, email, password, **extra_fields)
         manager_group, _ = Group.objects.get_or_create(name='Manager')
         user.groups.add(manager_group)
         return user
 
     def promote_to_manager(self, user):
-        """In‐place upgrade: keep Buyer, add Manager."""
         manager_group, _ = Group.objects.get_or_create(name='Manager')
         user.groups.add(manager_group)
         return user
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
-        """Superuser gets Buyer + Admin + staff/superuser flags."""
+        if not password:
+            raise ValueError("Superusers must have a password.")
+
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        user = super().create_superuser(username, email, password, **extra_fields)
-        # Ensure Buyer
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        user = self.create_user(username, email, password, **extra_fields)
+
         buyer_group, _ = Group.objects.get_or_create(name='Buyer')
-        user.groups.add(buyer_group)
-        # Ensure Admin
         admin_group, _ = Group.objects.get_or_create(name='Admin')
-        user.groups.add(admin_group)
+        user.groups.add(buyer_group, admin_group)
+
         return user
 
-class CustomUser(AbstractUser):
-    phone_number  = models.CharField(max_length=20)
-    gender        = models.CharField(max_length=20, choices=Gender.choices, blank=True, null=True)
+
+class CustomUser(AbstractUser, BaseModel):
+    phone_number = models.CharField(max_length=20)
+    gender = models.CharField(max_length=20, choices=Gender.choices, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
     objects = CustomUserManager()
@@ -79,7 +92,7 @@ class CustomUser(AbstractUser):
 
     def has_group(self, group_name: str) -> bool:
         return self.groups.filter(name=group_name).exists()
-    
+
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"

@@ -256,13 +256,13 @@ LOGGING = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your API Name',
-    'DESCRIPTION': 'Your project description here.',
+    'TITLE': 'FreeMarket API',
+    'DESCRIPTION': 'API documentation for the FreeMarket project.',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,  # Optional: Better request/response display
+    'SERVE_INCLUDE_SCHEMA': False,  # True if you want schema inside Swagger UI
+    'COMPONENT_SPLIT_REQUEST': True,  # Keeps request/response serializers separate (cleaner docs)
     'SECURITY': [
-        {'BearerAuth': []},
+        {'BearerAuth': []},  # This shows the JWT "Authorize" button
     ],
     'COMPONENTS': {
         'securitySchemes': {
@@ -274,5 +274,6 @@ SPECTACULAR_SETTINGS = {
         }
     }
 }
+
 
 

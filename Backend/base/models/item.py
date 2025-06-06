@@ -25,7 +25,7 @@ class Item(BaseModel):
     price_cents = models.BigIntegerField()
     currency = models.CharField(max_length=10, choices=Currency.choices)
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="items")
-    categories = models.ManyToManyField('Category', related_name="items", through="ItemCategory")
+    categories = models.ManyToManyField(Category, related_name="items", through="ItemCategory")
     search_vector = SearchVectorField(null=True, editable=False)
     metadata = models.JSONField(null=True, blank=True)
     image = models.ImageField(upload_to='items/', null=True, blank=True)
