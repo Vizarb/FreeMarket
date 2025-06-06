@@ -10,7 +10,7 @@ from django.utils.text import slugify
 from django.contrib.auth.management import create_permissions
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
-from base.utils.seed_data.Constants import ORDER_STATUSES, ROLE_PERMISSIONS, SERVICE_TYPES, PAYMENT_METHODS
+from base.utils.seed_data.Constants import ORDER_STATUSES, ROLE_PERMISSIONS, PAYMENT_METHODS
 from base.utils.seed_data.seed_helpers import create_items_with_subtypes_from_csv, with_timestamps, load_seed_items_from_csv, load_item_category_map
 from base.models import (
     CustomUser, Address, Category, ItemCategory,

@@ -2,6 +2,7 @@ import { BaseModel } from "./baseType";
 
 export interface Category extends BaseModel {
     name: string;
-    parent?: Category | null;
+    parent: string | null;
+    full_path: string; 
   }
   
