@@ -248,3 +248,24 @@ LOGGING = {
     },
 }
 
+feat-category-search-add-swagger
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your API Name',
+    'DESCRIPTION': 'Your project description here.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,  # Optional: Better request/response display
+    'SECURITY': [
+        {'BearerAuth': []},
+    ],
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            }
+        }
+    }
+}
+
