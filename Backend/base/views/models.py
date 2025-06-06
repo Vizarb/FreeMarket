@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import NotFound
 
-from base.filters import ItemFilter
 from base.enums import ActionStatus, UserAction
 from base.utils.decorators import log_user_activity
 from base.utils.metadata import generate_order_metadata
@@ -47,12 +46,10 @@ class ItemViewSet(BaseViewSet):
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated, HasRole, ReadOnlyOrOwner]
     required_roles    = ['Seller']
-    filterset_class  = ItemFilter
+    filterset_fields  = ['name', 'price_cents', 'currency', 'seller']
     search_fields     = ['name', 'description']
     ordering_fields   = ['created_at', 'updated_at', 'name']
     lookup_field = 'slug'
-
-
 
     def get_object(self):
         """
@@ -76,7 +73,6 @@ class ItemViewSet(BaseViewSet):
                 logger.debug(f"Slug '{lookup_value}' not found, trying ID fallback...")
 
         raise NotFound(f"Item not found for slug or id: {lookup_value}")
-
 
 
 

@@ -6,7 +6,7 @@ from rest_framework import status
 
 from tests.factories import UserFactory
 from base.models.user import CustomUser
-from Backend.base.models.category import Category
+from base.models.category import Category
 from base.models.address import Address
 from base.models.cart import Cart
 from base.models.order import Order
