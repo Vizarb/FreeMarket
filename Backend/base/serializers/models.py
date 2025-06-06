@@ -110,6 +110,7 @@ class ItemSerializer(serializers.ModelSerializer):
             'seller',
             'created_at',
             'updated_at',
+            'categories',
         ]
 
 
