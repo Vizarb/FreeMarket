@@ -1,7 +1,7 @@
 # tests/unit/test_category_utils.py
 import pytest
 from base.utils.category_utils import get_descendant_ids
-from base.models.category import Category
+from Backend.base.models.category import Category
 
 pytestmark = [pytest.mark.unit]
 
