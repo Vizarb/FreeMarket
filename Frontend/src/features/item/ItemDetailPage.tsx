@@ -11,6 +11,7 @@ import { addToCart } from '@/features/cart/cartSlice';
 import { Currency } from '@/types/enums';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import DefaultHeader from '@/components/common/DefaultHeader';
 
 const ItemDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -42,6 +43,8 @@ const ItemDetailPage: React.FC = () => {
     : '/placeholder.jpg';
 
   return (
+    <>
+    <DefaultHeader />
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-600 mb-4">
@@ -117,6 +120,7 @@ const ItemDetailPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

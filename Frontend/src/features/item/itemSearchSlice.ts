@@ -54,7 +54,7 @@ export const fetchUnifiedItemResults = createAsyncThunk<
       const axiosParams: Record<string, string | number | boolean> = {};
 
       if (params.search !== undefined && params.search !== '') {
-        axiosParams.search = params.search;
+        axiosParams.q = params.search;
       }
       if (params.min_price !== undefined) {
         axiosParams.min_price = params.min_price;

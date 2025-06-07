@@ -5,11 +5,14 @@ import { useAppSelector } from '@/store/hooks/hooks';
 import { selectUserOrders } from '@/features/order/orderSlice';
 import { OrderDetailsResponse } from '@/types/apiResponseType';
 import OrderSummary from './OrderSummary';
+import DefaultHeader from '@/components/common/DefaultHeader';
 
 const OrderHistory: React.FC = () => {
   const orders = useAppSelector(selectUserOrders);
 
   return (
+    <>
+    <DefaultHeader />
     <section className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-6">Order History</h2>
 
@@ -28,6 +31,7 @@ const OrderHistory: React.FC = () => {
         </ul>
       )}
     </section>
+    </>
   );
 };
 

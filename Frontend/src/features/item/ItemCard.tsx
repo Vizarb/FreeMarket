@@ -24,17 +24,17 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
     : '/placeholder.jpg'; // ✅ fallback if missing
 
   return (
-    <div className="border rounded-xl p-4 shadow flex flex-col bg-white">
+    <div className="border rounded-xl p-4 shadow flex flex-col bg-white h-full">
       <img
         src={imageUrl}
         alt={item.name}
-        className="w-full h-48 object-cover rounded-lg mb-4"
+        className="w-full h-40 sm:h-48 object-cover rounded-lg mb-3"
         onError={(e) => (e.currentTarget.src = '/placeholder.jpg')}
       />
       <Link to={`/items/${item.slug}`} className="text-lg font-bold text-blue-600 hover:underline">
         {item.name}
       </Link>
-      <p className="text-sm text-gray-700">{item.description || 'No description available'}</p>
+      <p className="text-sm sm:text-base text-gray-700 line-clamp-2">{item.description || 'No description available'}</p>
       <p className="font-semibold mt-2">
         ${(item.price_cents / 100).toFixed(2)} {Currency[item.currency]}
       </p>
@@ -46,7 +46,7 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
 
       <button
         onClick={handleAddToCart}
-        className="mt-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-4"
+        className="mt-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-4 text-sm sm:text-base"
       >
         Add to Cart
       </button>

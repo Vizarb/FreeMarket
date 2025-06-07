@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
+
 
 class ItemDetails(models.Model):
     item_id = models.IntegerField(primary_key=True)  # Views do not auto-generate primary keys
@@ -9,6 +11,7 @@ class ItemDetails(models.Model):
     currency = models.CharField(max_length=10)
     seller = models.CharField(max_length=255)
     categories = models.TextField()
+    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
     search_vector = models.TextField()
 
     class Meta:
@@ -25,6 +28,7 @@ class ItemSearchView(models.Model):
     seller = models.CharField(max_length=255)
     item_type = models.CharField(max_length=20)
     categories = models.TextField()
+    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
     quantity = models.IntegerField(null=True, blank=True)
     service_duration = models.IntegerField(null=True, blank=True)
     service_type = models.CharField(max_length=255, null=True, blank=True)
@@ -33,6 +37,43 @@ class ItemSearchView(models.Model):
     class Meta:
         managed = False
         db_table = "item_search_view"
+
+class ProductDetails(models.Model):
+    item_id = models.IntegerField(primary_key=True)
+    slug = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    price_cents = models.BigIntegerField()
+    currency = models.CharField(max_length=10)
+    seller = models.CharField(max_length=255)
+    categories = models.TextField()
+    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
+    quantity = models.IntegerField(null=True, blank=True)
+    search_vector = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = "product_details"
+
+
+class ServiceDetails(models.Model):
+    item_id = models.IntegerField(primary_key=True)
+    slug = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    price_cents = models.BigIntegerField()
+    currency = models.CharField(max_length=10)
+    seller = models.CharField(max_length=255)
+    categories = models.TextField()
+    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
+    service_duration = models.IntegerField(null=True, blank=True)
+    service_type = models.CharField(max_length=255, null=True, blank=True)
+    search_vector = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = "service_details"
+
 
 class UserOrderHistory(models.Model):
     order_id = models.IntegerField(primary_key=True)
