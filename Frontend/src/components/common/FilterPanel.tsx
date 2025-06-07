@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,11 @@ interface FilterPanelProps {
   categories?: { id: string; name: string }[];
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {}, categories = [] }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({
+  onChange,
+  defaultValues = {},
+  categories = [],
+}) => {
   const [filters, setFilters] = useState<FilterState>({
     currency: defaultValues.currency || '',
     item_type: defaultValues.item_type || '',
@@ -26,7 +30,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
     category_id: defaultValues.category_id || '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      ...defaultValues,
+    }));
+  }, [defaultValues]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
@@ -40,7 +53,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
   };
 
   const handleClear = () => {
-    const cleared = {
+    const cleared: FilterState = {
       currency: '',
       item_type: '',
       min_price: 0,
@@ -52,18 +65,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
   };
 
   return (
-    <div className="space-y-4 p-4 border rounded-xl shadow-sm">
-      <h3 className="text-lg font-semibold">Filters</h3>
-
-      {/* Currency Filter */}
+    <div className="space-y-4 p-4 w-full max-w-sm">
+      {/* Currency */}
       <div>
         <Label htmlFor="currency">Currency</Label>
         <select
           id="currency"
           name="currency"
-          className="w-full border px-2 py-1"
           value={filters.currency}
           onChange={handleInputChange}
+          className="w-full border px-2 py-1 rounded"
         >
           <option value="">All</option>
           <option value="USD">USD</option>
@@ -72,15 +83,15 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
         </select>
       </div>
 
-      {/* Item Type Filter */}
+      {/* Item Type */}
       <div>
         <Label htmlFor="item_type">Item Type</Label>
         <select
           id="item_type"
           name="item_type"
-          className="w-full border px-2 py-1"
           value={filters.item_type}
           onChange={handleInputChange}
+          className="w-full border px-2 py-1 rounded"
         >
           <option value="">All</option>
           <option value="product">Product</option>
@@ -88,26 +99,28 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
         </select>
       </div>
 
-      {/* Category Filter */}
+      {/* Category */}
       <div>
         <Label htmlFor="category_id">Category</Label>
         <select
           id="category_id"
           name="category_id"
-          className="w-full border px-2 py-1"
           value={filters.category_id}
           onChange={handleInputChange}
+          className="w-full border px-2 py-1 rounded"
         >
           <option value="">All</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
           ))}
         </select>
       </div>
 
-      {/* Price Slider */}
+      {/* Price Range */}
       <div>
-        <Label>Price Range (${filters.min_price / 100} – ${filters.max_price / 100})</Label>
+        <Label>Price (${filters.min_price / 100} – ${filters.max_price / 100})</Label>
         <Slider
           min={0}
           max={100000}
@@ -117,10 +130,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, defaultValues = {},
         />
       </div>
 
-      {/* Action Buttons */}
-      <div className="pt-2 flex justify-between gap-2">
-        <Button variant="outline" onClick={handleClear}>Clear Filters</Button>
-        <Button onClick={handleApplyFilters}>Search</Button>
+      {/* Actions */}
+      <div className="flex justify-between gap-2 pt-2">
+        <Button variant="outline" onClick={handleClear} className="flex-1">
+          Clear
+        </Button>
+        <Button onClick={handleApplyFilters} className="flex-1">
+          Apply
+        </Button>
       </div>
     </div>
   );

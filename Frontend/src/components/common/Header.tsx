@@ -1,9 +1,9 @@
-// src/components/Header.tsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartSummary } from '../../store/hooks/useCart';
 import AuthLinks from './Authlinks';
-import { Input } from '@/components/ui/input';
+import SearchBar from './SearchBar';
+import FilterPanel from './FilterPanel';
 import { useAuth } from '@/features/auth/useAuth';
 import {
   DropdownMenu,
@@ -11,15 +11,46 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Package, ShieldCheck, User2, Moon, Sun } from 'lucide-react';
+import {
+  ShoppingCart,
+  Package,
+  ShieldCheck,
+  User2,
+  Moon,
+  Sun,
+  Menu,
+  SlidersHorizontal,
+} from 'lucide-react';
+import MobileMenu from './MobileMenu';
+import { defaultFilterState, FilterState } from '@/constants/filters';
 
-const Header: React.FC = () => {
+
+
+interface HeaderProps {
+  onSearch?: (query: string) => void;
+  onFilterChange?: (filters: Partial<FilterState>) => void;
+  defaultValues?: Partial<FilterState>;
+  categories?: { id: string; name: string }[];
+}
+
+const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, defaultValues, categories = [] }) => {
   const { itemCount } = useCartSummary();
   const { isAuthenticated, isBuyer, isSeller, isAdmin } = useAuth();
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
+
+  const handleLogoClick = () => {
+  onFilterChange?.(defaultFilterState);
+  onSearch?.(defaultFilterState.search);
+  navigate('/marketplace');
+};
+
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -45,83 +76,121 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-white dark:bg-zinc-900 shadow-sm">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/marketplace" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-          FreeMarket
-        </Link>
-
-        <Button onClick={() => navigate("/become-seller")}>
-          Apply to Become a Seller
-        </Button>
-
-        <Button onClick={() => navigate("/admin/seller-applications")}>
-          Review Seller Applications
-        </Button>
-
-
-        {/* Search Bar */}
-        <div className="flex-1 mx-8">
-          <Input
-            placeholder="Search products or services..."
-            className="w-full"
-          />
-        </div>
-
-        {/* Navigation */}
-        <div className="flex items-center space-x-4">
-          {/* Dark mode toggle */}
+    <header className="bg-white dark:bg-zinc-900 shadow-sm w-full sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+        {/* Left: Logo + Theme Toggle */}
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <span
+            onClick={handleLogoClick}
+            className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            FreeMarket
+          </span>
           <Button variant="ghost" onClick={toggleTheme} size="icon">
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </Button>
+        </div>
 
-          {isAuthenticated && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">Menu</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {(isBuyer || isAdmin)&& (
-                  <DropdownMenuItem asChild>
-                    <Link to="/orders" className="flex items-center gap-2">
-                      <Package size={16} /> My Orders
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {(isSeller || isAdmin) && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/seller" className="flex items-center gap-2">
-                      <User2 size={16} /> Seller Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/admin" className="flex items-center gap-2">
-                      <ShieldCheck size={16} /> Admin Panel
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+        {/* Center: SearchBar + Filters */}
+        <div className="flex flex-grow gap-2 min-w-[280px] sm:min-w-[400px] items-start">
+          <div className="flex-grow">
+            <SearchBar onSearch={onSearch} />
+          </div>
 
-          {/* Cart */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon">
+                <SlidersHorizontal size={18} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[320px] p-0">
+              <FilterPanel
+                onChange={onFilterChange}
+                defaultValues={defaultValues}
+                categories={categories}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Right: User Actions */}
+        <div className="flex items-center gap-3 flex-shrink-0">
           {(isBuyer || isAdmin) && (
-            <Link to="/cart" className="relative text-sm hover:underline">
-              <div className="flex items-center gap-1">
-                <ShoppingCart size={18} /> Cart
-              </div>
+            <Link
+              to="/cart"
+              className="relative flex items-center text-sm gap-1 hover:underline"
+            >
+              <ShoppingCart size={18} />
+              <span>Cart</span>
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
                   {itemCount}
                 </span>
               )}
             </Link>
           )}
 
-          {/* Auth buttons */}
+          {isAuthenticated && (
+            <>
+              <div className="hidden md:block">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Menu size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => navigate('/become-seller')}
+                        className="w-full justify-start"
+                      >
+                        Apply to Sell
+                      </Button>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => navigate('/admin/seller-applications')}
+                        className="w-full justify-start"
+                      >
+                        Review Applications
+                      </Button>
+                    </DropdownMenuItem>
+
+                    {(isBuyer || isAdmin) && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/orders" className="flex items-center gap-2">
+                          <Package size={16} /> My Orders
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(isSeller || isAdmin) && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/seller" className="flex items-center gap-2">
+                          <User2 size={16} /> Seller Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center gap-2">
+                          <ShieldCheck size={16} /> Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Mobile Drawer */}
+              <div className="block md:hidden">
+                <MobileMenu />
+              </div>
+            </>
+          )}
+
           <AuthLinks />
         </div>
       </div>

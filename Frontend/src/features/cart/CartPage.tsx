@@ -10,6 +10,7 @@ import { useCart, useCartSummary } from '@/store/hooks/useCart';
 import { selectCart } from './cartSlice';
 import { selectAuthLoaded } from '../auth/authSlice';
 import CartItemCard from './CartItemCard';
+import DefaultHeader from '@/components/common/DefaultHeader';
 
 const CartPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -51,12 +52,23 @@ const CartPage: React.FC = () => {
     }
   };
 
-  if (loading || orderLoading) return <p>Loading...</p>;
+  if (loading || orderLoading) {
+    return (
+      <>
+        <DefaultHeader />
+        <div className="flex justify-center items-center h-[200px]">
+          <p className="text-center text-gray-500 text-sm">Loading your cart...</p>
+        </div>
+      </>
+    );
+  }
   if (error) return <p>Error: {error}</p>;
   if (orderError) return <p>Error: {orderError}</p>;
 
 return (
-  <div className="max-w-3xl mx-auto px-4">
+  <>
+    <DefaultHeader />
+    <div className="max-w-3xl mx-auto px-4">
     <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
 
     {sortedItems.length === 0 ? (
@@ -98,6 +110,7 @@ return (
       </>
     )}
   </div>
+  </>
 )};
 
 export default CartPage;

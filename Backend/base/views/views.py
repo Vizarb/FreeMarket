@@ -58,6 +58,7 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
         qs = super().get_queryset()
         search_term = self.request.query_params.get("q")
 
+        # === Full-text Search ===
         if search_term:
             try:
                 sq = SearchQuery(search_term, search_type='plain')
@@ -67,27 +68,32 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                     .order_by("-rank")
 
                 if fts_qs.exists():
-                    return fts_qs
+                    qs = fts_qs
+                else:
+                    qs = qs.filter(
+                        Q(name__icontains=search_term) |
+                        Q(description__icontains=search_term) |
+                        Q(slug__icontains=search_term)
+                    ).order_by("name")
             except Exception as e:
                 logger.warning(f"FTS failed for search='{search_term}': {e}")
+                qs = qs.filter(
+                    Q(name__icontains=search_term) |
+                    Q(description__icontains=search_term) |
+                    Q(slug__icontains=search_term)
+                ).order_by("name")
 
-            return qs.filter(
-                Q(name__icontains=search_term) |
-                Q(description__icontains=search_term) |
-                Q(slug__icontains=search_term)
-            ).order_by("name")
-
-        # Category filtering
+        # === Category Filter ===
         cat_id = self.request.query_params.get('category_id')
         if cat_id:
             try:
                 cat = Category.objects.prefetch_related('subcategories').get(id=cat_id)
-                ids = get_descendant_ids(cat)
-                qs = qs.filter(categories__iregex=r'\m(' + '|'.join(map(str, ids)) + r')\M')
+                ids = get_descendant_ids(cat)  # list of all descendant category IDs
+                qs = qs.filter(category_ids__overlap=ids)
             except Category.DoesNotExist:
                 pass
 
-        # Price filtering
+        # === Price Filter ===
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
 
@@ -102,8 +108,9 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                 qs = qs.filter(price_cents__lte=int(max_price))
             except ValueError:
                 pass
-
+                
         return qs
+
 
 
 

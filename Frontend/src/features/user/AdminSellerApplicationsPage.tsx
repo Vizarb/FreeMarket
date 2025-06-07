@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import type { SellerApplication } from "@/types/sellerApplication";
+import DefaultHeader from "@/components/common/DefaultHeader";
 
 
 const AdminSellerApplicationsPage: React.FC = () => {
@@ -42,6 +43,8 @@ const AdminSellerApplicationsPage: React.FC = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
+    <>
+    <DefaultHeader />
     <div className="max-w-4xl mx-auto mt-6 space-y-4">
       <h2 className="text-2xl font-bold mb-4">Seller Applications</h2>
 
@@ -105,6 +108,7 @@ const AdminSellerApplicationsPage: React.FC = () => {
         </Card>
       ))}
     </div>
+    </>
   );
 };
 
