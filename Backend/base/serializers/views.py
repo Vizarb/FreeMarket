@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models.views import (CartOverview, ItemDetails, MostActiveUsers, OrderDetails, OrderItemDetails, TopSellingProducts, UserOrderHistory)
+from drf_spectacular.utils import extend_schema_field
 
 class BaseSearchSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
@@ -7,13 +8,13 @@ class BaseSearchSerializer(serializers.ModelSerializer):
         data.pop('search_vector', None)  # 🧼 Remove internal full-text search field
         return data
 
-
 class ItemDetailsSerializer(BaseSearchSerializer):
     type = serializers.SerializerMethodField()
     class Meta:
         model = ItemDetails
         fields = '__all__'
 
+    @extend_schema_field(str)
     def get_type(self, obj):
         """Efficiently determine the subclass type using ContentType"""
         return obj.__class__.__name__.lower() 
@@ -59,6 +60,7 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
         model = OrderDetails
         fields = ['id', 'user_id', 'customer', 'status', 'total_price_cents', 'created_at', 'updated_at', 'order_items']
 
+    @extend_schema_field(OrderItemDetailsSerializer(many=True))
     def get_order_items(self, obj):
         order_items = OrderItemDetails.objects.filter(order_id=obj.id)
         return OrderItemDetailsSerializer(order_items, many=True).data

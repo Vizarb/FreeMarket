@@ -60,11 +60,7 @@ class Order(BaseModel):
 
 
 class OrderItem(BaseModel):
-    order       = models.ForeignKey(
-                      Order,
-                      on_delete=models.CASCADE,
-                      related_name="order_items"
-                  )
+    order       = models.ForeignKey(Order,on_delete=models.CASCADE,related_name="order_items")
     item        = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity    = models.PositiveIntegerField()
     price_cents = models.BigIntegerField()
