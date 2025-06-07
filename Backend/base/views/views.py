@@ -8,6 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import Q, F
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from base.views.baseviews import BaseReadOnlyViewSet
 from base.permissions import HasRole
@@ -137,6 +138,11 @@ class UserOrderHistoryViewSet(BaseReadOnlyViewSet):
         return qs.filter(customer=user)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name='cart_id', type=int, location=OpenApiParameter.PATH)
+    ]
+)
 class CartOverviewViewSet(BaseReadOnlyViewSet):
     """
     DB view: current user’s cart overview.
@@ -146,6 +152,7 @@ class CartOverviewViewSet(BaseReadOnlyViewSet):
     serializer_class  = CartOverviewSerializer
     filterset_fields  = ['user_id']
     ordering_fields   = ['price_snapshot_cents']
+    lookup_field       = 'cart_id'
 
     def get_queryset(self):
         # no soft-delete here—DB view only

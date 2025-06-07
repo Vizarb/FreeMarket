@@ -4,6 +4,8 @@ from ..models import (
     Order, OrderItem, Payment, Cart, CartItem
 )
 from base.models.logs.cart_activity_log import CartActivityLog
+from drf_spectacular.utils import extend_schema_field
+
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -80,13 +82,15 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'address_line_1', 'address_line_2', 'city', 'state_province', 'postal_code', 'country']
 
 # Category Serializer
+
 class CategorySerializer(serializers.ModelSerializer):
     full_path = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
         fields = ['id', 'name', 'parent', 'full_path', 'created_at', 'updated_at']
-        
+
+    @extend_schema_field(str)
     def get_full_path(self, obj):
         if obj.parent:
             return f"{self.get_full_path(obj.parent)} > {obj.name}"
@@ -117,6 +121,7 @@ class ItemSerializer(serializers.ModelSerializer):
 # Product Serializer
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
+    search_vector = serializers.CharField(read_only=True)
 
     class Meta:
         model = Product
@@ -130,6 +135,7 @@ class ProductSerializer(serializers.ModelSerializer):
 # Service Serializer
 class ServiceSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
+    search_vector = serializers.CharField(read_only=True)
 
     class Meta:
         model = Service
@@ -161,6 +167,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['id', 'item', 'item_name', 'quantity', 'price_cents', 'total_price']
 
+    @extend_schema_field(int)
     def get_total_price(self, obj):
         """
         Calculate the total price for the OrderItem
