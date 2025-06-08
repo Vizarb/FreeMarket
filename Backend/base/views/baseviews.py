@@ -106,13 +106,13 @@ class BaseReadOnlyViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_term = self.request.query_params.get("search")
+        search_term = self.request.query_params.get("q")
 
         if search_term:
             search_vector = getattr(self, "search_field", "search_vector")
             query = SearchQuery(search_term, search_type="plain")
             queryset = queryset.annotate(rank=SearchRank(F(search_vector), query))
-            fts = queryset.filter(**{search_vector: query}).order_by("-rank")
+            fts = queryset.filter(**{f"{search_vector}__search": search_term}).order_by("-rank")
 
             if fts.exists():
                 return fts

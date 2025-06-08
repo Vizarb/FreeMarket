@@ -22,8 +22,14 @@ def authed_client(api_client, user) -> APIClient:
 
 @pytest.fixture
 def user(db):
-    """A created CustomUser via Factory-Boy."""
-    return UserFactory()
+    """A Buyer user (default role)."""
+    return UserFactory(roles=["Buyer"])
+
+@pytest.fixture
+def seller(db):
+    """A Seller user."""
+    return UserFactory(roles=["Seller"])
+
 
 @pytest.fixture
 def product_factory(db):

@@ -1,8 +1,7 @@
-# tests/smoke/test_smoke_e2e.py
-
 import pytest
 from django.urls import reverse
 from rest_framework import status
+from tests.factories import UserFactory
 
 @pytest.mark.django_db
 @pytest.mark.smoke
@@ -28,16 +27,17 @@ def test_full_system_sanity(api_client, user, product_factory):
     ).data["access"]
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {new_access}")
 
-    # 3. Cart‐overview endpoint access
+    # 3. Cart-overview endpoint access
     assert api_client.get(reverse('cart-overview-list')).status_code == status.HTTP_200_OK
 
-    # 4. Create a product
-    prod = product_factory(seller=user, price_cents=500)
+    # 4. Create a product (by a separate Seller user)
+    seller = UserFactory(roles=["Seller"])
+    product = product_factory(seller=seller, price_cents=500)
 
-    # 5. Add to cart
+    # 5. Add to cart (as the buyer)
     resp_add = api_client.post(
         reverse('cart-item-list'),
-        {"item_id": prod.id, "quantity": 2},
+        {"item_id": product.id, "quantity": 2},
         format="json"
     )
     assert resp_add.status_code == status.HTTP_201_CREATED
@@ -47,5 +47,5 @@ def test_full_system_sanity(api_client, user, product_factory):
     assert resp_list.status_code == status.HTTP_200_OK
     items = resp_list.data
     assert len(items) == 1
-    assert items[0]["item_id"] == prod.id
+    assert items[0]["item_id"] == product.id
     assert items[0]["quantity"] == 2

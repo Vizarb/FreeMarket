@@ -1,21 +1,22 @@
 import pytest
 from rest_framework.test import APIClient
 from django.urls import reverse
-
 from base.models.user import CustomUser
-from Backend.base.models.category import Category
+from base.models.category import Category
 from base.models.item import Product, Service
 from base.models.cart import Cart
+from tests.factories import UserFactory
 
-# apply to all tests in this module
 pytestmark = [pytest.mark.integration, pytest.mark.django_db]
 
 
 class TestItemSearchViewSet:
     def setup_method(self):
-        self.user = CustomUser.objects.create_user(username='tester', password='pass123')
+        self.seller = UserFactory(roles=["Seller"])
+        self.buyer = UserFactory(roles=["Buyer"])
+
         self.client = APIClient()
-        self.client.force_authenticate(self.user)
+        self.client.force_authenticate(self.buyer)
 
         self.category = Category.objects.create(name='Electronics')
 
@@ -24,7 +25,7 @@ class TestItemSearchViewSet:
             description='High-end laptop',
             price_cents=150000,
             currency='USD',
-            seller=self.user,
+            seller=self.seller,
             quantity=5
         )
         self.product.categories.add(self.category)
@@ -34,7 +35,7 @@ class TestItemSearchViewSet:
             description='Home cleaning service',
             price_cents=5000,
             currency='USD',
-            seller=self.user,
+            seller=self.seller,
             service_duration=2,
             service_type='Standard'
         )
@@ -44,7 +45,7 @@ class TestItemSearchViewSet:
         url = reverse('item-search-autocomplete')
         resp = self.client.get(f"{url}?q=Lap")
         assert resp.status_code == 200
-        assert 'Laptop' in resp.data
+        assert any(s["name"] == "Laptop" for s in resp.data)
 
     def test_autocomplete_no_query(self):
         url = reverse('item-search-autocomplete')
@@ -70,15 +71,16 @@ class TestItemSearchViewSet:
 
 class TestCartOverviewViewSet:
     def setup_method(self):
-        self.u1 = CustomUser.objects.create_user(username='u1', password='pwd1')
-        self.u2 = CustomUser.objects.create_user(username='u2', password='pwd2')
+        self.seller = UserFactory(roles=["Seller"])
+        self.u1 = UserFactory(roles=["Buyer"])
+        self.u2 = UserFactory(roles=["Buyer"])
 
         self.product = Product.objects.create(
             name='Laptop',
             description='Gaming laptop',
             price_cents=120000,
             currency='USD',
-            seller=self.u1,
+            seller=self.seller,
             quantity=3
         )
 

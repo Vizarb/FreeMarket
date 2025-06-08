@@ -221,15 +221,14 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 # Cart Item Serializer
 class CartItemSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Cart Items
-    """
-    item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())  # Expect item as ID
+    item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
     item_name = serializers.CharField(source='item.name', read_only=True)
-    
+    quantity = serializers.IntegerField(read_only=True)  # ✅ this was missing!
+
     class Meta:
         model = CartItem
         fields = ['id', 'item_id', 'item_name', 'quantity']
+
 
 # Cart Serializer
 class CartSerializer(serializers.ModelSerializer):
