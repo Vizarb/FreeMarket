@@ -61,10 +61,10 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
         # === Full-text Search ===
         if search_term:
             try:
-                sq = SearchQuery(search_term, search_type='plain')
+                sq = SearchQuery(search_term)
                 fts_qs = qs.exclude(search_vector__isnull=True)\
-                    .annotate(rank=SearchRank(F(self.search_field), sq))\
-                    .filter(search_vector=sq)\
+                    .annotate(rank=SearchRank(F("search_vector"), sq))\
+                    .filter(search_vector__match=sq)\
                     .order_by("-rank")
 
                 if fts_qs.exists():
@@ -82,6 +82,7 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                     Q(description__icontains=search_term) |
                     Q(slug__icontains=search_term)
                 ).order_by("name")
+
 
         # === Category Filter ===
         cat_id = self.request.query_params.get('category_id')

@@ -4,7 +4,8 @@ from django.db.models import CheckConstraint, Q, Sum, F
 from django.contrib.postgres.indexes import GinIndex
 from .base_modle import BaseModel
 from .item import Item
-from .cart import Cart, CartItem
+from .cart import Cart
+from django.utils.timezone import now
 
 class OrderStatus(models.TextChoices):
     PENDING   = "PENDING", "Pending"
@@ -46,11 +47,11 @@ class Order(BaseModel):
             for ci in items
         ]
         OrderItem.objects.bulk_create(order_items)
-        cart.cart_items.delete()
+        cart.cart_items.all().update(is_deleted=True, deleted_at=now())
         self.calculate_total()
 
     def __str__(self):
-        return f"Order #{self.id} – {self.user.username} – {self.status}"
+        return f"Order #{self.id} - {self.user.username} - {self.status}"
 
     class Meta:
         indexes = [
@@ -74,4 +75,4 @@ class OrderItem(BaseModel):
         ]
 
     def __str__(self):
-        return f"{self.quantity}×{self.item.name} in Order #{self.order.id}"
+        return f"{self.quantity} of {self.item.name} in Order #{self.order.id}"

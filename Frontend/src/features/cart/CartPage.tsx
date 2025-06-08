@@ -18,18 +18,17 @@ const CartPage: React.FC = () => {
 
   const orderLoading = useAppSelector(selectOrderLoading);
   const orderError = useAppSelector(selectOrderError);
+  const authLoaded = useAppSelector(selectAuthLoaded);
 
+  const items = useAppSelector(selectCart);
   const { itemCount, total } = useCartSummary();
   const {
-    loading,
+    loading, // cart data still being fetched
     error,
     addItem,
     decrementItem,
     reloadCart,
   } = useCart();
-
-  const items = useAppSelector(selectCart);
-  const authLoaded = useAppSelector(selectAuthLoaded);
 
   const hasReloaded = useRef(false);
 
@@ -48,69 +47,83 @@ const CartPage: React.FC = () => {
   const handleCheckout = async () => {
     const result = await dispatch(createOrderFromCart());
     if (createOrderFromCart.fulfilled.match(result)) {
+      reloadCart();
       navigate('/order-confirmation', { state: { order: result.payload } });
     }
   };
 
-  if (loading || orderLoading) {
-    return (
-      <>
-        <DefaultHeader />
-        <div className="flex justify-center items-center h-[200px]">
-          <p className="text-center text-gray-500 text-sm">Loading your cart...</p>
-        </div>
-      </>
-    );
-  }
-  if (error) return <p>Error: {error}</p>;
-  if (orderError) return <p>Error: {orderError}</p>;
+  return (
+    <>
+      <DefaultHeader />
+      <div className="max-w-3xl mx-auto px-4">
+        <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
 
-return (
-  <>
-    <DefaultHeader />
-    <div className="max-w-3xl mx-auto px-4">
-    <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
+        {loading && (
+          <div className="flex justify-center mb-4">
+            <p className="text-sm text-gray-400 italic animate-pulse">
+              Refreshing cart...
+            </p>
+          </div>
+        )}
 
-    {sortedItems.length === 0 ? (
-      <p className="text-gray-600">Your cart is empty.</p>
-    ) : (
-      <>
-        <div className="space-y-4">
-          {sortedItems.map((item) => (
-            <div
-              key={item.cart_item_id}
-              className="transition-all duration-200 ease-in-out"
-            >
-              <CartItemCard
-                item={item}
-                onAdd={addItem}
-                onDecrement={decrementItem}
-              />
+        {error && (
+          <p className="text-red-600 text-center mt-4">Error: {error}</p>
+        )}
+
+        {orderError && (
+          <p className="text-red-600 text-center mt-4">Error: {orderError}</p>
+        )}
+
+        {sortedItems.length === 0 && !loading ? (
+          <p className="text-gray-600">Your cart is empty.</p>
+        ) : (
+          <>
+            <div className="space-y-4">
+              {sortedItems.map((item) => (
+                <div
+                  key={item.cart_item_id}
+                  className="transition-all duration-200 ease-in-out"
+                >
+                  <CartItemCard
+                    item={item}
+                    onAdd={addItem}
+                    onDecrement={decrementItem}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <hr className="my-6" />
+            <hr className="my-6" />
 
-        <div className="flex flex-col items-start gap-2">
-          <h3 className="text-lg font-semibold">Total Items: {itemCount}</h3>
-          <h3 className="text-lg font-semibold">
-            Total Price: ${(total / 100).toFixed(2)}
-          </h3>
-        </div>
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="text-lg font-semibold">
+                Total Items:{' '}
+                <span className={loading ? 'animate-pulse text-gray-400' : ''}>
+                  {itemCount}
+                </span>
+              </h3>
+              <h3 className="text-lg font-semibold">
+                Total Price:{' '}
+                <span className={loading ? 'animate-pulse text-gray-400' : ''}>
+                  ${(total / 100).toFixed(2)}
+                </span>
+              </h3>
+            </div>
 
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={handleCheckout}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl w-full max-w-sm"
-          >
-            Pay Now
-          </button>
-        </div>
-      </>
-    )}
-  </div>
-  </>
-)};
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleCheckout}
+                disabled={loading || orderLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl w-full max-w-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {orderLoading ? 'Processing...' : 'Pay Now'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default CartPage;
