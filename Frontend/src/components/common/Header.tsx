@@ -28,26 +28,27 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import MobileMenu from './MobileMenu';
-import { defaultFilterState, FilterState } from '@/constants/filters';
+import { useAppDispatch } from '@/store/hooks/hooks';
+import { FilterState, resetFilters } from '@/features/item/filterSlice';
 
 
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
   onFilterChange?: (filters: Partial<FilterState>) => void;
-  defaultValues?: Partial<FilterState>;
   categories?: { id: string; name: string }[];
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, defaultValues, categories = [] }) => {
+const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, categories = [] }) => {
+  const dispatch = useAppDispatch();
+
   const { itemCount } = useCartSummary();
   const { isAuthenticated, isBuyer, isSeller, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
 
   const handleLogoClick = () => {
-  onFilterChange?.(defaultFilterState);
-  onSearch?.(defaultFilterState.search);
+  dispatch(resetFilters()); // reset Redux filter state
   navigate('/marketplace');
 };
 
@@ -106,7 +107,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, d
             <PopoverContent className="w-[320px] p-0">
               <FilterPanel
                 onChange={onFilterChange}
-                defaultValues={defaultValues}
                 categories={categories}
               />
             </PopoverContent>
