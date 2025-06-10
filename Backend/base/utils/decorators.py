@@ -3,7 +3,7 @@ from functools import wraps
 from django.utils.timezone import now
 from django.db import transaction
 
-from base.models.logs.user_activity_logs import UserActivityLog
+from base.models.log_models.user_activity_logs import UserActivityLog
 
 logger = logging.getLogger('freemarketbackend')
 
