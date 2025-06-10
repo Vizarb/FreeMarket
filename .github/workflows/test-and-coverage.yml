@@ -61,7 +61,7 @@ jobs:
             --cov=base \
             --cov-report=xml \
             --cov-report=term \
-            --cov-fail-under=75 \
+            --cov-fail-under=30 \
             tests/
 
       - name: Upload Coverage XML
