@@ -29,10 +29,13 @@ interface UnifiedItemResultsPayload {
 // ----------------------------------------------------------------------------
 export interface ItemSearchParams {
   append?: boolean;       // whether to append results (infinite scroll)
+  nextPageUrl?: string;
   search?: string;        // text search
   min_price?: number;     // price >=
   max_price?: number;     // price <=
   category_id?: string;   // filter by category ID
+  item_type?: string;
+  ordering?: string;
   [key: string]: string | number | boolean | undefined;
 }
 
@@ -43,43 +46,45 @@ export interface ItemSearchParams {
 //    In extraReducers, we hand that to handlePagination(state, payload, meta).
 // ----------------------------------------------------------------------------
 export const fetchUnifiedItemResults = createAsyncThunk<
-  UnifiedItemResultsPayload, // returned payload type
-  ItemSearchParams,          // argument type
+  UnifiedItemResultsPayload,
+  ItemSearchParams,
   { rejectValue: string }
 >(
   'itemSearch/fetchUnifiedItemResults',
-  async (params: ItemSearchParams, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
-      // Build a plain object of only-defined query params:
-      const axiosParams: Record<string, string | number | boolean> = {};
+      const { append, nextPageUrl, ...rest } = params;
 
-      if (params.search !== undefined && params.search !== '') {
-        axiosParams.q = params.search;
-      }
-      if (params.min_price !== undefined) {
-        axiosParams.min_price = params.min_price;
-      }
-      if (params.max_price !== undefined) {
-        axiosParams.max_price = params.max_price;
-      }
-      if (params.category_id !== undefined && params.category_id !== '') {
-        axiosParams.category_id = params.category_id;
-      }
-      if (params.append) {
-        axiosParams.append = true;
+      if (append && nextPageUrl) {
+        // For infinite scroll, use the raw nextPageUrl directly
+        const response = await api.get<UnifiedItemResultsPayload>(nextPageUrl);
+        return response.data;
       }
 
-      // Let Axios build the query string automatically
+      // Normal case: build axios params
+      const axiosParams = Object.entries(rest).reduce<Record<string, string | number | boolean>>(
+        (acc, [key, value]) => {
+          if (
+            value !== undefined &&
+            value !== '' &&
+            !(typeof value === 'object' && value === null)
+          ) {
+            acc[key === 'search' ? 'q' : key] = value;
+          }
+          return acc;
+        },
+        {}
+      );
+
       const response = await api.get<UnifiedItemResultsPayload>('/api/item-search/', {
         params: axiosParams,
       });
 
       return response.data;
     } catch (err: unknown) {
-      // Narrow the error type
       let message = 'Failed to fetch search results';
       if (typeof err === 'object' && err !== null && 'response' in err) {
-        // @ts-expect-error: Axios error type
+        // @ts-expect-error narrow axios error
         message = err.response?.data?.detail ?? message;
       } else if (err instanceof Error) {
         message = err.message;
@@ -88,6 +93,7 @@ export const fetchUnifiedItemResults = createAsyncThunk<
     }
   }
 );
+
 
 // ----------------------------------------------------------------------------
 // 4) Thunk: fetchAutocompleteSuggestions (unchanged)
@@ -160,7 +166,7 @@ const itemSearchSlice = createSlice({
       })
       .addCase(fetchUnifiedItemResults.fulfilled, (state, action) => {
         // handlePagination expects a payload that has at least `{ results: UnifiedItemResult[], next: string | null }`
-        handlePagination(state, action.payload, action.meta);
+        handlePagination(state, action.payload, action.meta, (item) => item.item_id);
         state.loading = false;
       })
       .addCase(fetchUnifiedItemResults.rejected, (state, action) => {

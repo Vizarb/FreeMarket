@@ -6,5 +6,4 @@ from .category import *
 from .item import *
 from .order import *
 from .payment import *
-from .logs import *
 from .seller_application import *
