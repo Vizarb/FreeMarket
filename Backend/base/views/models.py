@@ -105,9 +105,9 @@ class UserViewSet(BaseViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, HasRole]
     required_roles    = ['Admin']
-    filterset_fields  = ['username', 'email']
-    search_fields     = ['username', 'email']
-    ordering_fields   = ['date_joined']
+    filterset_fields  = ['username', 'email', 'phone_number', 'is_staff']
+    search_fields     = ['username', 'email', 'phone_number', 'is_staff']
+    ordering_fields   = ['date_joined', 'username', 'is_staff']
 
     def get_permissions(self):
         if self.action == 'create':

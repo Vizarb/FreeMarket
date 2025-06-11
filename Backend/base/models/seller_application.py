@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from .base_modle import BaseModel  # or wherever your BaseModel lives
 
 class SellerApplication(BaseModel):
@@ -47,6 +48,11 @@ class SellerApplication(BaseModel):
 
     class Meta:
         ordering = ["-submitted_at"]
+        constraints = [
+        models.UniqueConstraint(
+            fields=["user"], name="unique_active_seller_application", condition=Q(is_deleted=False)
+        )
+    ]
 
     def __str__(self):
         return f"{self.user.username} → {self.status}"

@@ -1,7 +1,7 @@
 # src/models/cart.py
 
 from django.db import models, transaction
-from django.db.models import Sum, F
+from django.db.models import Sum, F ,Q
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
@@ -105,7 +105,16 @@ class CartItem(BaseModel):
         super().save(*args, **kwargs)
 
     class Meta:
+        indexes = [
+            models.Index(fields=['item'], name='idx_cartitem_item'),
+            models.Index(fields=['cart'], name='idx_cartitem_cart'),
+        ]
         constraints = [
-            models.CheckConstraint(condition=models.Q(quantity__gt=0), name="cart_item_quantity_positive"),
-            models.UniqueConstraint(fields=['cart', 'item'], name="unique_cart_item")
+            models.UniqueConstraint(
+            fields=["cart", "item"], name="unique_cart_item", condition=Q(is_deleted=False)
+        ),
+        models.CheckConstraint(
+            check=Q(quantity__gt=0),
+            name="cart_item_quantity_positive",
+        ),
         ]

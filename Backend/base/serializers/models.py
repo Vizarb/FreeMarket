@@ -3,7 +3,7 @@ from ..models import (
     CustomUser, Address, Category, Item, Product, Service, ItemCategory,
     Order, OrderItem, Payment, Cart, CartItem
 )
-from base.models.logs.cart_activity_log import CartActivityLog
+from base.models.log_models.cart_activity_log import CartActivityLog
 from drf_spectacular.utils import extend_schema_field
 
 # User Serializer

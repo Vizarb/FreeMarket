@@ -55,9 +55,11 @@ class Order(BaseModel):
 
     class Meta:
         indexes = [
-            # only extra index; the FK on `user` is auto-indexed
             GinIndex(fields=['metadata'], name='gin_order_metadata'),
         ]
+        constraints = [
+            CheckConstraint(check=models.Q(total_price_cents__gte=0), name='order_total_price_positive'),
+            ]
 
 
 class OrderItem(BaseModel):
@@ -68,10 +70,8 @@ class OrderItem(BaseModel):
 
     class Meta:
         constraints = [
-            CheckConstraint(
-                check=Q(quantity__gt=0),
-                name="quantity_positive"
-            ),
+            CheckConstraint(check=Q(quantity__gt=0),name="quantity_positive"),
+            CheckConstraint(check=models.Q(price_cents__gte=0), name='orderitem_price_non_negative'),
         ]
 
     def __str__(self):

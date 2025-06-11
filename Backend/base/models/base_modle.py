@@ -3,10 +3,10 @@ from django.utils.timezone import now
 
 class SoftDeleteManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(deleted_at__isnull=True)
+        return super().get_queryset().filter(is_deleted=False)
 
     def deleted(self):
-        return super().get_queryset().filter(deleted_at__isnull=False)
+        return super().get_queryset().filter(is_deleted=False)
 
     def all_with_deleted(self):
         return super().get_queryset()

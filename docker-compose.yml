@@ -14,6 +14,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - freemarket-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     restart: unless-stopped
@@ -21,7 +26,11 @@ services:
       context: ./Backend
       dockerfile: Dockerfile
     image: vizarb/backend:latest
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py makemigrations --noinput &&
+              python manage.py migrate --noinput &&
+              python manage.py seed &&
+              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./Backend:/app
       - media_data:/app/media
@@ -30,7 +39,8 @@ services:
     env_file:
       - ./Backend/.env.backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - freemarket-network
 

@@ -4,7 +4,7 @@ import factory
 from base.models.user import CustomUser
 from base.models.item import Product, Service
 from base.models.cart import Cart
-from base.models.logs.cart_activity_log import CartActivityLog
+from base.models.log_models.cart_activity_log import CartActivityLog
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
