@@ -31,8 +31,8 @@ class Command(BaseCommand):
             logger.info("Starting database setup...")
             with transaction.atomic():
                 self.seed_database()
-            logger.info("Database setup successfully completed!")
-            self.stdout.write(self.style.SUCCESS("Database setup successfully completed!"))
+            logger.info("Database seed setup successfully completed!")
+            self.stdout.write(self.style.SUCCESS("Database seed setup successfully completed!"))
         except Exception as e:
             logger.error(f"Error during setup: {e}")
             self.stdout.write(self.style.ERROR(f"Error during setup: {e}"))
