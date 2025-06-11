@@ -34,9 +34,8 @@ coverage-badge.svg
 *.db
 /static/
 media/
-**/migrations/
+**/migrations/__pycache__/
 **/migrations/*.pyc
-**/migrations/*.py
 
 # 🧾 Logs
 *.log
