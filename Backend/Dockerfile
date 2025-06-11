@@ -5,26 +5,26 @@ FROM python:3.12.10-slim
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements files into the container
+# Copy requirements first for better Docker caching
 COPY requirements.txt dev-requirements.txt /app/
 
-# Install Python dependencies (runtime + dev/test)
-RUN pip install --no-cache-dir -r requirements.txt \
+# Install Python dependencies
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir -r dev-requirements.txt
 
-# Copy the rest of the application code into the container
+# Copy the entire Django app
 COPY . /app/
 
-# Ensure the logs directory exists in case volume mapping fails
+# Create logs directory in case volume doesn't mount
 RUN mkdir -p /logs
 
-# Expose the Django development server port
+# Expose Django default dev port
 EXPOSE 8000
 
-# Default command to run the Django development server
+# The actual run command will be handled by docker-compose
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -26,11 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env.read_env(os.path.join(BASE_DIR, '.env.backend'))
 
-
 # Setup logging
 logger = logging.getLogger(__name__)
-logger.info(f"POSTGRES_HOST: {env('POSTGRES_HOST')}")
-logger.info(f"POSTGRES_PORT: {env('POSTGRES_PORT')}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

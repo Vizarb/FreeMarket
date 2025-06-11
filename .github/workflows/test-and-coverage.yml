@@ -51,9 +51,14 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r dev-requirements.txt
 
       - name: Wait for Postgres
-        run: until pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT"; do sleep 1; done
+        run: |
+          until pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
 
       - name: Run Migrations
         run: python manage.py migrate --noinput
