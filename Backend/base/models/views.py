@@ -17,6 +17,7 @@ class ItemDetails(models.Model):
     class Meta:
         managed = False  # Django won't manage this table (it's a DB view)
         db_table = "item_details"
+        default_permissions = ()
 
 class ItemSearchView(models.Model):
     item_id = models.IntegerField(primary_key=True)
@@ -37,7 +38,7 @@ class ItemSearchView(models.Model):
     class Meta:
         managed = False
         db_table = "item_search_view"
-
+        default_permissions = ()
 class ProductDetails(models.Model):
     item_id = models.IntegerField(primary_key=True)
     slug = models.CharField(max_length=255)
@@ -54,6 +55,7 @@ class ProductDetails(models.Model):
     class Meta:
         managed = False
         db_table = "product_details"
+        default_permissions = ()
 
 
 class ServiceDetails(models.Model):
@@ -73,6 +75,7 @@ class ServiceDetails(models.Model):
     class Meta:
         managed = False
         db_table = "service_details"
+        default_permissions = ()
 
 
 class UserOrderHistory(models.Model):
@@ -87,6 +90,7 @@ class UserOrderHistory(models.Model):
     class Meta:
         managed = False
         db_table = "user_order_history"
+        default_permissions = ()
 
 
 class CartOverview(models.Model):
@@ -103,6 +107,7 @@ class CartOverview(models.Model):
     class Meta:
         managed = False
         db_table = "cart_overview"
+        default_permissions = ()
 
 
 
@@ -115,6 +120,7 @@ class TopSellingProducts(models.Model):
     class Meta:
         managed = False
         db_table = "top_selling_products"
+        default_permissions = ()
 
 
 class MostActiveUsers(models.Model):
@@ -126,6 +132,7 @@ class MostActiveUsers(models.Model):
     class Meta:
         managed = False
         db_table = "most_active_users"
+        default_permissions = ()
 
 class OrderDetails(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -139,6 +146,7 @@ class OrderDetails(models.Model):
     class Meta:
         managed = False 
         db_table = "order_details"
+        default_permissions = ()
 
     def __str__(self):
         return f"Order #{self.id} - {self.customer} - {self.status}"
@@ -154,6 +162,7 @@ class OrderItemDetails(models.Model):
     class Meta:
         managed = False
         db_table = "order_item_details"
+        default_permissions = ()
 
     def __str__(self):
         return f"{self.quantity} of {self.item_name} in Order #{self.order_id}"

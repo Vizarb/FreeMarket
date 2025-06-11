@@ -1,5 +1,5 @@
 from django.contrib import admin
-from base.models.log_models.cart_activity_log import CartActivityLog
+from base.models.logs.cart_activity_log import CartActivityLog
 
 @admin.register(CartActivityLog)
 class CartLogAdmin(admin.ModelAdmin):

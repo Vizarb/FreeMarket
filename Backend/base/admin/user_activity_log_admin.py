@@ -1,6 +1,6 @@
 # base/admin/user_activity_log_admin.py
 from django.contrib import admin
-from base.models.log_models.user_activity_logs import UserActivityLog
+from base.models.logs.user_activity_logs import UserActivityLog
 
 @admin.register(UserActivityLog)
 class UserActivityLogAdmin(admin.ModelAdmin):
