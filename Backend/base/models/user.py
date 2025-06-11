@@ -78,7 +78,7 @@ class CustomUserManager(SoftDeleteManager, BaseUserManager):
 
 
 class CustomUser(AbstractUser, BaseModel):
-    phone_number = models.CharField(max_length=20)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
@@ -96,4 +96,8 @@ class CustomUser(AbstractUser, BaseModel):
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"
+        
+        indexes = [
+        models.Index(fields=['date_of_birth'], name='idx_user_dob'),
+    ]
 

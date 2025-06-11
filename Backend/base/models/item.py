@@ -33,10 +33,25 @@ class Item(BaseModel):
 
     class Meta:
         indexes = [
-            GinIndex(fields=['search_vector'], name='gin_item_search_vector'),
-            GinIndex(fields=['metadata'], name='gin_item_metadata'),
-            BTreeIndex(fields=['name'], name='idx_item_name'),
-        ]
+        # GIN indexes for full-text search and JSON filtering
+        GinIndex(fields=['search_vector'], name='gin_item_search_vector'),
+        GinIndex(fields=['metadata'], name='gin_item_metadata'),
+
+        # BTree indexes for fast filtering and sorting
+        BTreeIndex(fields=['name'], name='idx_item_name'),
+        BTreeIndex(fields=['created_at'], name='idx_item_created_at'),
+        BTreeIndex(fields=['price_cents'], name='idx_item_price'),
+        models.Index(fields=["slug"], name="idx_item_slug", condition=Q(is_deleted=False)),
+        BTreeIndex(fields=['seller'], name='idx_item_seller'),
+        BTreeIndex(fields=['currency'], name='idx_item_currency'),
+        BTreeIndex(fields=['is_deleted'], name='idx_item_is_deleted'),
+    ]
+    constraints = [
+        models.CheckConstraint(check=models.Q(price_cents__gte=0), name='item_price_non_negative'),
+        models.UniqueConstraint(
+            fields=["slug"], name="unique_slug_active_items", condition=Q(is_deleted=False)
+        )
+    ]
 
     def __str__(self):
         return self.name
@@ -104,7 +119,9 @@ class ItemCategory(BaseModel):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["item", "category"], name="unique_item_category"),
+            models.UniqueConstraint(
+            fields=["item", "category"], name="unique_item_category", condition=Q(is_deleted=False)
+        )
         ]
 
     def __str__(self):

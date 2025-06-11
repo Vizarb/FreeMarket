@@ -11,5 +11,13 @@ class UserActivityLog(models.Model):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=ActionStatus.choices, default=ActionStatus.SUCCESS)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user'], name='idx_log_user'),
+            models.Index(fields=['action'], name='idx_log_action'),
+            models.Index(fields=['created_at'], name='idx_log_timestamp'),
+        ]
+
+
     def __str__(self):
         return f'{self.user.username if self.user else "Anonymous"} - {self.action} - {self.status}'
