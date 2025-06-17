@@ -24,7 +24,7 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
     : '/placeholder.jpg'; // ✅ fallback if missing
 
   return (
-    <div className="border rounded-xl p-4 shadow flex flex-col bg-white h-full">
+    <div className="border rounded-xl p-4 shadow flex flex-col bg-white h-full min-h-[460px] max-h-[460px]">
       <img
         src={imageUrl}
         alt={item.name}
@@ -34,7 +34,8 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
       <Link to={`/items/${item.slug}`} className="text-lg font-bold text-blue-600 hover:underline">
         {item.name}
       </Link>
-      <p className="text-sm sm:text-base text-gray-700 line-clamp-2">{item.description || 'No description available'}</p>
+      <p className="text-sm sm:text-base text-gray-700 line-clamp-2 break-words overflow-hidden">
+        {item.description || 'No description available'}</p>
       <p className="font-semibold mt-2">
         ${(item.price_cents / 100).toFixed(2)} {Currency[item.currency]}
       </p>

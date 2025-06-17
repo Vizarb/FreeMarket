@@ -36,3 +36,8 @@ class ActionStatus(models.TextChoices):
     SUCCESS = 'success', 'Success'
     FAILED = 'failed', 'Failed'
     PENDING = 'pending', 'Pending'
+
+class SellerApplicationStatus(models.TextChoices):
+    PENDING = 'pending', 'Pending'
+    APPROVED = 'approved', 'Approved'
+    REJECTED = 'rejected', 'Rejected'
