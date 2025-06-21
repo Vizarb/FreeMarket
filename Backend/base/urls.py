@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from base.views.seller_profile import SellerProfileViewSet
 from base.views.seller_application import SellerApplicationViewSet
 from .views.models import (
     CartItemViewSet, OrderItemViewSet, ProductViewSet, UserViewSet, AddressViewSet, CartViewSet, OrderViewSet, PaymentViewSet, CategoryViewSet, ItemViewSet, ServiceViewSet,
@@ -24,6 +24,7 @@ router.register('orders', OrderViewSet, basename='order')
 router.register('order-items', OrderItemViewSet, basename='order-item')
 router.register('payments', PaymentViewSet, basename='payment')
 router.register('seller-applications',SellerApplicationViewSet,basename="seller-application")
+router.register('seller-profiles',SellerProfileViewSet,basename="seller-profile")
 
 
 # Views paths

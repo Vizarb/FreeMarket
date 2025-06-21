@@ -2,10 +2,11 @@ from rest_framework import serializers
 from base.models.views import ItemSearchView
 
 class ItemSearchSerializer(serializers.ModelSerializer):
-    item_id = serializers.SerializerMethodField()  # ✅ flexible across view or real model
+    item_id = serializers.SerializerMethodField()
 
     def get_item_id(self, obj):
         return getattr(obj, "item_id", getattr(obj, "id", None))
+
     class Meta:
         model = ItemSearchView
         fields = [
@@ -16,9 +17,12 @@ class ItemSearchSerializer(serializers.ModelSerializer):
             "price_cents",
             "currency",
             "seller",
+            "seller_shop_name",
+            "seller_slug",
             "item_type",
             "categories",
             "category_ids",
             "search_vector",
         ]
         read_only_fields = ["search_vector"]
+

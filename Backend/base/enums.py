@@ -41,3 +41,8 @@ class SellerApplicationStatus(models.TextChoices):
     PENDING = 'pending', 'Pending'
     APPROVED = 'approved', 'Approved'
     REJECTED = 'rejected', 'Rejected'
+
+class ThemePreset(models.TextChoices):
+    CLASSIC = 'classic', 'Classic Blue'
+    SUNSET = 'sunset', 'Sunset Orange'
+    MIDNIGHT = 'midnight', 'Midnight Dark'

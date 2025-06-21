@@ -8,3 +8,4 @@ from .order import *
 from .payment import *
 from .log_models import *
 from .seller_application import *
+from .seller_profile import *

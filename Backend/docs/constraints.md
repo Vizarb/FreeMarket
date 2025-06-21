@@ -25,7 +25,6 @@
 | base_cartitem_pkey | base_cartitem | P |
 | base_cartitem_quantity_check | base_cartitem | C |
 | cart_item_quantity_positive | base_cartitem | C |
-| unique_cart_item | base_cartitem | U |
 | base_category_parent_id_42ca2e66_fk_base_category_id | base_category | F |
 | base_category_pkey | base_category | P |
 | base_customuser_pkey | base_customuser | P |
@@ -44,13 +43,14 @@
 | base_itemcategory_category_id_23daba46_fk_base_category_id | base_itemcategory | F |
 | base_itemcategory_item_id_960bfceb_fk_base_item_id | base_itemcategory | F |
 | base_itemcategory_pkey | base_itemcategory | P |
-| unique_item_category | base_itemcategory | U |
 | base_order_pkey | base_order | P |
 | base_order_user_id_8ad0adec_fk_base_customuser_id | base_order | F |
+| order_total_price_positive | base_order | C |
 | base_orderitem_item_id_4f262f75_fk_base_item_id | base_orderitem | F |
 | base_orderitem_order_id_aaa7f08a_fk_base_order_id | base_orderitem | F |
 | base_orderitem_pkey | base_orderitem | P |
 | base_orderitem_quantity_check | base_orderitem | C |
+| orderitem_price_non_negative | base_orderitem | C |
 | quantity_positive | base_orderitem | C |
 | base_payment_order_id_36fcd8b6_fk_base_order_id | base_payment | F |
 | base_payment_pkey | base_payment | P |
@@ -62,6 +62,10 @@
 | base_sellerapplicati_reviewer_id_1b6685c0_fk_base_cust | base_sellerapplication | F |
 | base_sellerapplication_pkey | base_sellerapplication | P |
 | base_sellerapplication_user_id_58cd3c4c_fk_base_customuser_id | base_sellerapplication | F |
+| base_sellerprofile_pkey | base_sellerprofile | P |
+| base_sellerprofile_slug_key | base_sellerprofile | U |
+| base_sellerprofile_user_id_2b24ba23_fk_base_customuser_id | base_sellerprofile | F |
+| base_sellerprofile_user_id_key | base_sellerprofile | U |
 | base_service_item_ptr_id_d9b9bdb1_fk_base_item_id | base_service | F |
 | base_service_pkey | base_service | P |
 | base_service_service_duration_check | base_service | C |

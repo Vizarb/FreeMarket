@@ -23,12 +23,15 @@
 | base_cartitem | base_cartitem_cart_id_4f5a40cd | cart_id | BTREE |
 | base_cartitem | base_cartitem_item_id_3f016c53 | item_id | BTREE |
 | base_cartitem | base_cartitem_pkey | id | BTREE |
+| base_cartitem | idx_cartitem_cart | cart_id | BTREE |
+| base_cartitem | idx_cartitem_item | item_id | BTREE |
 | base_cartitem | unique_cart_item | cart_id, item_id | BTREE |
 | base_category | base_category_parent_id_42ca2e66 | parent_id | BTREE |
 | base_category | base_category_pkey | id | BTREE |
 | base_customuser | base_customuser_pkey | id | BTREE |
 | base_customuser | base_customuser_username_e2c38001_like | username varchar_pattern_ops | BTREE |
 | base_customuser | base_customuser_username_key | username | BTREE |
+| base_customuser | idx_user_dob | date_of_birth | BTREE |
 | base_customuser_groups | base_customuser_groups_customuser_id_04d7166b | customuser_id | BTREE |
 | base_customuser_groups | base_customuser_groups_customuser_id_group_id_d4e28d0b_uniq | customuser_id, group_id | BTREE |
 | base_customuser_groups | base_customuser_groups_group_id_d1822349 | group_id | BTREE |
@@ -43,7 +46,13 @@
 | base_item | base_item_slug_key | slug | BTREE |
 | base_item | gin_item_metadata | metadata | GIN |
 | base_item | gin_item_search_vector | search_vector | GIN |
+| base_item | idx_item_created_at | created_at | BTREE |
+| base_item | idx_item_currency | currency | BTREE |
+| base_item | idx_item_is_deleted | is_deleted | BTREE |
 | base_item | idx_item_name | name | BTREE |
+| base_item | idx_item_price | price_cents | BTREE |
+| base_item | idx_item_seller | seller_id | BTREE |
+| base_item | idx_item_slug | slug | BTREE |
 | base_itemcategory | base_itemcategory_category_id_23daba46 | category_id | BTREE |
 | base_itemcategory | base_itemcategory_item_id_960bfceb | item_id | BTREE |
 | base_itemcategory | base_itemcategory_pkey | id | BTREE |
@@ -62,9 +71,17 @@
 | base_sellerapplication | base_sellerapplication_pkey | id | BTREE |
 | base_sellerapplication | base_sellerapplication_reviewer_id_1b6685c0 | reviewer_id | BTREE |
 | base_sellerapplication | base_sellerapplication_user_id_58cd3c4c | user_id | BTREE |
+| base_sellerapplication | unique_active_seller_application | user_id | BTREE |
+| base_sellerprofile | base_sellerprofile_pkey | id | BTREE |
+| base_sellerprofile | base_sellerprofile_slug_93ae9d87_like | slug varchar_pattern_ops | BTREE |
+| base_sellerprofile | base_sellerprofile_slug_key | slug | BTREE |
+| base_sellerprofile | base_sellerprofile_user_id_key | user_id | BTREE |
 | base_service | base_service_pkey | item_ptr_id | BTREE |
 | base_useractivitylog | base_useractivitylog_pkey | id | BTREE |
 | base_useractivitylog | base_useractivitylog_user_id_a2ac241d | user_id | BTREE |
+| base_useractivitylog | idx_log_action | action | BTREE |
+| base_useractivitylog | idx_log_timestamp | created_at | BTREE |
+| base_useractivitylog | idx_log_user | user_id | BTREE |
 | django_admin_log | django_admin_log_content_type_id_c4bce8eb | content_type_id | BTREE |
 | django_admin_log | django_admin_log_pkey | id | BTREE |
 | django_admin_log | django_admin_log_user_id_c564eba6 | user_id | BTREE |
