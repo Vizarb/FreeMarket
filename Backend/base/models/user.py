@@ -24,6 +24,10 @@ class CustomUser(AbstractUser, BaseModel):
     def has_group(self, group_name: str) -> bool:
         return self.groups.filter(name=group_name).exists()
 
+    @property
+    def manager(self) -> CustomUserManager:
+        return type(self).objects
+    
     class Meta:
         verbose_name = "user"
         verbose_name_plural = "users"

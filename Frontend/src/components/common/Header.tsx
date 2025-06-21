@@ -6,12 +6,6 @@ import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import { useAuth } from '@/features/auth/useAuth';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -19,18 +13,14 @@ import {
 import { Button } from '@/components/ui/button';
 import {
   ShoppingCart,
-  Package,
-  ShieldCheck,
-  User2,
   Moon,
   Sun,
-  Menu,
   SlidersHorizontal,
 } from 'lucide-react';
 import MobileMenu from './MobileMenu';
 import { useAppDispatch } from '@/store/hooks/hooks';
 import { FilterState, resetFilters } from '@/features/item/filterSlice';
-
+import UserDropdownMenu from './UserDropdownMenu';
 
 
 interface HeaderProps {
@@ -43,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, c
   const dispatch = useAppDispatch();
 
   const { itemCount } = useCartSummary();
-  const { isAuthenticated, isBuyer, isSeller, isAdmin } = useAuth();
+  const { isAuthenticated, isBuyer, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
 
@@ -133,55 +123,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, c
           {isAuthenticated && (
             <>
               <div className="hidden md:block">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Menu size={16} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        onClick={() => navigate('/become-seller')}
-                        className="w-full justify-start"
-                      >
-                        Apply to Sell
-                      </Button>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        onClick={() => navigate('/admin/seller-applications')}
-                        className="w-full justify-start"
-                      >
-                        Review Applications
-                      </Button>
-                    </DropdownMenuItem>
-
-                    {(isBuyer || isAdmin) && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/orders" className="flex items-center gap-2">
-                          <Package size={16} /> My Orders
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    {(isSeller || isAdmin) && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/seller" className="flex items-center gap-2">
-                          <User2 size={16} /> Seller Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="flex items-center gap-2">
-                          <ShieldCheck size={16} /> Admin Panel
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <UserDropdownMenu/>
               </div>
 
               {/* Mobile Drawer */}
