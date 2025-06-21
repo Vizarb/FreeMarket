@@ -12,123 +12,89 @@ class Migration(migrations.Migration):
         sql="""
             CREATE OR REPLACE VIEW item_details AS
             SELECT
-                i.id AS item_id,
-                i.slug,
-                i.name,
-                i.description,
-                i.price_cents,
-                i.currency,
-                u.username AS seller,
-                COALESCE(
-                    string_agg(DISTINCT c.name::text, ', ' ORDER BY c.name::text),
-                    'Uncategorized'
-                ) AS categories,
-                COALESCE(
-                    array_agg(DISTINCT c.id ORDER BY c.id),
-                    ARRAY[]::integer[]
-                ) AS category_ids,
-                i.search_vector
+            i.id AS item_id,
+            i.slug,
+            i.name,
+            i.description,
+            i.price_cents,
+            i.currency,
+            u.username AS seller,
+            sp.shop_name AS seller_shop_name,
+            sp.slug AS seller_slug,
+            COALESCE(string_agg(DISTINCT c.name, ', ' ORDER BY c.name), 'Uncategorized') AS categories,
+            COALESCE(array_agg(DISTINCT c.id ORDER BY c.id), ARRAY[]::integer[]) AS category_ids,
+            i.search_vector
             FROM base_item i
             JOIN base_customuser u ON i.seller_id = u.id
-            LEFT JOIN base_itemcategory ic ON i.id = ic.item_id
+            LEFT JOIN base_sellerprofile sp ON sp.user_id = u.id
+            LEFT JOIN base_itemcategory ic ON ic.item_id = i.id
             LEFT JOIN base_category c ON ic.category_id = c.id
             WHERE NOT i.is_deleted AND NOT u.is_deleted
             GROUP BY
-                i.id, i.slug, i.name, i.description,
-                i.price_cents, i.currency, u.username, i.search_vector;
+            i.id,
+            i.slug,
+            i.name,
+            i.description,
+            i.price_cents,
+            i.currency,
+            u.username,
+            sp.shop_name,
+            sp.slug,
+            i.search_vector;
         """,
         reverse_sql="DROP VIEW IF EXISTS item_details;"
     ),
 
-    # 2. product_details
-    migrations.RunSQL(
-        sql="""
-            CREATE OR REPLACE VIEW product_details AS
-            SELECT
-              p.item_ptr_id   AS item_id,
-              i.slug,
-              i.name,
-              i.description,
-              i.price_cents,
-              i.currency,
-              i.seller,
-              i.categories,
-              i.category_ids,
-              p.quantity,
-              i.search_vector
-            FROM base_product p
-            JOIN item_details i ON p.item_ptr_id = i.item_id;
-        """,
-        reverse_sql="DROP VIEW IF EXISTS product_details;"
-    ),
-
-    # 3. service_details
-    migrations.RunSQL(
-        sql="""
-            CREATE OR REPLACE VIEW service_details AS
-            SELECT
-              s.item_ptr_id     AS item_id,
-              i.slug,
-              i.name,
-              i.description,
-              i.price_cents,
-              i.currency,
-              i.seller,
-              i.categories,
-              i.category_ids,
-              s.service_duration,
-              s.service_type,
-              i.search_vector
-            FROM base_service s
-            JOIN item_details i ON s.item_ptr_id = i.item_id;
-        """,
-        reverse_sql="DROP VIEW IF EXISTS service_details;"
-    ),
-
-    # 4. item_search_view
+    # 2. item_search_view
     migrations.RunSQL(
         sql="""
             CREATE OR REPLACE VIEW item_search_view AS
-            SELECT
-              item_id,
-              slug,
-              name,
-              description,
-              price_cents,
-              currency,
-              seller,
-              'product' AS item_type,
-              categories,
-              category_ids,
-              quantity,
-              NULL::INTEGER AS service_duration,
-              NULL::VARCHAR AS service_type,
-              search_vector
-            FROM product_details
+            SELECT 
+            i.item_id,
+            i.slug,
+            i.name,
+            i.description,
+            i.price_cents,
+            i.currency,
+            i.seller,
+            i.seller_shop_name,
+            i.seller_slug,
+            'product'::text AS item_type,
+            i.categories,
+            i.category_ids,
+            p.quantity,
+            NULL::integer AS service_duration,
+            NULL::varchar AS service_type,
+            i.search_vector
+            FROM base_product p
+            JOIN item_details i ON p.item_ptr_id = i.item_id
 
             UNION ALL
 
-            SELECT
-              item_id,
-              slug,
-              name,
-              description,
-              price_cents,
-              currency,
-              seller,
-              'service' AS item_type,
-              categories,
-              category_ids,
-              NULL::INTEGER AS quantity,
-              service_duration,
-              service_type,
-              search_vector
-            FROM service_details;
+            SELECT 
+            i.item_id,
+            i.slug,
+            i.name,
+            i.description,
+            i.price_cents,
+            i.currency,
+            i.seller,
+            i.seller_shop_name,
+            i.seller_slug,
+            'service'::text AS item_type,
+            i.categories,
+            i.category_ids,
+            NULL::integer AS quantity,
+            s.service_duration,
+            s.service_type,
+            i.search_vector
+            FROM base_service s
+            JOIN item_details i ON s.item_ptr_id = i.item_id;
         """,
         reverse_sql="DROP VIEW IF EXISTS item_search_view;"
     ),
 
-        # 5. cart_overview
+        # 3. cart_overview
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW cart_overview AS
@@ -159,7 +125,7 @@ class Migration(migrations.Migration):
             reverse_sql="DROP VIEW IF EXISTS cart_overview;"
         ),
 
-        # 6. most_active_users
+        # 4. most_active_users
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW most_active_users AS
@@ -176,7 +142,7 @@ class Migration(migrations.Migration):
             reverse_sql="DROP VIEW IF EXISTS most_active_users;"
         ),
 
-        # 7. top_selling_items
+        # 5. top_selling_items
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW top_selling_items AS
@@ -195,7 +161,7 @@ class Migration(migrations.Migration):
             reverse_sql="DROP VIEW IF EXISTS top_selling_items;"
         ),
 
-        # 8. user_order_history
+        # 6. user_order_history
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW user_order_history AS
@@ -216,7 +182,7 @@ class Migration(migrations.Migration):
             reverse_sql="DROP VIEW IF EXISTS user_order_history;"
         ),
 
-        # 9. order_details
+        # 7. order_details
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW order_details AS
@@ -234,7 +200,7 @@ class Migration(migrations.Migration):
             reverse_sql="DROP VIEW IF EXISTS order_details;"
         ),
 
-        # 10. order_item_details
+        # 8. order_item_details
         migrations.RunSQL(
             sql="""
                 CREATE OR REPLACE VIEW order_item_details AS

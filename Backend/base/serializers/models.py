@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field="codename"  # ✅ Returns permission codenames instead of IDs
     )
+    seller_slug = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
@@ -39,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login",
             "groups",
             "user_permissions",
+            "seller_slug",
         ]
         extra_kwargs = {
             'first_name':    {'required': False, 'allow_blank': True},
@@ -63,6 +65,11 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(raw)
         instance.save()
         return instance
+        
+    def get_seller_slug(self, obj):
+        if hasattr(obj, 'seller_profile'):
+            return obj.seller_profile.slug
+        return None
 
 
 class UserSimpleSerializer(serializers.ModelSerializer):

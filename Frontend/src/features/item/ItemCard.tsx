@@ -39,7 +39,15 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
       <p className="font-semibold mt-2">
         ${(item.price_cents / 100).toFixed(2)} {Currency[item.currency]}
       </p>
-      <p className="text-sm">Seller: {item.seller}</p>
+      <p className="text-sm">
+        Seller:{' '}
+        <Link
+          to={`/shop/${item.seller_slug}`}
+          className="text-blue-600 hover:underline"
+        >
+          {item.seller_shop_name || item.seller}
+        </Link>
+      </p>
       <p className="text-sm">Categories: {Array.isArray(item.categories) ? item.categories.join(', ') : item.categories}</p>
       {typeof item.quantity === 'number' && <p>Stock: {item.quantity}</p>}
       {typeof item.service_duration === 'number' && <p>Duration: {item.service_duration} hours</p>}

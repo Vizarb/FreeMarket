@@ -38,11 +38,13 @@ SELECT i.id AS item_id,
     i.currency,
     u.username AS seller,
     COALESCE(string_agg(DISTINCT (c.name)::text, ', '::text ORDER BY (c.name)::text), 'Uncategorized'::text) AS categories,
+    COALESCE(array_agg(DISTINCT c.id ORDER BY c.id), ARRAY[]::integer[]) AS category_ids,
     i.search_vector
    FROM (((base_item i
      JOIN base_customuser u ON ((i.seller_id = u.id)))
      LEFT JOIN base_itemcategory ic ON ((i.id = ic.item_id)))
      LEFT JOIN base_category c ON ((ic.category_id = c.id)))
+  WHERE ((NOT i.is_deleted) AND (NOT u.is_deleted))
   GROUP BY i.id, i.slug, i.name, i.description, i.price_cents, i.currency, u.username, i.search_vector;
 ```
 
@@ -58,6 +60,7 @@ SELECT product_details.item_id,
     product_details.seller,
     'product'::text AS item_type,
     product_details.categories,
+    product_details.category_ids,
     product_details.quantity,
     NULL::integer AS service_duration,
     NULL::character varying AS service_type,
@@ -73,6 +76,7 @@ UNION ALL
     service_details.seller,
     'service'::text AS item_type,
     service_details.categories,
+    service_details.category_ids,
     NULL::integer AS quantity,
     service_details.service_duration,
     service_details.service_type,
@@ -132,6 +136,7 @@ SELECT p.item_ptr_id AS item_id,
     i.currency,
     i.seller,
     i.categories,
+    i.category_ids,
     p.quantity,
     i.search_vector
    FROM (base_product p
@@ -149,6 +154,7 @@ SELECT s.item_ptr_id AS item_id,
     i.currency,
     i.seller,
     i.categories,
+    i.category_ids,
     s.service_duration,
     s.service_type,
     i.search_vector

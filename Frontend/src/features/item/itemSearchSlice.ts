@@ -134,6 +134,7 @@ interface ItemSearchState {
   error: string | null;
   selectedItem: UnifiedItemResult | null;
   nextPage: string | null;
+  lastUsedParams: ItemSearchParams | null;
 }
 
 const initialState: ItemSearchState = {
@@ -143,6 +144,7 @@ const initialState: ItemSearchState = {
   error: null,
   selectedItem: null,
   nextPage: null,
+  lastUsedParams: null,
 };
 
 const itemSearchSlice = createSlice({
@@ -156,6 +158,10 @@ const itemSearchSlice = createSlice({
       state.nextPage = null;
       state.selectedItem = null;
     },
+    resetResults(state) {
+      state.results = [];
+      state.nextPage = null;
+    },
   },
   extraReducers: (builder) => {
     // --- fetchUnifiedItemResults ---
@@ -168,6 +174,7 @@ const itemSearchSlice = createSlice({
         // handlePagination expects a payload that has at least `{ results: UnifiedItemResult[], next: string | null }`
         handlePagination(state, action.payload, action.meta, (item) => item.item_id);
         state.loading = false;
+        state.lastUsedParams = action.meta.arg;
       })
       .addCase(fetchUnifiedItemResults.rejected, (state, action) => {
         state.loading = false;

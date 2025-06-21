@@ -10,6 +10,8 @@ class ItemDetails(models.Model):
     price_cents = models.BigIntegerField()
     currency = models.CharField(max_length=10)
     seller = models.CharField(max_length=255)
+    seller_shop_name= models.CharField(max_length=255, null=True)
+    seller_slug = models.CharField(max_length=255, null=True)
     categories = models.TextField()
     category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
     search_vector = models.TextField()
@@ -27,6 +29,8 @@ class ItemSearchView(models.Model):
     price_cents = models.BigIntegerField()
     currency = models.CharField(max_length=10)
     seller = models.CharField(max_length=255)
+    seller_shop_name = models.CharField(max_length=255, null=True)
+    seller_slug = models.CharField(max_length=255, null=True)
     item_type = models.CharField(max_length=20)
     categories = models.TextField()
     category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
@@ -38,43 +42,6 @@ class ItemSearchView(models.Model):
     class Meta:
         managed = False
         db_table = "item_search_view"
-        default_permissions = ()
-class ProductDetails(models.Model):
-    item_id = models.IntegerField(primary_key=True)
-    slug = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    price_cents = models.BigIntegerField()
-    currency = models.CharField(max_length=10)
-    seller = models.CharField(max_length=255)
-    categories = models.TextField()
-    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
-    quantity = models.IntegerField(null=True, blank=True)
-    search_vector = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = "product_details"
-        default_permissions = ()
-
-
-class ServiceDetails(models.Model):
-    item_id = models.IntegerField(primary_key=True)
-    slug = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    price_cents = models.BigIntegerField()
-    currency = models.CharField(max_length=10)
-    seller = models.CharField(max_length=255)
-    categories = models.TextField()
-    category_ids = ArrayField(models.IntegerField(), blank=True, default=list)
-    service_duration = models.IntegerField(null=True, blank=True)
-    service_type = models.CharField(max_length=255, null=True, blank=True)
-    search_vector = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = "service_details"
         default_permissions = ()
 
 

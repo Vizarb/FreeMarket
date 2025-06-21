@@ -15,6 +15,7 @@ import ItemDetailPage from "@/features/item/ItemDetailPage";
 import SearchResultsPage from "@/components/common/SearchResultsPage";
 import BecomeSellerForm from "@/components/forms/BecomeSellerForm";
 import AdminSellerApplicationsPage from "@/features/user/AdminSellerApplicationsPage";
+import SellerShopPage from "@/components/pages/SellerShopPage";
 
 // === Shared Route Type ===
 export interface AppRoute {
@@ -34,11 +35,12 @@ export const publicRoutes: AppRoute[] = [
   { path: "/register", name: "Register", component: RegisterPage },
   { path: "/test-env", name: "Test Env", component: TestEnvPage },
   { path: "/403", name: 'Forbidden', component: ForbiddenPage },
+  { path: "/marketplace", name: "Marketplace", component: MarketplacePage },
+  { path: "/shop/:slug", name: "Seller Shop", component: SellerShopPage },
 ];
 
 // === Role-Based Routes (All authenticated users have at least a role) ===
 export const roleBasedRoutes: RoleProtectedRoute[] = [
-  { path: "/marketplace", name: "Marketplace", component: MarketplacePage, roles: ["Buyer", "Admin", "Seller"] },
   { path: "/cart", name: "Cart", component: CartPage, roles: ["Buyer", "Admin"] },
   { path: "/checkout", name: "Checkout", component: CheckoutPage, roles: ["Buyer", "Admin"] },
   { path: "/orders", name: "Order History", component: OrderHistory, roles: ["Buyer", "Admin"] },
