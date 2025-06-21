@@ -10,4 +10,10 @@ export interface User extends BaseModel {
     gender?: Gender;
     date_of_birth?: string;
   }
-  
+
+
+export interface SimpleUser {
+  id: number;
+  username: string;
+  roles: string[];  // ✅ add this line
+}

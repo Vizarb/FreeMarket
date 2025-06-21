@@ -69,8 +69,10 @@ const ItemList: React.FC = () => {
         )}
 
         {items.map((item: UnifiedItemResult) => (
-          <div key={item.item_id} className="h-full flex">
-            <ItemCard item={item} />
+          <div key={item.item_id} className="flex">
+            <div className="flex flex-col h-full w-full">
+              <ItemCard item={item} />
+            </div>
           </div>
         ))}
       </div>

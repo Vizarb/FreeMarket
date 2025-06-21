@@ -10,3 +10,17 @@ export enum Gender {
     FEMALE = "Female",
     OTHER = "Other"
 }
+
+export enum AllowedRoles {
+  Seller = "Seller",
+  Manager = "Manager",
+  Support = "Support",
+  Admin = "Admin"};
+
+export enum AllRoles {
+  Buyer = "Buyer",
+  Seller = "Seller",
+  Manager = "Manager",
+  Support = "Support",
+  Admin = "Admin"
+};
