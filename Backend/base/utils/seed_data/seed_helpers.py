@@ -77,6 +77,8 @@ def load_item_category_map(csv_path):
 
 
 def create_items_with_subtypes_from_csv(item_rows, category_map, users):
+    from base.models.seller_profile import SellerProfile
+    from base.models.user import CustomUser
     items = []
     product_data = []  # (slug, quantity)
     service_data = []  # (slug, duration, service_type)
@@ -96,6 +98,16 @@ def create_items_with_subtypes_from_csv(item_rows, category_map, users):
 
     for row in item_rows:
         seller = random.choice(users)
+
+        # Promote to seller and create a default profile
+        if not seller.has_group("Seller"):
+            CustomUser.objects.promote_to_seller(seller)
+
+        if not hasattr(seller, "seller_profile"):
+            SellerProfile.objects.create(
+                user=seller,
+                slug=f"default-shop-{slugify(seller.username)}"
+            )
         name = row["name"]
         description = row["description"]
         item_type = row["type"].strip().lower()

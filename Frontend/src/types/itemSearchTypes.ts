@@ -7,6 +7,8 @@ export interface UnifiedItemResult {
   price_cents: number;
   currency: Currency;
   seller: string;
+  seller_slug?: string;
+  seller_shop_name?: string;
   item_type: 'product' | 'service';
   categories: string[];
   image?: string;

@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils.text import slugify
 from base.enums import ThemePreset
-from base.models.user import CustomUser
+from .user import CustomUser
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(

@@ -8,6 +8,7 @@ export type FilterState = {
     category_id?: string;   // filter by category ID
     item_type?: string;
     ordering?: string;
+    seller?: string;
 }
 
 
@@ -18,6 +19,7 @@ export const initialState: FilterState = {
   category_id: '',
   ordering: '-price_cents',
   search: '',
+  seller: '',
 };
 
 const filterSlice = createSlice({
@@ -30,10 +32,16 @@ const filterSlice = createSlice({
     resetFilters() {
       return initialState;
     },
+    resetFiltersExceptSeller(state) {
+      return {
+        ...initialState,
+        seller: state.seller,
+      };
+    },
   },
 });
 
-export const { setFilters, resetFilters } = filterSlice.actions;
+export const { setFilters, resetFilters, resetFiltersExceptSeller } = filterSlice.actions;
 
 export const selectFilters = (state: RootState) => state.filters;
 

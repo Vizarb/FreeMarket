@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import {
   fetchItemBySlug,
@@ -89,7 +89,13 @@ const ItemDetailPage: React.FC = () => {
               className="w-10 h-10 rounded-full"
             />
             <p className="text-gray-700 text-sm">
-              <span className="font-medium">Sold by:</span> {item.seller}
+              <span className="font-medium">Sold by:</span>{' '}
+              <Link
+                to={`/shop/${item.seller_slug}`}
+                className="text-blue-600 hover:underline"
+              >
+                {item.seller_shop_name || item.seller}
+              </Link>
             </p>
           </div>
 

@@ -18,7 +18,7 @@ import AuthLinks from './Authlinks';
 
 
 const MobileMenu: React.FC = () => {
-  const { isBuyer, isSeller, isAdmin } = useAuth();
+  const { isBuyer, isSeller, isAdmin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -34,52 +34,56 @@ const MobileMenu: React.FC = () => {
           FreeMarket Menu
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Button variant="ghost" onClick={() => navigate('/become-seller')}>
-            Apply to Sell
-          </Button>
-          {isAdmin && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/admin/seller-applications')}
-            >
-              Review Applications
+        {isAuthenticated && (
+          <div className="flex flex-col gap-2">
+            <Button variant="ghost" onClick={() => navigate('/become-seller')}>
+              Apply to Sell
             </Button>
-          )}
 
-          {isBuyer || isAdmin ? (
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/orders')}
-              className="justify-start"
-            >
-              <Package size={16} className="mr-2" />
-              My Orders
-            </Button>
-          ) : null}
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/admin/seller-applications')}
+              >
+                Review Applications
+              </Button>
+            )}
 
-          {isSeller || isAdmin ? (
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/seller')}
-              className="justify-start"
-            >
-              <User2 size={16} className="mr-2" />
-              Seller Dashboard
-            </Button>
-          ) : null}
+            {(isBuyer || isAdmin) && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/orders')}
+                className="justify-start"
+              >
+                <Package size={16} className="mr-2" />
+                My Orders
+              </Button>
+            )}
 
-          {isAdmin && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/admin')}
-              className="justify-start"
-            >
-              <ShieldCheck size={16} className="mr-2" />
-              Admin Panel
-            </Button>
-          )}
-        </div>
+            {(isSeller || isAdmin) && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/seller')}
+                className="justify-start"
+              >
+                <User2 size={16} className="mr-2" />
+                Seller Dashboard
+              </Button>
+            )}
+
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/admin')}
+                className="justify-start"
+              >
+                <ShieldCheck size={16} className="mr-2" />
+                Admin Panel
+              </Button>
+            )}
+          </div>
+        )}
+
 
         <div className="pt-4 border-t">
           <AuthLinks />

@@ -1,12 +1,8 @@
 from rest_framework import serializers
+from base.models.seller_profile import SellerProfile
 from base.models.views import ItemSearchView
 
 class ItemSearchSerializer(serializers.ModelSerializer):
-    item_id = serializers.SerializerMethodField()
-
-    def get_item_id(self, obj):
-        return getattr(obj, "item_id", getattr(obj, "id", None))
-
     class Meta:
         model = ItemSearchView
         fields = [

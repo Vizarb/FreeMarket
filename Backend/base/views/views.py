@@ -3,7 +3,7 @@
 import logging
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.postgres.search import SearchQuery, SearchRank
@@ -31,8 +31,7 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
     """
     Full-text search over Items.
     """
-    permission_classes = [IsAuthenticated, HasRole]
-    required_roles    = ['Buyer', 'Seller']
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset          = ItemSearchView.objects.all()
     serializer_class  = ItemSearchSerializer
     filterset_fields  = ['currency', 'seller', 'item_type']
@@ -111,9 +110,6 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
                 pass
                 
         return qs
-
-
-
 
 class ItemDetailsViewSet(BaseReadOnlyViewSet):
     """

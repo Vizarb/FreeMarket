@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import NotFound
 
 from base.filters import ItemFilter
@@ -149,8 +149,8 @@ class AddressViewSet(BaseViewSet):
 class CategoryViewSet(BaseViewSet):
     queryset = Category.objects.select_related('parent').all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated, HasRole]
-    required_roles    = ['Buyer', 'Seller', 'Manager', 'Admin']
+    permission_classes = [IsAuthenticatedOrReadOnly, HasRole]
+    required_roles = ['Buyer', 'Seller', 'Manager', 'Admin']
     filterset_fields  = ['name']
     search_fields     = ['name']
     ordering_fields   = ['name']

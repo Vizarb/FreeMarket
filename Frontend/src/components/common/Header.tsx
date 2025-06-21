@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, c
 
         {/* Right: User Actions */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          {(isBuyer || isAdmin) && (
+          {isAuthenticated && (isBuyer || isAdmin) && (
             <Link
               to="/cart"
               className="relative flex items-center text-sm gap-1 hover:underline"

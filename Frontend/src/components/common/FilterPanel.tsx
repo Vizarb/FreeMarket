@@ -3,9 +3,9 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import {
   selectFilters,
   setFilters,
-  resetFilters,
   FilterState,
   initialState,
+  resetFiltersExceptSeller,
 } from '@/features/item/filterSlice';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -46,13 +46,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, categories = [] }) 
   };
 
   const handleApplyFilters = () => {
-    dispatch(setFilters(localFilters));
-    onChange(localFilters);
+    const merged = { ...localFilters, seller: savedFilters.seller }; // Preserve seller
+    dispatch(setFilters(merged));
+    onChange(merged);
   };
 
   const handleClear = () => {
-    dispatch(resetFilters());
-    onChange(initialState);
+    dispatch(resetFiltersExceptSeller());
+    onChange({ ...initialState, seller: savedFilters.seller });
   };
 
   return (

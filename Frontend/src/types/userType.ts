@@ -9,6 +9,7 @@ export interface User extends BaseModel {
     phoneNumber?: string;
     gender?: Gender;
     date_of_birth?: string;
+    seller_slug?: string;
   }
 
 
