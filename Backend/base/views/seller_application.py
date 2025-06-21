@@ -71,14 +71,14 @@ class SellerApplicationViewSet(viewsets.ModelViewSet):
         app = self.get_object()
         if app.status != SellerApplicationStatus.PENDING:
             return Response({"detail": "Already reviewed."}, status=400)
+        
         app.status = SellerApplicationStatus.APPROVED
         app.reviewed_at = timezone.now()
         app.reviewer = request.user
         app.save()
 
-        # Add to Seller group
-        seller_group, _ = Group.objects.get_or_create(name="Seller")
-        app.user.groups.add(seller_group)
+        # ✅ promote via manager
+        app.user.manager.promote_to_seller(app.user)
 
         return Response({"status": app.status})
 
