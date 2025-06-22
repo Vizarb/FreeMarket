@@ -1,15 +1,9 @@
 // src\types\itemType.ts
-import { BaseModel } from "./baseType";
-import { Currency } from "./enums";
-import { Product } from "./productType";
-import { Service } from "./serviceType";
+import { components } from "@/types/generated/schema";
 
-export interface Item extends BaseModel {
-  name: string;                 
-  description: string | null;
-  price_cents: number;             
-  currency: Currency;
-  seller_id: string;               
-}
+export type Item = components["schemas"]["Item"];
+export type Product = components["schemas"]["Product"];
+export type Service = components["schemas"]["Service"];
 
+// For use where either applies (e.g., search results)
 export type ItemType = Product | Service;

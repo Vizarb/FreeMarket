@@ -2,11 +2,10 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import { setFilters } from '@/features/item/filterSlice';
 import { ItemSearchParams } from '@/features/item/itemSearchSlice';
-import { Category } from '@/types/categoryType';
+import { useCategories } from './useCategories'; // ✅ NEW HOOK
 
 export function useHeaderConfig(defaultFilters: Partial<ItemSearchParams> = {}) {
   const dispatch = useAppDispatch();
-  const { items: categories } = useAppSelector((state) => state.categories);
   const savedFilters = useAppSelector((state) => state.filters);
 
   const baseFilters = { ...defaultFilters, seller: savedFilters.seller };
@@ -19,7 +18,9 @@ export function useHeaderConfig(defaultFilters: Partial<ItemSearchParams> = {}) 
     dispatch(setFilters({ ...baseFilters, ...filters }));
   };
 
-  const formattedCategories = (categories || []).map((cat: Category) => ({
+  const { categories } = useCategories(); // ✅ Use shared logic
+
+  const formattedCategories = (categories || []).map((cat) => ({
     id: cat.id.toString(),
     name: cat.full_path,
   }));
