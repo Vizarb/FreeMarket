@@ -7,7 +7,6 @@ import {
   selectSearchError,
   ItemSearchParams,
 } from '@/features/item/itemSearchSlice';
-import { fetchCategories } from '@/features/category/categorySlice';
 import { selectFilters } from '@/features/item/filterSlice';
 import Header from '@/components/common/Header';
 import ItemList from '@/features/item/ItemList';
@@ -19,16 +18,10 @@ const MarketplacePage: React.FC = () => {
   const loading = useAppSelector(selectSearchLoading);
   const error = useAppSelector(selectSearchError);
 
-  const {
-    loading: catLoading,
-    error: catError,
-  } = useAppSelector((state) => state.categories);
-
   const { onSearch, onFilterChange, categories } = useHeaderConfig();
 
   useEffect(() => {
     dispatch(fetchUnifiedItemResults(filters as ItemSearchParams));
-    dispatch(fetchCategories());
   }, [dispatch, filters]);
 
   return (
@@ -42,8 +35,6 @@ const MarketplacePage: React.FC = () => {
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-2xl font-bold mb-4">Marketplace</h2>
 
-        {catLoading && <p>Loading categories…</p>}
-        {catError && <p className="text-red-600">Category error: {catError}</p>}
         {error && <p className="text-red-600">Error: {error}</p>}
 
         <ItemList />

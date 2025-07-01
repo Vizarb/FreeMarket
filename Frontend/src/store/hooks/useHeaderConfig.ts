@@ -2,7 +2,7 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import { setFilters } from '@/features/item/filterSlice';
 import { ItemSearchParams } from '@/features/item/itemSearchSlice';
-import { useCategories } from './useCategories'; // ✅ NEW HOOK
+import { useCategories } from './useCategories';
 
 export function useHeaderConfig(defaultFilters: Partial<ItemSearchParams> = {}) {
   const dispatch = useAppDispatch();
@@ -18,12 +18,7 @@ export function useHeaderConfig(defaultFilters: Partial<ItemSearchParams> = {}) 
     dispatch(setFilters({ ...baseFilters, ...filters }));
   };
 
-  const { categories } = useCategories(); // ✅ Use shared logic
-
-  const formattedCategories = (categories || []).map((cat) => ({
-    id: cat.id.toString(),
-    name: cat.full_path,
-  }));
+  const { formattedCategories } = useCategories();
 
   return { onSearch, onFilterChange, categories: formattedCategories };
 }

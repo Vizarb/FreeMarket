@@ -15,5 +15,10 @@ export const useCategories = () => {
     }
   }, [dispatch, categories]);
 
-  return { categories, loading, error };
+  const formattedCategories = (categories || []).map((cat) => ({
+    id: cat.id.toString(),
+    name: cat.full_path,
+  }));
+
+  return { categories, formattedCategories, loading, error };
 };
