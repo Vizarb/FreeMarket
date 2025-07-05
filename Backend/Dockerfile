@@ -23,8 +23,11 @@ COPY . /app/
 # Create logs directory in case volume doesn't mount
 RUN mkdir -p /logs
 
-# Expose Django default dev port
+# Set default settings module for prod — Render will override this via env var
+ENV DJANGO_SETTINGS_MODULE=config.settings.prod
+
+# Expose port 8000
 EXPOSE 8000
 
-# The actual run command will be handled by docker-compose
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Default to gunicorn for production (Render)
+CMD ["gunicorn", "myproj.wsgi:application", "--bind", "0.0.0.0:8000"]

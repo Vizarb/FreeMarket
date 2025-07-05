@@ -38,6 +38,8 @@ jest.config.js
 .env
 !.env.frontend
 !.env.example
+!.env.frontend.local.example
+
 
 # =====================================
 # 💻 Editor/IDE

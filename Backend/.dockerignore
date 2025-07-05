@@ -3,6 +3,7 @@
 # =====================================
 .env
 !.env.backend
+!.env.backend.local.example
 !.env.example
 
 # =====================================
