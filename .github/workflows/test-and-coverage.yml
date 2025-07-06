@@ -23,6 +23,7 @@ jobs:
       POSTGRES_DB: test_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
 
     services:
       postgres:
