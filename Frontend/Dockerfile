@@ -1,27 +1,36 @@
-# Use a slim, fast Node image
-FROM node:20-slim
+# --- Build Stage ---
+FROM node:20-slim AS builder
 
-# Create working directory
+# Set working directory
 WORKDIR /app
 
-# Install minimal system tools needed for Yarn
+# Install system tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates git \
     && rm -rf /var/lib/apt/lists/*
 
-# Only copy lock files to leverage Docker cache
+# Copy lock files first for better Docker caching
 COPY package.json yarn.lock ./
 
-# Validate lockfile and install exact dependencies
+# Install dependencies
 RUN yarn install --check-files --frozen-lockfile
 
-# Now copy the rest of the frontend app
+# Copy the rest of the codebase
 COPY . .
 
-# Optional: optimize build cache further
-# RUN yarn build    # ← only if you're building static assets
+# Build the production static site
+RUN yarn build
 
-EXPOSE 5173
+# --- Run Stage ---
+FROM node:20-slim
 
-# Start Vite dev server (for development use)
-CMD ["yarn", "dev"]
+WORKDIR /app
+
+# Copy build output and dependencies from builder
+COPY --from=builder /app /app
+
+# Expose Vite preview port
+EXPOSE 4173
+
+# Production preview server
+CMD ["yarn", "preview", "--host"]

@@ -47,7 +47,7 @@ Designed for modern web standards, FreeMarket integrates advanced search, real-t
 | **Backend**  | Django                           | 4.2.x                |
 |              | Django REST Framework            | 3.14.x               |
 |              | PostgreSQL Full-Text Search (FTS)| GIN index + fallback |
-| **Database** | PostgreSQL                       | 15.x                 |
+| **Database** | PostgreSQL                       | 16.6                 |
 | **Caching**  | Redis                            | 7.x                  |
 | **DevOps**   | Docker                           | 24.x                 |
 |              | Docker Compose                   | 2.x                  |

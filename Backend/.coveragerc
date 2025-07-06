@@ -1,0 +1,74 @@
+[run]
+# What to measure
+source = 
+    base
+
+# Skip coverage for these files/globs
+omit =
+    # Management scripts (usually not unit-tested)
+    base/management/**
+
+    # Settings and configuration
+    myproj/settings.py
+    */settings.py
+    */wsgi.py
+    */asgi.py
+    */urls.py
+
+    # External and auto-generated files
+    */__init__.py
+    */apps.py
+    */admin.py
+    */migrations/*
+    */tests/*
+    */conftest.py
+    */factories/*
+    */utils/dev_only/*
+
+    # Celery and other scripts (if applicable)
+    */celery.py
+    */tasks.py
+
+
+# Measure branch coverage
+branch = True
+
+# If you run tests in parallel, coverage data files are merged
+parallel = True
+
+[paths]
+# Map local "./" to container "/app"
+source =
+    .
+    /app
+
+[report]
+    # Patterns for lines to ignore in the report
+    exclude_lines =
+        pragma: no cover
+        if __name__ == .__main__.:
+        @abc\.abstractmethod
+        @pytest\.mark
+        raise AssertionError
+        if 0:
+        if False:
+        logger\.debug
+        print\(.*\)
+        except Exception as e
+
+
+    # Show a list of missing lines
+    show_missing = True
+
+    # Number of decimal places in percent output
+    precision = 2
+
+    [html]
+    # Where to write the HTML report
+    directory = htmlcov
+    # Title used in the HTML <title>
+    title = Freemarket Project Coverage Report
+
+    [xml]
+    # If you need a Cobertura-style XML for CI integrations
+    output = coverage.xml

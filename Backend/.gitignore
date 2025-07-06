@@ -1,5 +1,6 @@
 # 🔐 Environment Files
 .env
+.env.local
 .env.*
 !.env*.example
 
@@ -20,7 +21,6 @@ venv.bak/
 
 # 🧪 Test Artifacts & Coverage
 .coverage
-.coveragerc
 coverage.xml
 htmlcov/
 pytest-report.xml
