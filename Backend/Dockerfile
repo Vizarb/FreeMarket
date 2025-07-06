@@ -19,4 +19,7 @@ ENV DJANGO_SETTINGS_MODULE=config.settings.prod
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py seed && gunicorn myproj.wsgi:application --bind 0.0.0.0:8000"]
+COPY startup.sh /app/startup.sh
+RUN chmod +x /app/startup.sh
+
+CMD ["sh", "/app/startup.sh"]
