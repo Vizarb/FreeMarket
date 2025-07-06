@@ -3,7 +3,7 @@ name: Build & Push Docker Images
 on:
   push:
     tags:
-      - 'v*'  # Only run on version tags like v1.2.3
+      - 'v*'
 
 jobs:
   build_and_push:
