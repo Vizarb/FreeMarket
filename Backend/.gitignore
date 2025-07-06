@@ -21,7 +21,6 @@ venv.bak/
 
 # 🧪 Test Artifacts & Coverage
 .coverage
-.coveragerc
 coverage.xml
 htmlcov/
 pytest-report.xml
