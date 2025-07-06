@@ -21,7 +21,7 @@ const SearchResultsPage: React.FC = () => {
 
   useEffect(() => {
     if (query.trim()) {
-      dispatch(fetchUnifiedItemResults(query));
+      dispatch(fetchUnifiedItemResults({ search: query }));
     }
   }, [dispatch, query]);
 
