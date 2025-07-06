@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends gcc \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt dev-requirements.txt requirements.prod.txt /app/
+COPY requirements.txt dev-requirements.txt /app/
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir -r dev-requirements.txt
