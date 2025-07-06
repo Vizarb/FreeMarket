@@ -24,6 +24,8 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+
 
     services:
       postgres:
