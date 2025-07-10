@@ -109,17 +109,21 @@ class BaseReadOnlyViewSet(ReadOnlyModelViewSet):
         search_term = self.request.query_params.get("q")
 
         if search_term:
-            search_vector = getattr(self, "search_field", "search_vector")
+            search_vector_field = getattr(self, "search_field", "search_vector")
             query = SearchQuery(search_term, search_type="plain")
-            queryset = queryset.annotate(rank=SearchRank(F(search_vector), query))
-            fts = queryset.filter(**{f"{search_vector}__search": search_term}).order_by("-rank")
 
-            if fts.exists():
-                return fts
+            # Annotate rank manually
+            queryset = queryset.annotate(rank=SearchRank(F(search_vector_field), query))
 
-            return queryset.filter(
-                Q(name__icontains=search_term) |
-                Q(description__icontains=search_term)
-            )
+            # Only return rows with a positive match score
+            queryset = queryset.filter(rank__gt=0).order_by("-rank")
+
+            # If you want to include fallback to icontains, you can do this:
+            if not queryset.exists():
+                return super().get_queryset().filter(
+                    Q(name__icontains=search_term) |
+                    Q(description__icontains=search_term)
+                )
 
         return queryset
+

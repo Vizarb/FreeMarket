@@ -46,13 +46,17 @@ class ItemViewSet(BaseViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated, HasRole, ReadOnlyOrOwner]
-    required_roles    = ['Seller']
+    required_roles    = ['Seller', 'Admin']
     filterset_class  = ItemFilter
     search_fields     = ['name', 'description']
     ordering_fields   = ['created_at', 'updated_at', 'name']
     lookup_field = 'slug'
 
-
+    def get_queryset(self):
+        return Item.all_objects.filter(seller=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
 
     def get_object(self):
         """

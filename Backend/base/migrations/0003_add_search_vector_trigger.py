@@ -3,7 +3,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0003_create_db_views'),
+        ('base', '0002_create_rbac_groups'),
     ]
 
     operations = [

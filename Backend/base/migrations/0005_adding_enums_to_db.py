@@ -3,7 +3,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0004_add_search_vector_trigger'),
+        ('base', '0004_create_db_views'),
     ]
 
     operations = [

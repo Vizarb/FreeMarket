@@ -1,5 +1,4 @@
 import React from 'react';
-import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../../store/hooks/hooks';
 import { addToCart } from '../cart/cartSlice';
@@ -15,8 +14,6 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
 
   const handleAddToCart = () => {
     dispatch(addToCart({ item_id: item.item_id, quantity: 1 }))
-      .then(() => toast.success(`${item.name} added to cart!`))
-      .catch(() => toast.error(`Failed to add ${item.name} to cart.`));
   };
   
   const imageUrl = item.image

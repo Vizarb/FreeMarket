@@ -57,19 +57,27 @@ export const addToCart = createAsyncThunk<
   'cart/addToCart',
   async ({ item_id, quantity }, { rejectWithValue }) => {
     if (!getAccessToken()) {
-      toast.error('You must be logged in to use the cart');
+      toast.error('You must be logged in to use the cart', {
+        id: 'auth-required',
+        position: 'top-center',
+      });
       return rejectWithValue("Authentication required.");
     }
 
     try {
       const res = await api.post<CartOverviewResponse>('/api/cart-items/', { item_id, quantity });
+      toast.success(`${res.data.item_name} added to cart!`);
       return res.data;
     } catch (err) {
+      let message = 'Failed to add item.';
       if (axios.isAxiosError(err)) {
-        return rejectWithValue(err.response?.data || "Failed to add item.");
+        message = err.response?.data?.detail || err.message || message;
+      } else if (err instanceof Error) {
+        message = err.message;
       }
-      if (err instanceof Error) return rejectWithValue(err.message);
-      return rejectWithValue("Failed to add item.");
+
+      toast.error(message);
+      return rejectWithValue(message);
     }
   }
 );

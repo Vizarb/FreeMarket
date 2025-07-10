@@ -1,6 +1,6 @@
 // src/components/MobileMenu.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
@@ -9,22 +9,25 @@ import {
 import {
   Menu,
   Package,
-  User2,
+  LayoutDashboard,
+  Store,
   ShieldCheck,
+  NotebookTabs,
+  UserRoundPen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/features/auth/useAuth';
+import { useMyShopSlug } from '@/features/seller/useMyShopSlug';
 import AuthLinks from './Authlinks';
-
 
 const MobileMenu: React.FC = () => {
   const { isBuyer, isSeller, isAdmin, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const { slug: myShopSlug } = useMyShopSlug();
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button variant="outline" size="icon" className="md:hidden">
           <Menu size={20} />
         </Button>
       </SheetTrigger>
@@ -36,54 +39,59 @@ const MobileMenu: React.FC = () => {
 
         {isAuthenticated && (
           <div className="flex flex-col gap-2">
-            <Button variant="ghost" onClick={() => navigate('/become-seller')}>
-              Apply to Sell
-            </Button>
+            <Link to="/become-seller">
+              <Button variant="outline" className="w-full justify-start gap-2">
+                <UserRoundPen size={16} />
+                Apply to Sell
+              </Button>
+            </Link>
 
             {isAdmin && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/admin/seller-applications')}
-              >
-                Review Applications
-              </Button>
+              <Link to="/admin/seller-applications">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <NotebookTabs size={16} />
+                  Review Applications
+                </Button>
+              </Link>
             )}
 
             {(isBuyer || isAdmin) && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/orders')}
-                className="justify-start"
-              >
-                <Package size={16} className="mr-2" />
-                My Orders
-              </Button>
+              <Link to="/orders">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <Package size={16} />
+                  My Orders
+                </Button>
+              </Link>
             )}
 
             {(isSeller || isAdmin) && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/seller')}
-                className="justify-start"
-              >
-                <User2 size={16} className="mr-2" />
-                Seller Dashboard
-              </Button>
+              <Link to="/seller-dashboard">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <LayoutDashboard size={16} />
+                  Seller Dashboard
+                </Button>
+              </Link>
+            )}
+
+            {(isSeller || isAdmin) && myShopSlug && (
+              <Link to={`/shop/${myShopSlug}`}>
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <Store size={16} />
+                  My Shop
+                </Button>
+              </Link>
             )}
 
             {isAdmin && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/admin')}
-                className="justify-start"
-              >
-                <ShieldCheck size={16} className="mr-2" />
-                Admin Panel
-              </Button>
+              <Link to="/admin">
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <ShieldCheck size={16} />
+                  Admin Panel
+                </Button>
+              </Link>
             )}
           </div>
         )}
-
 
         <div className="pt-4 border-t">
           <AuthLinks />

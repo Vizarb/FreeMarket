@@ -1,4 +1,3 @@
-// src/pages/LoginPage.tsx
 import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin }   from './uselogin';
@@ -17,7 +16,7 @@ const LoginPage: React.FC = () => {
   const navigate  = useNavigate();
   const location  = useLocation();
 
-  const state     = location.state as LocationState;  // unknown → LocationState
+  const state     = location.state as LocationState;
   const from      = state?.from?.pathname ?? '/';
 
   useEffect(() => {
@@ -27,10 +26,20 @@ const LoginPage: React.FC = () => {
   }, [authLoaded, isAuthenticated, navigate, from]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center min-h-screen bg-gray-100">
+      {/* FreeMarket Header */}
+      <header className="w-full py-4 px-6 bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto">
+          <Link to="/" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:opacity-80 transition-opacity">
+            FreeMarket
+          </Link>
+        </div>
+      </header>
+
+      {/* Login Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 p-6 bg-white shadow-md rounded-xl w-full max-w-md"
+        className="space-y-4 mt-10 p-6 bg-white shadow-md rounded-xl w-full max-w-md"
       >
         <h2 className="text-2xl font-bold text-center">Login</h2>
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
@@ -58,13 +67,13 @@ const LoginPage: React.FC = () => {
         <Button type="submit" disabled={loading} className="w-full bg-green-600">
           {loading ? 'Logging in...' : 'Login'}
         </Button>
+
         <div>
-      <Link to="/register">
-      <Button variant={'link'} className="w-full">Register</Button>
-      </Link>
-      </div>
+          <Link to="/register">
+            <Button variant="link" className="w-full">Register</Button>
+          </Link>
+        </div>
       </form>
-     
     </div>
   );
 };
