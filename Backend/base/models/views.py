@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import SearchVectorField
 
 
 class ItemDetails(models.Model):
@@ -37,7 +38,7 @@ class ItemSearchView(models.Model):
     quantity = models.IntegerField(null=True, blank=True)
     service_duration = models.IntegerField(null=True, blank=True)
     service_type = models.CharField(max_length=255, null=True, blank=True)
-    search_vector = models.TextField()
+    search_vector = SearchVectorField()
 
     class Meta:
         managed = False

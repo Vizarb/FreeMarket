@@ -20,7 +20,12 @@ const AuthLinks: React.FC = () => {
         <span className="text-gray-600 dark:text-gray-300 text-center sm:text-left">
           Welcome, <span className="font-medium">{user?.username}</span>
         </span>
-        <Button variant="outline" size="sm" onClick={handleLogout}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLogout}
+          className="hidden sm:inline-flex"
+        >
           Logout
         </Button>
       </div>

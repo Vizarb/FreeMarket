@@ -211,6 +211,8 @@ class Command(BaseCommand):
         # Ensure the 'Admin' group exists before assigning it
         try:
             admin_group = Group.objects.get(name="Admin")
+            buyer_group, _ = Group.objects.get_or_create(name="Buyer")
+            seller_group, _ = Group.objects.get_or_create(name="Seller")
         except Group.DoesNotExist:
             logger.error("Admin group was not found — did group creation fail?")
             return
@@ -224,7 +226,18 @@ class Command(BaseCommand):
                 gender="Male",
                 date_of_birth=datetime(1990, 1, 1),
             )
-            superuser.groups.add(admin_group)  # Now safe to assign the group
+            superuser.groups.add(admin_group, buyer_group, seller_group)  # Now safe to assign the group
+
+            from base.models.seller_profile import SellerProfile
+            from base.enums import ThemePreset
+            SellerProfile.objects.create(
+                user=superuser,
+                shop_name=f"Shop of {superuser.username}",
+                slug=None,  # let AutoSlugField handle this
+                theme_id=ThemePreset.CLASSIC,
+                bio="Welcome to my shop!",
+            )
+
             logger.info(f"Superuser '{superuser_username}' created successfully.")
         else:
             logger.info(f"Superuser '{superuser_username}' already exists.")

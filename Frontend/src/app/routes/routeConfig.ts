@@ -1,7 +1,7 @@
 // src/app/routes/routeConfig.ts
 
 import HomePage from "@/components/pages/HomePage";
-import SellerDashboard from "@/components/pages/SellerDashboard";
+import SellerDashboard from "@/features/seller/SellerDashboard";
 import LoginPage from "@/features/auth/LoginPage";
 import RegisterPage from "@/features/auth/RegisterPage";
 import TestEnvPage from "@/components/pages/TestEnvPage";
@@ -15,7 +15,8 @@ import ItemDetailPage from "@/features/item/ItemDetailPage";
 import SearchResultsPage from "@/components/common/SearchResultsPage";
 import BecomeSellerForm from "@/components/forms/BecomeSellerForm";
 import AdminSellerApplicationsPage from "@/features/user/AdminSellerApplicationsPage";
-import SellerShopPage from "@/components/pages/SellerShopPage";
+import SellerShopPage from "@/features/seller/SellerShopPage";
+import NewItemPage from "@/components/pages/NewItemPage";
 
 // === Shared Route Type ===
 export interface AppRoute {
@@ -45,7 +46,8 @@ export const roleBasedRoutes: RoleProtectedRoute[] = [
   { path: "/checkout", name: "Checkout", component: CheckoutPage, roles: ["Buyer", "Admin"] },
   { path: "/orders", name: "Order History", component: OrderHistory, roles: ["Buyer", "Admin"] },
   { path: "/order-confirmation", name: "Order Confirmation", component: OrderConfirmation, roles: ["Buyer", "Admin"] },
-  { path: "/seller", name: "Seller Dashboard", component: SellerDashboard, roles: ["Seller", "Admin"] },
+  { path: "/seller-dashboard", name: "Seller Dashboard", component: SellerDashboard, roles: ["Seller", "Admin"] },
+  { path: "/seller-dashboard/items/new", name: "Item Creation", component: NewItemPage, roles: ["Seller", "Admin"] },
   { path: "/items/:slug",name: "Item Detail", component: ItemDetailPage, roles: ["Buyer", "Admin", "Seller"] },
   { path: "/search", name: "Search Results", component: SearchResultsPage, roles: ["Buyer", "Admin", "Seller"] },
   { path: "/become-seller", name: "Become Seller", component: BecomeSellerForm, roles: ["Buyer", "Admin"] },

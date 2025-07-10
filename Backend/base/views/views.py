@@ -27,6 +27,15 @@ from base.utils.category_utils import get_descendant_ids
 
 logger = logging.getLogger(__name__)
 
+
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name="q", description="Full-text search query", required=False, type=str),
+        OpenApiParameter(name="category_id", description="Filter by category (including subcategories)", required=False, type=int),
+        OpenApiParameter(name="min_price", description="Minimum price in cents", required=False, type=int),
+        OpenApiParameter(name="max_price", description="Maximum price in cents", required=False, type=int),
+    ]
+)
 class ItemSearchViewSet(BaseReadOnlyViewSet):
     """
     Full-text search over Items.

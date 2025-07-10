@@ -6,6 +6,8 @@ import orderReducer from '../features/order/orderSlice'
 import itemSearchReducer from '../features/item/itemSearchSlice'
 import categoryReducer from '../features/category/categorySlice'
 import filterReducer from '@/features/item/filterSlice'
+import sellerItemsReducer from '@/features/seller/sellerItemSlice';
+
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -15,6 +17,7 @@ const rootReducer = combineReducers({
   order: orderReducer,
   categories: categoryReducer,
   filters: filterReducer,
+  sellerItems: sellerItemsReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;  // Changed from AppState to RootState

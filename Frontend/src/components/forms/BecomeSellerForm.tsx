@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SellerApplication } from "@/types/sellerApplication";
+import DefaultHeader from "../common/DefaultHeader";
 
 const BecomeSellerForm: React.FC = () => {
   const [businessName, setBusinessName] = useState("");
@@ -132,6 +133,8 @@ const BecomeSellerForm: React.FC = () => {
   };
 
   return (
+    <>
+    <DefaultHeader/>
     <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-4 mt-6">
       <h2 className="text-xl font-bold">Become a Seller</h2>
 
@@ -150,7 +153,7 @@ const BecomeSellerForm: React.FC = () => {
         {loading ? "Submitting..." : "Submit Application"}
       </Button>
     </form>
-  );
+  </>);
 };
 
 export default BecomeSellerForm;

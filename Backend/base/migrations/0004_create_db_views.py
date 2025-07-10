@@ -3,7 +3,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0002_create_rbac_groups'),
+        ('base', '0003_add_search_vector_trigger'),
     ]
 
     operations = [
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             sp.slug AS seller_slug,
             COALESCE(string_agg(DISTINCT c.name, ', ' ORDER BY c.name), 'Uncategorized') AS categories,
             COALESCE(array_agg(DISTINCT c.id ORDER BY c.id), ARRAY[]::integer[]) AS category_ids,
-            i.search_vector
+            i.search_vector::tsvector AS search_vector
             FROM base_item i
             JOIN base_customuser u ON i.seller_id = u.id
             LEFT JOIN base_sellerprofile sp ON sp.user_id = u.id
