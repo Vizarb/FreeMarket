@@ -46,3 +46,10 @@ class ThemePreset(models.TextChoices):
     CLASSIC = 'classic', 'Classic Blue'
     SUNSET = 'sunset', 'Sunset Orange'
     MIDNIGHT = 'midnight', 'Midnight Dark'
+
+class ServiceType(models.TextChoices):
+    OTHER = "Other", "Other"
+    CONSULTING = "Consulting", "Consulting"
+    DELIVERY = "Delivery", "Delivery"
+    SETUP = "Setup", "Setup"
+    CUSTOM = "Custom", "Custom"

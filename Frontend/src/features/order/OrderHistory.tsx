@@ -5,7 +5,7 @@ import { useAppSelector } from '@/store/hooks/hooks';
 import { selectUserOrders } from '@/features/order/orderSlice';
 import { OrderDetailsResponse } from '@/types/apiResponseType';
 import OrderSummary from './OrderSummary';
-import DefaultHeader from '@/components/common/DefaultHeader';
+import DefaultHeader from '@/common/components/DefaultHeader';
 
 const OrderHistory: React.FC = () => {
   const orders = useAppSelector(selectUserOrders);

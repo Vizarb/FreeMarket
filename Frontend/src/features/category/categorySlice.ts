@@ -1,7 +1,7 @@
 // src/features/category/categorySlice.ts
 
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import api from '../../api/apiService';
+import api from '@/api/apiService';
 import { Category } from '@/types/categoryType';
 
 

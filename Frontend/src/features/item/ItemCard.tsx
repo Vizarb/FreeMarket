@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAppDispatch } from '../../store/hooks/hooks';
-import { addToCart } from '../cart/cartSlice';
-import { Currency } from '../../types/enums';
-import { UnifiedItemResult } from '../../types/itemSearchTypes';
+import { useAppDispatch } from '@/store/hooks/hooks';
+import { addToCart } from '@/features/cart/cartSlice';
+import { Currency } from '@/types/enums';
+import { UnifiedItemResult } from '@/types/itemSearchTypes';
 
 export interface ItemProps {
   item: UnifiedItemResult;

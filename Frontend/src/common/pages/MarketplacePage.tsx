@@ -9,7 +9,7 @@ import {
 } from '@/features/item/itemSearchSlice';
 import { fetchCategories } from '@/features/category/categorySlice';
 import { selectFilters } from '@/features/item/filterSlice';
-import Header from '@/components/common/Header';
+import Header from '@/common/components/Header';
 import ItemList from '@/features/item/ItemList';
 import { useHeaderConfig } from '@/store/hooks/useHeaderConfig';
 

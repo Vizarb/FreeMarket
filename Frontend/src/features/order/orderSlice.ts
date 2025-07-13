@@ -1,9 +1,9 @@
 // src/features/order/orderSlice.ts
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import api from '../../api/apiService';
-import { RootState } from '../../store/rootReducer';
-import { OrderDetailsResponse } from '../../types/apiResponseType';
+import api from '@/api/apiService';
+import { RootState } from '@/store/rootReducer';
+import { OrderDetailsResponse } from '@/types/apiResponseType';
 import { AxiosError } from 'axios';
 
 // Async thunk for fetching user orders

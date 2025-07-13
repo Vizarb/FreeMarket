@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import {
   createOrderFromCart,
   selectOrderLoading,
@@ -10,7 +10,7 @@ import { useCart, useCartSummary } from '@/store/hooks/useCart';
 import { selectCart } from './cartSlice';
 import { selectAuthLoaded } from '../auth/authSlice';
 import CartItemCard from './CartItemCard';
-import DefaultHeader from '@/components/common/DefaultHeader';
+import DefaultHeader from '@/common/components/DefaultHeader';
 
 const CartPage: React.FC = () => {
   const dispatch = useAppDispatch();

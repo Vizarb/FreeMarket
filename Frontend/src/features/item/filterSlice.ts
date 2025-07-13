@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../../store/rootReducer';
+import { RootState } from '@/store/rootReducer';
 
 export type FilterState = {
     search?: string;        // text search
@@ -15,7 +15,7 @@ export type FilterState = {
 export const initialState: FilterState = {
   item_type: '',
   min_price: 0,
-  max_price: 100000,
+  max_price: 1000000, // 10K 
   category_id: '',
   ordering: '-price_cents',
   search: '',

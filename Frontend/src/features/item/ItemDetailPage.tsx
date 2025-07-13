@@ -9,9 +9,9 @@ import {
 } from '@/features/item/itemSearchSlice';
 import { addToCart } from '@/features/cart/cartSlice';
 import { Currency } from '@/types/enums';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import DefaultHeader from '@/components/common/DefaultHeader';
+import { Button } from '@/common/ui/button';
+import { Input } from '@/common/ui/input';
+import DefaultHeader from '@/common/components/DefaultHeader';
 
 const ItemDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();

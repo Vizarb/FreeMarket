@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from base.enums import ServiceType
 from ..models import (
     CustomUser, Address, Category, Item, Product, Service, ItemCategory,
     Order, OrderItem, Payment, Cart, CartItem
@@ -107,6 +109,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     seller = UserSerializer(read_only=True)
     image = serializers.ImageField(required=False, allow_null=True)
+    search_vector = serializers.CharField(read_only=True)
 
     class Meta:
         model = Item
@@ -123,36 +126,74 @@ class ItemSerializer(serializers.ModelSerializer):
             'updated_at',
             'categories',
             'is_deleted',
+            'search_vector',
         ]
 
 
-# Product Serializer
-class ProductSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=False, allow_null=True)
-    search_vector = serializers.CharField(read_only=True)
 
-    class Meta:
+# Product Serializer
+class ProductSerializer(ItemSerializer):
+    category_ids = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True, required=False
+    )
+
+    class Meta(ItemSerializer.Meta):
         model = Product
-        fields = '__all__'
+        fields = ItemSerializer.Meta.fields + ['quantity', 'category_ids']
 
     def validate_quantity(self, value):
         if value <= 0:
             raise serializers.ValidationError("Quantity must be positive.")
         return value
+    
+    def validate_category_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("At least one category is required.")
+        return value
+    
+    def create(self, validated_data):
+        category_ids = validated_data.pop('category_ids', [])
+        item = super().create(validated_data)
+
+        for cat_id in category_ids:
+            ItemCategory.objects.create(item=item, category_id=cat_id)
+
+        return item
+
+
 
 # Service Serializer
-class ServiceSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=False, allow_null=True)
-    search_vector = serializers.CharField(read_only=True)
+class ServiceSerializer(ItemSerializer):
+    category_ids = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True, required=False
+    )
+    service_type = serializers.ChoiceField(choices=ServiceType.choices)
 
-    class Meta:
+
+    class Meta(ItemSerializer.Meta):
         model = Service
-        fields ='__all__'
-    
+        fields = ItemSerializer.Meta.fields + ['service_duration', 'service_type', 'category_ids']
+
     def validate_service_duration(self, value):
         if value <= 0:
             raise serializers.ValidationError("Duration must be positive.")
         return value
+    
+    def validate_category_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("At least one category is required.")
+        return value
+
+    def create(self, validated_data):
+        category_ids = validated_data.pop('category_ids', [])
+        item = super().create(validated_data)
+
+        for cat_id in category_ids:
+            ItemCategory.objects.create(item=item, category_id=cat_id)
+
+        return item
+
+
 
 # Item Category Serializer
 class ItemCategorySerializer(serializers.ModelSerializer):

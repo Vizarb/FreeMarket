@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/apiService";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/common/ui/input";
+import { Textarea } from "@/common/ui/textarea";
+import { Button } from "@/common/ui/button";
 import { toast } from "sonner";
 import { SellerApplication } from "@/types/sellerApplication";
-import DefaultHeader from "../common/DefaultHeader";
+import DefaultHeader from "@/common/components/DefaultHeader";
 
 const BecomeSellerForm: React.FC = () => {
   const [businessName, setBusinessName] = useState("");

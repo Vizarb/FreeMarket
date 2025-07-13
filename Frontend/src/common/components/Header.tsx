@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useCartSummary } from '../../store/hooks/useCart';
-import AuthLinks from './Authlinks';
+import { Link } from 'react-router-dom';
+import { useCartSummary } from '@/store/hooks/useCart';
+import AuthLinks from '../../features/auth/Authlinks';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import { useAuth } from '@/features/auth/useAuth';
@@ -9,8 +9,8 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+} from '@/common/ui/popover';
+import { Button } from '@/common/ui/button';
 import {
   ShoppingCart,
   Moon,
@@ -34,14 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, c
 
   const { itemCount } = useCartSummary();
   const { isAuthenticated, isBuyer, isAdmin } = useAuth();
-  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
-
-  const handleLogoClick = () => {
-  dispatch(resetFilters()); // reset Redux filter state
-  navigate('/marketplace');
-};
-
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -71,12 +64,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onFilterChange  = () => {}, c
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
         {/* Left: Logo + Theme Toggle */}
         <div className="flex items-center gap-4 flex-shrink-0">
-          <span
-            onClick={handleLogoClick}
+          <Link
+            to="/marketplace"
+            onClick={() => dispatch(resetFilters())}
             className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:opacity-80 transition-opacity"
           >
             FreeMarket
-          </span>
+          </Link>
           <Button variant="ghost" onClick={toggleTheme} size="icon">
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </Button>

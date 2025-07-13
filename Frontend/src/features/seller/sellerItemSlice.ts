@@ -20,7 +20,7 @@ export const fetchSellerItems = createAsyncThunk<Item[], void, { rejectValue: st
   'sellerItems/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get<Item[]>('/api/items/');
+      const response = await api.get<Item[]>('/api/items/mine/');
       return response.data;
     } catch (err: unknown) {
       const message =

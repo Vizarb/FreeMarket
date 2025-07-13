@@ -1,8 +1,8 @@
 // src/features/auth/authSlice.ts
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { User } from "../../types/userType";
-import { RootState } from "../../store/rootReducer";
-import { clearTokens, getAccessToken, setTokens } from "../../utils/tokenManager";
+import { User } from "@/types/userType";
+import { RootState } from "@/store/rootReducer";
+import { clearTokens, getAccessToken, setTokens } from "@/utils/tokenManager";
 import { AppDispatch } from "@/store";
 import api from '@/api/apiService';
 import axios from "axios";

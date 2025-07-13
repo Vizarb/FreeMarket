@@ -1,13 +1,13 @@
 // src/features/cart/cartSlice.ts
 
 import { createSlice, createAsyncThunk, isAnyOf } from '@reduxjs/toolkit';
-import api from '../../api/apiService';
-import { RootState } from '../../store/rootReducer';
-import { CartOverviewResponse, PaginatedResponse } from '../../types/apiResponseType';
+import api from '@/api/apiService';
+import { RootState } from '@/store/rootReducer';
+import { CartOverviewResponse, PaginatedResponse } from '@/types/apiResponseType';
 import { getAccessToken } from '@/utils/tokenManager';
 import { toast } from 'sonner';
 import axios from 'axios';
-import type { AppDispatch } from '../../store';
+import type { AppDispatch } from '@/store';
 
 // Shared Thunk API type
 export type ThunkApiConfig = {

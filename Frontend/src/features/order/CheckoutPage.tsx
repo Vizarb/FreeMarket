@@ -1,11 +1,11 @@
 // src/features/order/CheckoutPage.tsx
 
 import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import { fetchUserOrders, selectUserOrders, createOrderFromCart, selectOrderLoading, selectOrderError } from './orderSlice';
 import { selectIsAuthenticated, selectUserId } from '../auth/authSlice';
 import OrderSummary from './OrderSummary';
-import useCustomNavigate from '../../store/hooks/useCustomNavigate';
+import useCustomNavigate from '@/store/hooks/useCustomNavigate';
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useAppDispatch();

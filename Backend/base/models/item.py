@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, CheckConstraint
+from base.enums import ServiceType
 from .base_modle import BaseModel
 from .category import Category
 from django.contrib.postgres.search import SearchVectorField
@@ -91,7 +92,11 @@ class Service(Item):
     Represents a service derived from an Item.
     """
     service_duration = models.PositiveIntegerField(default=60)
-    service_type = models.CharField(max_length=50, default="Other")
+    service_type = models.CharField(
+        max_length=50,
+        choices=ServiceType.choices,
+        default=ServiceType.OTHER,
+    )
 
     @classmethod
     def from_item(cls, item: Item, service_duration: int, service_type: str):
