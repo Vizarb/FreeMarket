@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
-import { Button, buttonVariants } from "@/components/common/ui/button";
+import { Button, buttonVariants } from "@/common/ui/button";
 import type { VariantProps } from "class-variance-authority";
 import useCustomNavigate from "@/store/hooks/useCustomNavigate";
 
