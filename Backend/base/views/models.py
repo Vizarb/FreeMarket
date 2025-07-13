@@ -80,6 +80,25 @@ class ItemViewSet(BaseViewSet):
                 logger.debug(f"Slug '{lookup_value}' not found, trying ID fallback...")
 
         raise NotFound(f"Item not found for slug or id: {lookup_value}")
+    
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        """
+        Return all items owned by the authenticated user (seller).
+        """
+        items = self.get_queryset().filter(seller=request.user)
+        serializer = self.get_serializer(items, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["POST"], url_path=r"(?P<id>\d+)/restore")
+    def restore_by_id(self, request, id=None):
+        try:
+            item = Item.all_objects.get(id=id, seller=request.user)
+        except Item.DoesNotExist:
+            raise NotFound("Item not found or not authorized to restore.")
+
+        item.restore()
+        return Response({"status": "restored"}, status=status.HTTP_200_OK)
 
 
 
@@ -93,6 +112,19 @@ class ProductViewSet(BaseViewSet):
     search_fields     = ['name', 'description']
     ordering_fields   = ['created_at', 'updated_at', 'quantity']
 
+    def get_queryset(self):
+        return Product.objects.filter(seller=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        queryset = self.get_queryset().filter(seller=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 
 class ServiceViewSet(BaseViewSet):
     queryset = Service.objects.all()
@@ -102,6 +134,18 @@ class ServiceViewSet(BaseViewSet):
     filterset_fields  = ['name', 'service_duration']
     search_fields     = ['name', 'description']
     ordering_fields   = ['created_at', 'updated_at', 'service_duration']
+
+    def get_queryset(self):
+        return Service.objects.filter(seller=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        queryset = self.get_queryset().filter(seller=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class UserViewSet(BaseViewSet):

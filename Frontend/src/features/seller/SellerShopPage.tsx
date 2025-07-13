@@ -8,7 +8,7 @@ import ItemList from '@/features/item/ItemList';
 import api from '@/api/apiService';
 import { SellerProfile } from '@/types/sellerTypes';
 import { useHeaderConfig } from '@/store/hooks/useHeaderConfig';
-import Header from '../../components/common/Header';
+import Header from '@/common/components/Header';
 import { selectCurrentUser } from '@/features/auth/authSlice';
 
 const SellerShopPage: React.FC = () => {

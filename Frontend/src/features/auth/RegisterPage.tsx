@@ -1,12 +1,12 @@
 // src/pages/RegisterPage.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/common/ui/input';
+import { Button } from '@/common/ui/button';
 import { toast } from 'sonner';
 import { registerUser } from '@/features/user/userSlice';
 import { useFormState } from '@/store/hooks/useFormState';
-import AuthFormWrapper from '@/components/common/AuthFormWrapper';
+import AuthFormWrapper from '@/features/auth/PanelFormWrapper';
 import { useAppDispatch } from '@/store/hooks/hooks';
 
 const RegisterPage: React.FC = () => {

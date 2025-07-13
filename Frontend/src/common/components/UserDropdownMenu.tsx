@@ -1,4 +1,4 @@
-// src/components/common/UserDropdownMenu.tsx
+// src/common/UserDropdownMenu.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/features/auth/useAuth';
@@ -8,8 +8,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from '@/common/ui/dropdown-menu';
+import { Button } from '@/common/ui/button';
 import {
   Menu,
   Package,

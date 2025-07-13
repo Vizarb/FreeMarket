@@ -5,17 +5,27 @@ import { setFilters } from '@/features/item/filterSlice';
 import api from '@/api/apiService';
 import { SellerProfile } from '@/types/sellerTypes';
 import { useNavigate } from 'react-router-dom';
-import SellerItemTable from './SellerItemTable';
-import Header from '@/components/common/DefaultHeader';
+import Header from '@/common/components/Header';
+import PanelFormWrapper from '@/features/auth/PanelFormWrapper';
+import ProductTable from './SellerProductTable';
+import ServiceTable from './SellerServiceTable';
+import { Button } from '@/common/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/common/ui/dropdown-menu';
 
 const SellerDashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<SellerProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [itemType, setItemType] = useState<'product' | 'service'>('product');
 
   useEffect(() => {
-    const loadSeller = async () => {
+    const loadSeller = async (): Promise<void> => {
       try {
         const res = await api.get<SellerProfile>('/api/seller-profiles/me/');
         setProfile(res.data);
@@ -35,22 +45,46 @@ const SellerDashboardPage: React.FC = () => {
   if (!profile) return <p className="p-4 text-red-600">You don't have a seller profile.</p>;
 
   return (
-        <>
-        <Header
-      />
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manage Your Shop</h1>
-        <button
-          onClick={() => navigate('/seller-dashboard/items/new')}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          + Add New Item
-        </button>
-      </div>
+    <>
+      <Header />
+      <div className="p-6 ">
+        <PanelFormWrapper title="Manage Your Shop" onSubmit={(e) => e.preventDefault()}>
+          <div className="flex justify-center items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="default" className="bg-green-600 hover:bg-green-700 text-white">
+                  + Add New Item
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => {
+                  setItemType('product');
+                  navigate('/seller-dashboard/new/product');
+                }}>
+                  {itemType}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  setItemType('service');
+                  navigate('/seller-dashboard/new/service');
+                }}>
+                  Service
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-    <SellerItemTable />
-    </div>
+          <div className="mt-6 space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Products</h3>
+              <ProductTable />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Services</h3>
+              <ServiceTable />
+            </div>
+          </div>
+        </PanelFormWrapper>
+      </div>
     </>
   );
 };

@@ -24,3 +24,11 @@ export enum AllRoles {
   Support = "Support",
   Admin = "Admin"
 };
+
+export enum ServiceType {
+  Other = 'Other',
+  Consulting = 'Consulting',
+  Delivery = 'Delivery',
+  Setup = 'Setup',
+  Custom = 'Custom',
+}

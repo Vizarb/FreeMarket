@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../store/hooks/hooks";
+import { useAppDispatch } from "@/store/hooks/hooks";
 import { loginSuccess } from "./authSlice";
-import { setTokens } from "../../utils/tokenManager";
+import { setTokens } from "@/utils/tokenManager";
 import { fetchUserDetails, loginUser } from "./authSlice";
 import { toast } from "sonner";
 import { useFormState } from "@/store/hooks/useFormState";

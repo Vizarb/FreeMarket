@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { publicRoutes, roleBasedRoutes } from './routeConfig';
 import RoleProtectedRoute from './RoleProtectedRoute';
-import Layout from '@/components/common/Layout';
+import Layout from '@/common/components/Layout';
 
 const AppRoutes: React.FC = () => {
   return (

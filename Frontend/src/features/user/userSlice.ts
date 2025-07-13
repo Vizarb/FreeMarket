@@ -1,8 +1,8 @@
 // src/features/user/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { User } from '../../types/userType';
-import api from '../../api/apiService';
+import { User } from '@/types/userType';
+import api from '@/api/apiService';
 
 interface UserState {
   isAuthenticated: boolean;

@@ -1,4 +1,4 @@
-import { CartOverviewResponse } from '../types/apiResponseType';
+import { CartOverviewResponse } from '@/types/apiResponseType';
 
 export function calculateCartSummary(items: CartOverviewResponse[]) {
   const itemCount = items.reduce((sum, item) => sum + item.total_quantity, 0);

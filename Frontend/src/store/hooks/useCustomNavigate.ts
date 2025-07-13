@@ -2,7 +2,8 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from './hooks';
-import { selectIsAuthenticated } from '../../features/auth/authSlice';
+import { selectIsAuthenticated } from '@/features/auth/authSlice';
+import { toast } from 'sonner';
 
 const useCustomNavigate = () => {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ const useCustomNavigate = () => {
     if (isAuthenticated) {
       navigate(path);
     } else {
-      alert('You need to be logged in to access this page.');
-      navigate('/login');
+      toast.error('You need to be logged in to access this page.');
+      navigate('/login', { state: { from: path } });
     }
   };
 
@@ -23,14 +24,23 @@ const useCustomNavigate = () => {
     navigate(path);
   };
 
-  // Redirect to Login if not authenticated
-  const redirectToLogin = () => {
-    navigate('/login');
+  // Redirect to login, with optional redirect target
+  const redirectToLogin = (redirectTo?: string) => {
+    if (redirectTo) {
+      navigate('/login', { state: { from: redirectTo } });
+    } else {
+      navigate('/login');
+    }
   };
 
-  // Navigate to Home
+  // Navigate to home page
   const goToHome = () => {
     navigate('/');
+  };
+
+  // Go back in browser history
+  const goBack = () => {
+    navigate(-1);
   };
 
   return {
@@ -38,6 +48,7 @@ const useCustomNavigate = () => {
     goToPublicRoute,
     redirectToLogin,
     goToHome,
+    goBack,
   };
 };
 

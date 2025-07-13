@@ -1,7 +1,7 @@
 // src/pages/SearchResultsPage.tsx
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../store/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks/hooks';
 import {
   fetchUnifiedItemResults,
   selectItemResults,

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../store/hooks/hooks';
-import { logout } from '../../features/auth/authSlice';
-import { clearTokens } from '../../utils/tokenManager';
-import { Button } from '@/components/ui/button';
+import { useAppSelector, useAppDispatch } from '@/store/hooks/hooks';
+import { logout } from '@/features/auth/authSlice';
+import { clearTokens } from '@/utils/tokenManager';
+import { Button } from '@/common/ui/button';
 
 const AuthLinks: React.FC = () => {
   const dispatch = useAppDispatch();

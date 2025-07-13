@@ -7,9 +7,9 @@ import {
   initialState,
   resetFiltersExceptSeller,
 } from '@/features/item/filterSlice';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Slider } from '@/common/ui/slider';
+import { Label } from '@/common/ui/label';
+import { Button } from '@/common/ui/button';
 
 interface FilterPanelProps {
   onChange: (filters: Partial<FilterState>) => void;
@@ -98,7 +98,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onChange, categories = [] }) 
         <Label>Price (${localFilters.min_price / 100} – ${localFilters.max_price / 100})</Label>
         <Slider
           min={0}
-          max={100000}
+          max={initialState.max_price}
           step={1000}
           value={[localFilters.min_price, localFilters.max_price]}
           onValueChange={handleSliderChange}

@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin }   from './uselogin';
 import { useAuth }    from '@/features/auth/useAuth';
-import { Input }      from '@/components/ui/input';
-import { Button }     from '@/components/ui/button';
+import { Input }      from '@/common/ui/input';
+import { Button }     from '@/common/ui/button';
 
 interface LocationState {
   from?: { pathname: string };

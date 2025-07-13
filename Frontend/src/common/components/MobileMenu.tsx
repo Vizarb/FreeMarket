@@ -1,11 +1,11 @@
-// src/components/MobileMenu.tsx
+// src/MobileMenu.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '@/common/ui/sheet';
 import {
   Menu,
   Package,
@@ -15,10 +15,10 @@ import {
   NotebookTabs,
   UserRoundPen,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/ui/button';
 import { useAuth } from '@/features/auth/useAuth';
 import { useMyShopSlug } from '@/features/seller/useMyShopSlug';
-import AuthLinks from './Authlinks';
+import AuthLinks from '../../features/auth/Authlinks';
 
 const MobileMenu: React.FC = () => {
   const { isBuyer, isSeller, isAdmin, isAuthenticated } = useAuth();

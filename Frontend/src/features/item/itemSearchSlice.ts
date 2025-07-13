@@ -1,9 +1,9 @@
 // src/features/item/itemSearchSlice.ts
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import api from '../../api/apiService';
-import { UnifiedItemResult } from '../../types/itemSearchTypes';
-import { RootState } from '../../store/rootReducer';
+import api from '@/api/apiService';
+import { UnifiedItemResult } from '@/types/itemSearchTypes';
+import { RootState } from '@/store/rootReducer';
 import { handlePagination } from '@/utils/handlePagination';
 
 // ----------------------------------------------------------------------------

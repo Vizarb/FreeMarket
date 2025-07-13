@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import api from "@/api/apiService";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/common/ui/button";
+import { Card, CardContent } from "@/common/ui/card";
 import { toast } from "sonner";
 import { SellerApplicationStatus, type SellerApplication } from "@/types/sellerApplication";
-import DefaultHeader from "@/components/common/DefaultHeader";
+import DefaultHeader from "@/common/components/DefaultHeader";
 import { hasAllowedRole } from "@/utils/roles";
 import { useAppSelector } from "@/store/hooks/hooks";
 

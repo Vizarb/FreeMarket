@@ -10,7 +10,7 @@ import {
 } from '@/features/item/itemSearchSlice';
 import { selectFilters } from '@/features/item/filterSlice';
 import { UnifiedItemResult } from '@/types/itemSearchTypes';
-import ItemCard from '../item/ItemCard';
+import ItemCard from '@/features/item/ItemCard';
 
 const ItemList: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { OrderDetailsResponse } from '@/types/apiResponseType';
-import DefaultHeader from '@/components/common/DefaultHeader';
+import DefaultHeader from '@/common/components/DefaultHeader';
 
 const OrderConfirmation: React.FC = () => {
   const location = useLocation();

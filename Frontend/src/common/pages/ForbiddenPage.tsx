@@ -1,7 +1,7 @@
-// src/components/pages/ForbiddenPage.tsx
+// src/pages/ForbiddenPage.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/ui/button';
 
 const ForbiddenPage: React.FC = () => {
   return (
