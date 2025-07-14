@@ -18,7 +18,7 @@ const ItemCard: React.FC<ItemProps> = ({ item }) => {
   
   const imageUrl = item.image
     ? `${import.meta.env.VITE_BACKEND_URL}${item.image}`
-    : '/placeholder.jpg'; // ✅ fallback if missing
+    : '/placeholder.jpg'; //  fallback if missing
 
   return (
     <div className="border rounded-xl p-4 shadow flex flex-col bg-white h-full min-h-[460px] max-h-[460px]">

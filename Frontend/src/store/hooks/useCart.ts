@@ -42,7 +42,7 @@ const removeItem = async (cart_item_id: number | undefined) => {
   }
 
   try {
-    await dispatch(removeFromCart(cart_item_id)).unwrap(); // 🔥 critical
+    await dispatch(removeFromCart(cart_item_id)).unwrap(); //  critical
     toast.success('Item removed');
   } catch (error) {
     if (error instanceof Error) {

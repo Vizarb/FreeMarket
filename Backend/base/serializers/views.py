@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema_field
 class BaseSearchSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data.pop('search_vector', None)  # 🧼 Remove internal full-text search field
+        data.pop('search_vector', None)  #  Remove internal full-text search field
         return data
 
 class ItemDetailsSerializer(BaseSearchSerializer):
@@ -54,7 +54,7 @@ class OrderItemDetailsSerializer(serializers.ModelSerializer):
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     order_items = serializers.SerializerMethodField()
-    id = serializers.IntegerField()  # ✅ Explicitly include it
+    id = serializers.IntegerField()  #  Explicitly include it
 
     class Meta:
         model = OrderDetails

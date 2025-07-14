@@ -14,12 +14,12 @@ class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field="name"  # ✅ Returns group names instead of IDs
+        slug_field="name"  #  Returns group names instead of IDs
     )
     user_permissions = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field="codename"  # ✅ Returns permission codenames instead of IDs
+        slug_field="codename"  #  Returns permission codenames instead of IDs
     )
     seller_slug = serializers.SerializerMethodField()
 
@@ -272,7 +272,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 class CartItemSerializer(serializers.ModelSerializer):
     item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
     item_name = serializers.CharField(source='item.name', read_only=True)
-    quantity = serializers.IntegerField(read_only=True)  # ✅ this was missing!
+    quantity = serializers.IntegerField(read_only=True)  #  this was missing!
 
     class Meta:
         model = CartItem

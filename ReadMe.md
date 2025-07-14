@@ -1,200 +1,243 @@
-
 # 🛒 FreeMarket
 
 ![Conventional Commits](https://img.shields.io/badge/commits-conventional-yellow.svg)
 ![Build](https://img.shields.io/github/actions/workflow/status/vizarb/FreeMarket/ci.yml?branch=main)
 ![Last Commit](https://img.shields.io/github/last-commit/vizarb/FreeMarket)
-![Latest Tag](https://img.shields.io/github/v/tag/vizarb/FreeMarket?label=latest%20release)
 ![Coverage](https://codecov.io/gh/vizarb/FreeMarket/branch/main/graph/badge.svg)
 ![License: All Rights Reserved](https://img.shields.io/badge/license-All%20Rights%20Reserved-red)
 
-**FreeMarket** is a full-stack, AI-enhanced online marketplace built with a modular and scalable architecture. It supports both **products** and **services**, and replicates the vibrancy of a street market with the reliability of a digital storefront.
-
-Designed for modern web standards, FreeMarket integrates advanced search, real-time features, structured APIs, and role-aware user management to support both individual sellers and large-scale vendors.
+**FreeMarket** is a full-stack, modern, scalable e-commerce platform where users can buy and sell both physical products and digital services. Inspired by street markets and shaped by platform architecture, it balances performance, flexibility, and clean design — and is actively being developed.
 
 ---
 
-## 🎯 Core Features
+ **Live Demo**: [https://free-market-theta.vercel.app/](https://free-market-theta.vercel.app/)
+---
+ **Status**: In development — all feedback and suggestions welcome!
+---
 
-### Unified Marketplace
-- **Sell Anything**: Supports both tangible **Products** and scheduled **Services** under a unified item model.
-- **Category Trees**: Nestable categories with full-path filtering like `Electronics > Laptops > Gaming`.
-- **Full-Text Search**: PostgreSQL-powered fuzzy matching with GIN indexes and ILIKE fallback.
-- **Autocomplete**: Fast live suggestions while typing.
-- **AI-Powered Suggestions** *(roadmap)*: ML models for product/service recommendations.
+## 🎯 Purpose
 
-### User & Order Management
-- **Custom Auth**: Extended Django `AbstractUser` with roles, phone number, gender, and birth date.
-- **Cart-to-Order Flow**: Cart syncing with bulk order creation and pricing snapshots.
-- **Soft Deletion**: Restore deleted items or orders.
-- **Role-Based Logging**: Structured user activity logging via decorators.
+This project serves as a professional portfolio to:
 
-### Real-Time & UX
-- **Responsive UI**: Built in React 18 with Tailwind-compatible layouting.
-- **Dynamic Filters**: Category, price, and service-type filtering with pagination.
-- **Add to Cart**: Unified interface for products/services with contextual handling.
+* Demonstrate end-to-end system design in a modern tech stack
+* Practice scalable backend architecture (views, triggers, Redis, AI, etc.)
+* Build and polish a real-world, testable product ready for extensions
 
 ---
 
-## ⚙️ Tech Stack & Versions
+## 🧰 Tech Stack
 
-| Layer        | Tech                            | Version              |
-|--------------|----------------------------------|----------------------|
-| **Frontend** | React                            | 18.2.0               |
-|              | Redux Toolkit                    | 1.9.x                |
-|              | TypeScript                       | 5.x                  |
-|              | Axios                            | 1.6.x                |
-| **Backend**  | Django                           | 4.2.x                |
-|              | Django REST Framework            | 3.14.x               |
-|              | PostgreSQL Full-Text Search (FTS)| GIN index + fallback |
-| **Database** | PostgreSQL                       | 16.6                 |
-| **Caching**  | Redis                            | 7.x                  |
-| **DevOps**   | Docker                           | 24.x                 |
-|              | Docker Compose                   | 2.x                  |
-|              | GitHub Actions                   | CI/CD enabled        |
+### Frontend
+
+* React 19, TypeScript 5.7, Vite 6.3
+* Redux Toolkit, Axios, Tailwind CSS, ShadCN UI
+* Hosted on Vercel
+
+### Backend
+
+* Python 3.12, Django 5.1.4, DRF 3.15.2
+* PostgreSQL 15
+* `drf-spectacular` for OpenAPI schema generation
+* Dockerized, deployed on Render
+
+### DevOps
+
+* Docker + Docker Compose
+* GitHub Actions CI/CD
+* Codecov coverage tracking
+* Redis (planned): pub/sub, caching, Celery queues
 
 ---
 
-## 📦 Project Structure
+## 🛂 Authentication & Roles
+
+* Secure login/logout with JWT
+* Role-based access control: Buyer / Seller / Admin
+* Seller application workflow
+* Admin dashboard for seller and user management
+
+---
+
+## 🏪 Marketplace Features
+
+### 🔍 Search & Filtering
+
+* Full-text search (PostgreSQL GIN + fallback)
+* Autocomplete suggestions
+* Filter by type, category, price, and currency
+
+### 🧾 Cart & Orders
+
+* Cart with add/remove/update logic
+* Soft delete logic + item recovery
+* Checkout triggers atomic order creation
+* Order snapshot locking prices
+
+### 👤 Seller Dashboard
+
+* Add/edit/remove (soft-delete) items
+* View and manage live listings
+* Public-facing shop view for each seller
+
+### 📈 Admin Capabilities
+
+* View top sellers and products
+* Approve/reject seller applications
+* View order and cart stats via PostgreSQL views
+
+---
+
+## 🔢 Database Architecture
+
+* Multi-table model inheritance (`Item → Product | Service`)
+* Soft-delete via `BaseModel`
+* PostgreSQL views: `ItemDetails`, `UserOrderHistory`, `CartOverview`, `TopSellingProducts`
+* Indexed search vector (`SearchVectorField`)
+* Planned: materialized views and scheduled refresh
+
+---
+
+## 🏗 Project Structure
 
 ```
-
-frontend/
-│   ├── components/
-│   ├── features/ (item, cart, auth, order)
-│   └── pages/ (LoginPage, MarketplacePage, CartPage)
-backend/
-│   ├── base/ (models, views, serializers)
-│   ├── utils/ (category, logging)
-│   └── api/ (REST endpoints + viewsets)
-
-````
+FreeMarket/
+├── frontend/            # React app
+│   ├── components/      # SearchBar, Filters, ItemCard, etc.
+│   ├── features/        # Redux slices for cart, auth, search
+│   └── pages/           # MarketplacePage, CartPage, etc.
+│
+├── backend/             # Django app
+│   ├── base/            # Core models, serializers, views
+│   ├── utils/           # Logging decorators, FTS utilities
+│   ├── management/      # Custom Django commands
+│   └── settings/        # Environment-specific config
+```
 
 ---
 
-## 🧪 Quick Start
+## 🧪 Local Development
 
-### 🔧 Docker
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/vizarb/freemarket.git
-cd freemarket
-docker-compose up
-````
+git clone https://github.com/Vizarb/FreeMarket.git
+cd FreeMarket
+```
 
-App runs at `http://localhost:8000`.
-
----
-
-### 👨‍💻 Manual Setup (Dev)
-
-#### Backend
+### 2. Setup Environment
 
 ```bash
-cd backend
-python -m venv env
-source env/bin/activate  # Windows: env\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+cp .env.example .env
 ```
 
-#### Frontend
+### 3. Start with Docker Compose
 
 ```bash
-cd frontend
-yarn install
-yarn dev
+docker compose up --build
 ```
 
----
+* Frontend: [http://localhost:5173](http://localhost:5173)
+* Backend API: [http://localhost:8000/api/](http://localhost:8000/api/)
+* Swagger: [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
 
-## 🔐 Configuration
-
-* Setup `.env` files in both `frontend/` and `backend/` for keys like:
-
-  * `POSTGRES_DB`, `REDIS_URL`, `DJANGO_SECRET_KEY`
-* Redis must be running for sessions and logging.
-* Seed logic supports rebuilding FTS columns on init.
-
----
-
-## 🗺 Roadmap
-
-* [x] MVP: Cart, Order, Product/Service creation
-* [x] Full-Text Search + Autocomplete
-* [x] Nested Category Filtering
-* [ ] Real-Time Chat & Notifications (planned)
-* [ ] AI-Powered Recommendations (planned)
-* [ ] Admin Dashboard & Analytics
-
----
-
-## 🔧 Git Conventions
-
-This project follows [Conventional Commits](https://www.conventionalcommits.org/) for consistency and automation.
-
-### ✅ Commit Format
-
-```
-<type>(scope): message
-```
-
-Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`
-
-Examples:
-
-* `feat(cart): add remove-from-cart button`
-* `fix(auth): token not refreshing correctly`
-* `TAG release v0.3.0` – triggers automated tagging
-
-### 🔀 Branch Naming
-
-| Branch Type | Example                              |
-| ----------- | ------------------------------------ |
-| Feature     | `feature/item-search`                |
-| Bugfix      | `bugfix/order-cancel-bug`            |
-| Refactor    | `refactor/user-model`                |
-| Chore/Test  | `chore/ci-pipeline`, `test/cart-api` |
-
----
-
-## 📬 Contributing
-
-1. Fork this repo
-2. Create a branch: `git checkout -b feature/your-feature`
-3. Commit with proper format
-4. Open a Pull Request
-
-### 🔒 Enforce Commit Style
-
-Install this Git hook to prevent bad commit messages:
+### 4. Migrate & Seed (optional)
 
 ```bash
-cp hooks/commit-msg .git/hooks/commit-msg
-chmod +x .git/hooks/commit-msg
-
-cp hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
-chmod +x .git/hooks/prepare-commit-msg
-
+docker compose exec backend python manage.py migrate
+# Optional seed
+docker compose exec backend python manage.py seed
 ```
 
 ---
 
-## 🪪 License
+## 🧭 Roadmap Preview
 
-This project is **not open source**. The code is published for educational and personal portfolio use only.
+✅ Core MVP Complete:
 
-You may **not** copy, reuse, redistribute, or republish any part of this project without the author’s express permission.
+* Auth, roles, cart, orders, seller dashboard, views
 
-See [`LICENSE`](./LICENSE) for full terms.
+🔜 In Progress:
 
+* Admin dashboard
+* Order history view
+* Materialized views
+* Full Redis integration (chat, notifications)
+* AI recommendations + personalization
+* Offer/negotiation system
+
+📄 Full roadmap: [ROADMAP.md](./ROADMAP.md)
 
 ---
 
-## 👤 Contact
+## 🧱 Architecture Highlights
 
-* **Author**: Barr Ziv
-* **GitHub**: [@vizarb](https://github.com/vizarb)
-* **Email**: [zivbarr47@gmail.com](mailto:zivbarr47@gmail.com)
-* **LinkedIn**: [Barr Ziv](https://www.linkedin.com/in/barr-ziv-b63a82219/)
+* Monorepo with clean frontend/backend separation
+* PostgreSQL views for optimized reads
+* Django REST Framework with viewsets, serializers
+* Scalable model hierarchy (Item → Product/Service)
+* Soft deletes with restore capability
+* CI/CD and local parity via Docker
+* Future Redis Channel Layer for:
+
+  * Real-time chat (WebSockets)
+  * Async tasks (Celery/Django-Q)
+  * Rate limiting & token management
+
+---
+
+## 🤝 Contributing
+
+This is a solo project built for portfolio/demo purposes.
+
+You’re welcome to:
+
+* Explore the code
+* Open issues
+* Suggest improvements
+
+If collaboration is opened in the future, contribution guidelines will be added.
+
+---
+
+Here’s a more **approachable and humanized** version of the **“About the Author”** section for your README:
+
+---
+
+You're absolutely right — in a professional README, especially one meant to showcase your full-stack skills, the emphasis should be on your **technical experience** and **career pivot**, not the kitchen.
+
+Here’s a **refined version** that acknowledges your past without dwelling on it, and puts the spotlight on your **QA experience**, **education**, and **dev strengths**:
+
+---
+
+## 👤 About the Author
+
+Hi! I’m **Bar Ziv** (also known as Vizarb) — a full-stack developer with a solid foundation in QA engineering and a passion for backend systems, databases, and scalable architecture.
+
+Before becoming a developer, I worked for several years as a **QA engineer**, combining **manual and automated testing** (Python, Selenium) to ensure product reliability and edge-case coverage. That experience sharpened my attention to detail, test-first mindset, and understanding of how real-world systems break.
+
+I completed a professional full-stack development program at **John Bryce**, where I trained in modern web technologies including **Django**, **React**, **PostgreSQL**, **Docker**, and **TypeScript**. Since then, I’ve been building real-world projects like **FreeMarket** — a production-ready marketplace platform — to deepen my skills and demonstrate what I can build independently.
+
+### 💻 What I Focus On
+
+* **Backend architecture**: PostgreSQL, Django REST Framework, Redis, Docker
+* **Frontend UX**: Clean, responsive UIs with React, Vite, Tailwind CSS
+* **Testing & DevOps**: Pytest, GitHub Actions, Docker Compose, CI/CD best practices
+
+### 🌍 Let’s Connect
+
+* 📫 Email: [zivbarr47@gmail.com](mailto:zivbarr47@gmail.com)
+* 💼 LinkedIn: [Barr Ziv](https://www.linkedin.com/in/barr-ziv-b63a82219/)
+* 💻 GitHub: [@vizarb](https://github.com/vizarb)
+
+> I’m always open to opportunities, feedback, and conversations about backend development, full-stack systems, or QA-informed design.
+
+---
+
+## 📜 License
+
+This project is **All Rights Reserved**.
+Code may not be reused, republished, or distributed without written permission.
+
+---
+
+*Thank you for exploring **FreeMarket**!*

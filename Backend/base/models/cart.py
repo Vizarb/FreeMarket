@@ -25,7 +25,7 @@ class Cart(BaseModel):
         total = self.cart_items.aggregate(
             total=Sum(F('quantity') * F('price_snapshot_cents'))
         )['total'] or 0
-        Cart.objects.filter(id=self.id).update(total_price_cents=total)  # ✅ Avoids multiple `.save()`
+        Cart.objects.filter(id=self.id).update(total_price_cents=total)  #  Avoids multiple `.save()`
 
     @log_cart_action('ADD')
     def add_item(self, item, quantity=1):

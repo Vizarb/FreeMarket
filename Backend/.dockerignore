@@ -1,5 +1,5 @@
 # =====================================
-# 🔐 Environment Files
+#  Environment Files
 # =====================================
 .env
 !.env.backend
@@ -7,7 +7,7 @@
 !.env.example
 
 # =====================================
-# 🐍 Python Bytecode and Caches
+#  Python Bytecode and Caches
 # =====================================
 __pycache__/
 *.py[cod]
@@ -20,7 +20,7 @@ __pycache__/
 *.log
 
 # =====================================
-# 📦 Virtual Environments
+#  Virtual Environments
 # =====================================
 env/
 venv/
@@ -29,7 +29,7 @@ env.bak/
 venv.bak/
 
 # =====================================
-# 📊 Coverage and Test Artifacts
+#  Coverage and Test Artifacts
 # =====================================
 .coverage
 .coveragerc
@@ -43,33 +43,33 @@ junit.xml
 *.tar.gz
 
 # =====================================
-# 🐳 Docker
+#  Docker
 # =====================================
 .docker/
 *.pid
 *.sock
 
 # =====================================
-# 📝 Logs
+#  Logs
 # =====================================
 logs/
 *.log
 
 # =====================================
-# 🧪 Migrations (optional if you generate them inside container)
+#  Migrations (optional if you generate them inside container)
 # =====================================
 **/migrations/*.py
 **/migrations/*.pyc
 
 # =====================================
-# 💻 IDE/Editor Configs
+#  IDE/Editor Configs
 # =====================================
 .vscode/
 .idea/
 *.iml
 
 # =====================================
-# 🗑 System Files
+#  System Files
 # =====================================
 .DS_Store
 Thumbs.db

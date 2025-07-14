@@ -38,7 +38,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('word')
     price_cents = 1000
     currency = 'USD'
-    seller = factory.SubFactory(UserFactory, roles=["Seller"])  # ✅ explicitly a Seller
+    seller = factory.SubFactory(UserFactory, roles=["Seller"])  #  explicitly a Seller
     quantity = 10
 
 class ServiceFactory(factory.django.DjangoModelFactory):
@@ -48,7 +48,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('word')
     price_cents = 2000
     currency = 'USD'
-    seller = factory.SubFactory(UserFactory, roles=["Seller"])  # ✅ explicitly a Seller
+    seller = factory.SubFactory(UserFactory, roles=["Seller"])  #  explicitly a Seller
     service_duration = 5
     service_type = 'Cleaning'
 

@@ -46,8 +46,8 @@ class Command(BaseCommand):
         """Deletes all records from the database, in the correct order."""
         models_to_clear = [
             OrderItem, Order, CartItem, Cart, Payment,  
-            Product, Service,        # ✅ Delete child models first
-            Item,                    # ✅ Then delete parent (Item)
+            Product, Service,        #  Delete child models first
+            Item,                    #  Then delete parent (Item)
             ItemCategory, Category, Address,
             CustomUser, Group, Permission,
         ]
@@ -63,10 +63,10 @@ class Command(BaseCommand):
         with connection.cursor() as cursor:
             models = [
                 CustomUser, Address, Category, ItemCategory,  
-                Item,                     # ✅ Item owns the PK sequence
+                Item,                     #  Item owns the PK sequence
                 Payment, Order, OrderItem, Cart, CartItem, 
                 Group, Permission,
-                # ❌ Do NOT include Product or Service (they use Item's ID)
+                #  Do NOT include Product or Service (they use Item's ID)
             ]
 
             for model in models:

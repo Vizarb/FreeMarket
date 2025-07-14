@@ -27,7 +27,7 @@ export interface PaginatedResponse<T> {
 //   price_cents: number;
 //   currency: Currency;
 //   seller: string;
-//   categories: string[];  // ✅ Change to string instead of string[]
+//   categories: string[];  //  Change to string instead of string[]
 //   quantity: number;
 // }
   
