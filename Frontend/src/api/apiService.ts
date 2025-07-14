@@ -18,7 +18,7 @@ const api: AxiosInstance = axios.create({
   },
 });
 
-// ✅ Attach access token automatically
+//  Attach access token automatically
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = getAccessToken();
   if (token) {
@@ -32,7 +32,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 const retryCounts: Record<string, number> = {};
 const MAX_RETRIES = 1;
 
-// ✅ Refresh token manually on 401
+//  Refresh token manually on 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

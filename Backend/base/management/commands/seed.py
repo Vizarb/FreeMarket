@@ -155,7 +155,7 @@ class Command(BaseCommand):
                     order=order,
                     item=item,
                     quantity=random.randint(1, 5),
-                    price_cents=item.price_cents  # ✅ Fix: Assign a valid price
+                    price_cents=item.price_cents  #  Fix: Assign a valid price
                 )
             )
 

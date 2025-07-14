@@ -277,7 +277,7 @@ class CartItemViewSet(BaseViewSet):
             cart.update_quantity(cart_item.item, request.data.get('quantity', 1))
             cart.save()
 
-            # ✅ Return CartOverview instead of CartItem
+            #  Return CartOverview instead of CartItem
             overview_item = CartOverview.objects.get(cart_item_id=cart_item.id)
             serializer = CartOverviewSerializer(overview_item)
             return Response(serializer.data)

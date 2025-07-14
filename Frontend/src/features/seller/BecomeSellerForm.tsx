@@ -46,7 +46,7 @@ const BecomeSellerForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ✅ Prevent double-submit
+    //  Prevent double-submit
     if (loading) return;
 
     const alphanumericPattern = /^[A-Za-z0-9]{9,15}$/;

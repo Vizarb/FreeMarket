@@ -16,5 +16,5 @@ export interface User extends BaseModel {
 export interface SimpleUser {
   id: number;
   username: string;
-  roles: string[];  // ✅ add this line
+  roles: string[];
 }

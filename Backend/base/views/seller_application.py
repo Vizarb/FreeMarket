@@ -77,7 +77,7 @@ class SellerApplicationViewSet(viewsets.ModelViewSet):
         app.reviewer = request.user
         app.save()
 
-        # ✅ promote via manager
+        #  promote via manager
         app.user.manager.promote_to_seller(app.user)
 
         return Response({"status": app.status})

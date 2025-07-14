@@ -157,7 +157,7 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // ✅ Fulfilled cases
+      //  Fulfilled cases
       .addCase(fetchCartOverview.fulfilled, (state, action) => {
         state.cart = action.payload;
         state.loading = false;
@@ -197,7 +197,7 @@ const cartSlice = createSlice({
         state.loading = false;
       })
 
-      // ❌ Rejected
+      //  Rejected
       .addMatcher(
         isAnyOf(
           fetchCartOverview.rejected,
@@ -212,7 +212,7 @@ const cartSlice = createSlice({
         }
       )
 
-      // 🔄 Pending
+      //  Pending
       .addMatcher(
         isAnyOf(
           fetchCartOverview.pending,

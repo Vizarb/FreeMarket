@@ -1,89 +1,110 @@
-# 🗺️ FreeMarket Roadmap (2025 Edition)test
-
-## 🚀 Phase 1: MVP Core (Must-Haves)
-🎯 Goal: Launch the basics, cleanly. Focus on backend strength, database logic, and clean API design.
-
-### ✅ Backend
-- [x] Custom user model
-- [x] JWT auth (access + refresh)
-- [x] Products/Services with categories
-- [x] Orders + OrderItems
-- [x] PostgreSQL views + triggers + stored procedures
-- [x] Basic API tests (pytest or Django built-in)
-
-### ✅ Frontend
-- [x] Sign up / login flow
-- [x] Browse products
-- [x] Add to cart (Redux slice)
-- [x] View cart + checkout (triggers order)
-- [ ] Basic order history
-
-### ✅ Infra
-- [x] Docker for dev
-- [ ] GitHub Actions for sanity checks (DB, lint, test)
-- [ ] Redis for session/token management or rate limiting
-
-> 💡 Deliverable: Working backend-heavy MVP. Focus on clean APIs and DB logic.
 
 ---
 
-## ✨ Phase 2: MVP Polish & Developer Quality
-🎯 Goal: Make it testable, secure, and dev-friendly. Great for resume + GitHub.
+# 🗺️ FreeMarket Roadmap
 
-### ✅ Backend
-- [ ] Email verification / password reset
-- [ ] Rate limiting (Redis-based)
-- [ ] Token blacklisting / logout
-- [ ] Caching expensive views with Redis
-
-### ✅ Frontend
-- [ ] Improved UI (Tailwind + component library)
-- [ ] React toast notifications (errors, success)
-- [ ] Error handling with Axios interceptors
-- [ ] Refresh token flow on expiry
-
-### ✅ Infra
-- [ ] GitHub Actions CI with lint + tests
-- [ ] Docker Compose with Redis/Postgres/Celery
-
-> 💡 Deliverable: A clean, secure MVP with modern tooling and good DX.
+This roadmap reflects the evolution of **FreeMarket** from a clean MVP to a full-featured, scalable marketplace with real-time systems, AI features, and backend-first polish. It’s built to demonstrate professional-level engineering and architectural depth.
 
 ---
 
-## 🧠 Phase 3: Smart Features & Real-World Feel
-🎯 Goal: Showcase advanced backend, clean frontend, and real business logic.
+## ✅ Phase 1: Core MVP (Complete)
 
-### ✅ Backend
-- [ ] Wishlist or saved items
-- [ ] Stock management (trigger-based)
-- [ ] Advanced filtering/sorting/pagination
-- [ ] Business logic in stored procs/views
+🎯 Goal: Build a minimal, working e-commerce platform with real data and auth flow.
 
-### ✅ Frontend
-- [ ] Product filters (price, category, etc.)
-- [ ] Sort by price, popularity
-- [ ] Seller dashboard (CRUD products)
-- [ ] User order dashboard
-
-### ✅ Redis Enhancements
-- [ ] Pub/Sub for seller notifications
-- [ ] Email/OTP via Redis + Celery
-- [ ] Chat system prototype (Redis Pub/Sub + WebSocket)
-
-> 💡 Deliverable: A feature-rich app with intelligent architecture.
+* [x] Custom `User` model with roles (Buyer, Seller, Admin)
+* [x] JWT login & protected API routes
+* [x] Products & Services with polymorphic `Item` base
+* [x] Categories with nested filtering and full paths
+* [x] Cart with soft-delete + restore
+* [x] Order creation with price snapshot
+* [x] Seller dashboard (CRUD)
+* [x] Item search with FTS + autocomplete
+* [x] PostgreSQL views (`ItemDetails`, `CartOverview`, `OrderDetails`, etc.)
+* [x] Vercel + Render deployment (frontend/backend)
+* [x] .env configuration for local Docker dev
 
 ---
 
-## 🚀 Phase 4: Advanced Features (For fun + learning)
-🎯 Goal: Build impressive, uncommon features to make your project stand out.
+## 🔧 Phase 2: Polish & Platform Stability (In Progress)
 
-- [ ] Real-time chat (Redis Pub/Sub + WebSocket)
-- [ ] Admin dashboard (CRUD on all models)
-- [ ] Recommender system ("You may also like...")
-- [ ] AI-powered search (basic keyword/vector matching)
-- [ ] Multi-vendor support (sellers manage their own inventory)
-- [ ] Payment integration mock (Stripe sandbox or simulated logic)
+🎯 Goal: Harden the stack, improve UX, and make it CI/CD ready.
 
-> 💡 Deliverable: A unique, powerful resume project that demonstrates initiative and creativity.
+### Backend
+
+* [x] BaseViewSet abstraction for DRY CRUD logic
+* [x] Soft delete & restore for all key models
+* [x] Logging decorator for user actions
+* [ ] Email/password reset + verification flow
+* [x] Test coverage using `pytest-django`
+* [x] GitHub Actions for tests, lint, coverage, tagging
+* [ ] Admin dashboard to manage users/sellers
+
+### Frontend
+
+* [x] Global error handling with Axios interceptors
+* [x] Toast notifications
+* [x] Dark mode + theme toggle
+* [x] Marketplace filters (price, currency, category, type)
+* [x] Order history page
+* [x] Improved mobile experience
+* [x] Form validation tied to Django model rules
 
 ---
+
+## 🔄 Phase 3: Real-Time, Redis, and Materialized Views
+
+🎯 Goal: Enable performance, live UX, and data-driven features.
+
+### Redis-powered Features
+
+* [ ] Redis integration (via Docker)
+* [ ] Redis Pub/Sub channel layer
+* [ ] Live chat between buyer & seller (prototype)
+* [ ] Real-time notifications (new order, offer, etc.)
+* [ ] Rate limiting or login/session protection
+
+### PostgreSQL Enhancements
+
+* [x] Read-optimized views
+* [ ] Materialized views for analytics
+* [ ] Periodic refresh jobs (e.g. top sellers weekly)
+
+---
+
+## 🧠 Phase 4: AI & Personalization
+
+🎯 Goal: Add intelligent behavior and data-driven UX.
+
+* [ ] Simple rule-based recommendation engine (e.g. “You might also like…”)
+* [ ] AI search refinement (vector search or keyword boosting)
+* [ ] Offer system: buyers can propose prices
+* [ ] Negotiation interface (seller counter-offer)
+* [ ] Smart category suggestion when posting items
+* [ ] Personalized homepage based on user behavior
+
+---
+
+## 💳 Phase 5: Monetization & Extensibility
+
+🎯 Goal: Showcase business-readiness and multi-vendor architecture.
+
+* [ ] Multi-vendor storefronts with vanity URLs
+* [ ] Gift card logic with balance tracking
+* [ ] Subscription plans (mocked Stripe or PayPal)
+* [ ] Seller analytics page
+* [ ] Admin promotions/featured items system
+
+---
+
+## 🔚 Phase 6: Final Polish & Release
+
+🎯 Goal: Deliver a professional-grade, portfolio-worthy app.
+
+* [ ] 90–100% code coverage on backend
+* [x] Full README + tech doc + Swagger schema
+* [x] Production Dockerfile + CI deployment
+* [x] GitHub profile + personal site linking to project
+* [ ] Code walkthrough blog post or demo video
+
+---
+

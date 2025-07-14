@@ -15,7 +15,7 @@ const initialState: SellerItemState = {
   error: null,
 };
 
-// ✅ Thunk to fetch seller's items from /api/items/
+//  Thunk to fetch seller's items from /api/items/
 export const fetchSellerItems = createAsyncThunk<Item[], void, { rejectValue: string }>(
   'sellerItems/fetchAll',
   async (_, { rejectWithValue }) => {

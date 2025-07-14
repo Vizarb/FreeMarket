@@ -1,5 +1,5 @@
 # ===================================
-# 🔐 Global Env Files
+#  Global Env Files
 # ===================================
 .env
 .env.local
@@ -7,7 +7,7 @@
 !.env*.example
 
 # ===================================
-# 🔄 System & Editor Files
+#  System & Editor Files
 # ===================================
 .DS_Store
 Thumbs.db
@@ -22,7 +22,7 @@ desktop.ini
 *.iml
 
 # ===================================
-# 🐳 Global Docker Files
+#  Global Docker Files
 # ===================================
 .docker/
 docker-compose.override.yml
@@ -34,7 +34,7 @@ docker-compose*.yml
 !docker-compose.yml
 
 # ===================================
-# 🔧 Misc
+#  Misc
 *.log
 *.pid
 *.zip

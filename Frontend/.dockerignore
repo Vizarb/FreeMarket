@@ -1,5 +1,5 @@
 # =====================================
-# 📦 Node/Yarn Artifacts
+#  Node/Yarn Artifacts
 # =====================================
 node_modules/
 .pnp/
@@ -10,7 +10,7 @@ package-lock.json
 yarn-error.log
 
 # =====================================
-# 🧪 Build & Cache
+#  Build & Cache
 # =====================================
 dist/
 build/
@@ -22,7 +22,7 @@ coverage-report.zip
 *.lcov
 
 # =====================================
-# 🧪 Test Output
+#  Test Output
 # =====================================
 __tests__/
 *.test.*
@@ -33,7 +33,7 @@ jest.config.js
 .vitest-output/
 
 # =====================================
-# 🔐 Env
+#  Env
 # =====================================
 .env
 !.env.frontend
@@ -42,7 +42,7 @@ jest.config.js
 
 
 # =====================================
-# 💻 Editor/IDE
+#  Editor/IDE
 # =====================================
 .vscode/
 .idea/
@@ -50,7 +50,7 @@ jest.config.js
 *.sublime-workspace
 
 # =====================================
-# 🗑 System Files
+#  System Files
 # =====================================
 .DS_Store
 Thumbs.db

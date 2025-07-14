@@ -1,10 +1,10 @@
-# 🔐 Environment Files
+#  Environment Files
 .env
 .env.local
 .env.*
 !.env*.example
 
-# 📦 Node/Yarn
+#  Node/Yarn
 node_modules/
 .pnp/
 .pnp.js
@@ -13,14 +13,14 @@ node_modules/
 package-lock.json
 yarn-error.log
 
-# 🔨 Build & Dev Caches
+#  Build & Dev Caches
 dist/
 build/
 .vite/
 .cache/
 public/build/
 
-# 🧪 Tests & Coverage
+#  Tests & Coverage
 coverage/
 coverage-report.zip
 *.lcov
@@ -31,7 +31,7 @@ __tests__/
 *.test.*
 *.spec.*
 
-# 🎨 Tailwind/PostCSS (if generated)
+#  Tailwind/PostCSS (if generated)
 *.css.map
 *.postcss
 *.generated.css
@@ -39,11 +39,11 @@ __tests__/
 temp/
 generated/
 
-# 📓 Logs
+#  Logs
 *.log
 logs/
 
-# 💻 IDE/Editor
+#  IDE/Editor
 .vscode/
 .idea/
 *.swp
@@ -51,7 +51,7 @@ logs/
 *.bak
 *.iml
 
-# 🗑 OS Files
+#  OS Files
 .DS_Store
 Thumbs.db
 desktop.ini

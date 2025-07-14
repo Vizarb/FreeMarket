@@ -25,9 +25,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const handleSearch = () => {
     if (query.trim()) {
       if (onSearch) {
-        onSearch(query); // 🔁 custom handler
+        onSearch(query); //  custom handler
       } else {
-        navigate(`/marketplace?q=${encodeURIComponent(query)}`); // 🔁 fallback default
+        navigate(`/marketplace?q=${encodeURIComponent(query)}`); //  fallback default
       }
       setQuery('')
     }

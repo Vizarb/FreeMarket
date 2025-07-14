@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { restoreAuth } from "./features/auth/authSlice";  // ✅ Import `restoreAuth`
+import { restoreAuth } from "./features/auth/authSlice";  //  Import `restoreAuth`
 import AppRoutes from "./app/routes/AppRoutes";
 import { useAppDispatch } from "./store/hooks/hooks";
 
