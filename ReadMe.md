@@ -5,14 +5,13 @@
 ![Last Commit](https://img.shields.io/github/last-commit/vizarb/FreeMarket)
 ![Coverage](https://codecov.io/gh/vizarb/FreeMarket/branch/main/graph/badge.svg)
 ![License: All Rights Reserved](https://img.shields.io/badge/license-All%20Rights%20Reserved-red)
+[![Roadmap](https://img.shields.io/badge/docs-roadmap-blue)](./ROADMAP.md)
+[![Tech Doc](https://img.shields.io/badge/docs-tech--spec-green)](./TECH_DOC.md)
+
+---
 
 **FreeMarket** is a full-stack, modern, scalable e-commerce platform where users can buy and sell both physical products and digital services. Inspired by street markets and shaped by platform architecture, it balances performance, flexibility, and clean design — and is actively being developed.
 
----
-
- **Live Demo**: [https://free-market-theta.vercel.app/](https://free-market-theta.vercel.app/)
----
- **Status**: In development — all feedback and suggestions welcome!
 ---
 
 ## 🎯 Purpose
@@ -46,6 +45,8 @@ This project serves as a professional portfolio to:
 * GitHub Actions CI/CD
 * Codecov coverage tracking
 * Redis (planned): pub/sub, caching, Celery queues
+
+📄 Full Tech Doc: [TECH_DOC.md](./TECH_DOC.md)
 
 ---
 
