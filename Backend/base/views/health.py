@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.core.cache import cache
 
 from base.serializers.health import HealthCheckResponseSerializer
 
@@ -15,3 +18,8 @@ class HealthCheckView(APIView):
     @extend_schema(responses=HealthCheckResponseSerializer)
     def get(self, request):
         return Response({"status": "ok"}, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def redis_health(request):
+    cache.set("healthcheck", "ok", 5)
+    return Response({"cache": cache.get("healthcheck")})

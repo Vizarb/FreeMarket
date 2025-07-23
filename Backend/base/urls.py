@@ -8,7 +8,7 @@ from .views.models import (
     index, test, myproducts
 )
 from .views.views import (CartOverviewViewSet, ItemDetailsViewSet, ItemSearchViewSet, MostActiveUsersViewSet, OrderDetailsViewSet, OrderItemDetailsViewSet, TopSellingProductsViewSet, UserOrderHistoryViewSet, )
-from .views.health import HealthCheckView
+from .views.health import HealthCheckView, redis_health
 
 # Initialize router
 router = DefaultRouter()
@@ -42,6 +42,8 @@ custom_urlpatterns = [
     path('', index, name='index'),  # Home page
     path('test', test, name='test'),
     path('myproducts', myproducts, name='myproducts'),
+    path('health/redis/', redis_health, name='redis_health'),
+
 ]
 
 # Authentication paths

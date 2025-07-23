@@ -3,6 +3,22 @@ networks:
     driver: bridge
 
 services:
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - freemarket-network
+    volumes:
+      - redis_data:/data
   db:
     image: postgres:16.6
     restart: unless-stopped
@@ -42,6 +58,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - freemarket-network
 
@@ -68,3 +86,4 @@ volumes:
   postgres_data:
   media_data:
   frontend_node_modules:
+  redis_data:
