@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from base.views.debug_cache import CacheDemoView
 from base.views.seller_profile import SellerProfileViewSet
 from base.views.seller_application import SellerApplicationViewSet
 from .views.models import (
@@ -60,5 +61,6 @@ urlpatterns = [
     path('', include(auth_urlpatterns)),  # Authentication routes
     path('api/auth/me/', UserViewSet.as_view({'get': 'me'}), name='auth_me'),
     path('api/health/', HealthCheckView.as_view(), name='health_check'),
+    path('api/debug/cache-demo/', CacheDemoView.as_view(), name='cache-demo'),
 
 ]

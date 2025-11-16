@@ -1,5 +1,6 @@
 # views/models.py
 
+from django.conf import settings
 from django.forms import ValidationError
 from django.http import JsonResponse
 
@@ -39,6 +40,7 @@ from base.serializers.models import (
 )
 import logging
 from django.db import transaction
+from base.utils.cache_utils import get_or_set_json
 
 logger = logging.getLogger('freemarketbackend')
 
@@ -203,14 +205,34 @@ class CategoryViewSet(BaseViewSet):
     search_fields     = ['name']
     ordering_fields   = ['name']
 
+    API_CACHE_VERSION = "v1"
+
     def get_queryset(self):
-        # Base soft-delete filtering
         qs = super().get_queryset().select_related('parent')
         def build_full_path(cat):
             return f"{build_full_path(cat.parent)} > {cat.name}" if cat.parent else cat.name
         for cat in qs:
             cat.full_path = build_full_path(cat)
         return qs
+
+    # Add this list override to apply caching:
+    def list(self, request, *args, **kwargs):
+        ttl = settings.CACHE_TTL["CATEGORY_LIST"]
+
+        def produce():
+            qs = self.filter_queryset(self.get_queryset())
+            ser = self.get_serializer(qs, many=True)
+            return ser.data
+
+        data, hit = get_or_set_json(
+            ["category", "list", self.API_CACHE_VERSION],
+            producer=produce,
+            ttl=ttl,
+            vary_user_id=None,  # shared for all users
+        )
+        resp = Response(data)
+        resp["X-Cache"] = "HIT" if hit else "MISS"
+        return resp
 
 
 class CartViewSet(BaseReadOnlyViewSet):

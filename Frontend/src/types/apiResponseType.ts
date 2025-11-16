@@ -53,6 +53,9 @@ export interface CartOverviewResponse {
   total_quantity: number;
   latest_price: number;
   item_type: string;
+  item_slug?: string;
+  image_url?: string;
+  image?: string;
 }
 
 export interface OrderDetailsResponse {
@@ -64,6 +67,7 @@ export interface OrderDetailsResponse {
   created_at: string;
   updated_at: string;
   order_items: OrderItemDetailsResponse[];
+  image?: string
 }
 
 export interface OrderItemDetailsResponse {
@@ -73,5 +77,6 @@ export interface OrderItemDetailsResponse {
   item_name: string;
   quantity: number;
   price_cents: number;
+  image?: string
 }
 

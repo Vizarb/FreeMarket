@@ -5,4 +5,4 @@ class BaseConfig(AppConfig):
     name = 'base'
     
     def ready(self):
-        import base.signals  # Ensure signals are loaded
+        from .signals import cache_invalidation ,assign_permissions  # Ensure signals are loaded
