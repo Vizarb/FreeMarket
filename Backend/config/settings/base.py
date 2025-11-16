@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ENV_FILE = os.getenv("ENV_FILE", BASE_DIR / ".env.backend")
 env.read_env(str(ENV_FILE))
 
+
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
@@ -95,6 +96,59 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+}
+
+# ---- Redis URL per environment ----
+# Local docker:  redis://redis:6379/0
+# Prod TLS:      rediss://<host>:<port>/<db>   (note the double 's')
+REDIS_CACHE_URL = env("REDIS_CACHE_URL", default="redis://redis:6379/0")
+REDIS_RATE_LIMIT_URL  = env("REDIS_RATE_LIMIT_URL",  default="redis://redis:6379/1")  # (optional) ratelimit
+REDIS_TASK_URL  = env("REDIS_TASK_URL",  default="redis://redis:6379/2")  # (optional) Celery/RQ
+
+# A short, environment-specific prefix to isolate keys across envs
+# e.g., "fm:dev", "fm:stg", "fm:prod"
+CACHE_KEY_PREFIX = env("CACHE_KEY_PREFIX", default="fm:dev")
+
+# Central TTL policy (endpoints choose from here)
+CACHE_TTL = {
+    "CATEGORY_LIST": 300,  # 5m
+    "ITEM_DETAIL": 60,     # 1m
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "TIMEOUT": None,  # IMPORTANT: do per-key TTL in code
+        "KEY_PREFIX": CACHE_KEY_PREFIX,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # Don’t take down the site if Redis hiccups (serve uncached)
+            "IGNORE_EXCEPTIONS": True,
+            # Be responsive under network issues
+            "SOCKET_TIMEOUT": 1.0,     # seconds
+            "SOCKET_CONNECT_TIMEOUT": 1.0,
+            # Small but safe pool; adjust if you see pool exhaustion
+            "CONNECTION_POOL_KWARGS": {"max_connections": 50, "retry_on_timeout": True},
+            # Optional lightweight compression for bigger payloads
+            # "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
+    },
+
+    # Secondary cache alias for rate limiting
+    "ratelimit": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_RATE_LIMIT_URL,
+        "TIMEOUT": None,
+        "KEY_PREFIX": f"{CACHE_KEY_PREFIX}:rl",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": True,
+            "SOCKET_TIMEOUT": 1.0,
+            "SOCKET_CONNECT_TIMEOUT": 1.0,
+            "CONNECTION_POOL_KWARGS": {"max_connections": 20, "retry_on_timeout": True},
+        },
+    },
 }
 
 REST_FRAMEWORK = {

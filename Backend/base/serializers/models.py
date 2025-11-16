@@ -268,29 +268,66 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'
 
-# Cart Item Serializer
 class CartItemSerializer(serializers.ModelSerializer):
-    item_id = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
+    item_id   = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
     item_name = serializers.CharField(source='item.name', read_only=True)
-    quantity = serializers.IntegerField(read_only=True)  #  this was missing!
+    quantity  = serializers.IntegerField(read_only=True)
+
+    # Additions (read-only => safe for existing writes)
+    cart_item_id = serializers.IntegerField(source='id', read_only=True)
+    item_slug    = serializers.CharField(source='item.slug', read_only=True)
+    price_cents  = serializers.IntegerField(source='item.price_cents', read_only=True)
+    currency     = serializers.CharField(source='item.currency', read_only=True)
+
+    # Image (relative path) and absolute URL for convenience
+    image       = serializers.ImageField(source='item.image', read_only=True, allow_null=True)
+    image_url   = serializers.SerializerMethodField(read_only=True)
+
+    def get_image_url(self, obj: CartItem) -> str | None:
+        img = getattr(obj.item, "image", None)
+        if not img:
+            return None
+        request = self.context.get("request")
+        # If DRF has request, build absolute URL; otherwise fall back to relative
+        return request.build_absolute_uri(img.url) if request else getattr(img, "url", None)
 
     class Meta:
-        model = CartItem
-        fields = ['id', 'item_id', 'item_name', 'quantity']
+        model  = CartItem
+        # Keep original 'id' to avoid breaking any admin/other consumers,
+        # and add 'cart_item_id' for the frontend that expects it.
+        fields = [
+            'id', 'cart_item_id',
+            'item_id', 'item_name', 'item_slug',
+            'quantity',
+            'price_cents', 'currency',
+            'image', 'image_url',
+        ]
 
 
-# Cart Serializer
 class CartSerializer(serializers.ModelSerializer):
     """
     Serializer for Cart
     """
-    user = UserSimpleSerializer(read_only=True)  # Use simplified user serializer
-    cart_items = CartItemSerializer(many=True, read_only=True)
-    total_price_cents = serializers.IntegerField(read_only=True)
+    user               = UserSimpleSerializer(read_only=True)
+    cart_items         = CartItemSerializer(many=True, read_only=True)
+    total_price_cents  = serializers.IntegerField(read_only=True)
+
+    # Optional niceties that don't break anything
+    item_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_item_count(self, obj: Cart) -> int:
+        # If Cart has a property for count, use that; otherwise sum quantities.
+        return sum(ci.quantity for ci in obj.cart_items.all())
 
     class Meta:
-        model = Cart
-        fields = ['id', 'user', 'cart_items', 'total_price_cents', 'created_at', 'updated_at']
+        model  = Cart
+        fields = [
+            'id', 'user',
+            'cart_items',
+            'total_price_cents',
+            'item_count',
+            'created_at', 'updated_at',
+        ]
 
 class CartLogSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()

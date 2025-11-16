@@ -1,6 +1,7 @@
 # views/item_views.py
 
 import logging
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -10,6 +11,7 @@ from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import Q, F
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
+from base.utils.cache_utils import get_or_set_json
 from base.views.baseviews import BaseReadOnlyViewSet
 from base.permissions import HasRole
 from base.models import Item, Category
@@ -24,6 +26,8 @@ from base.serializers.views import (
     TopSellingProductsSerializer, MostActiveUsersSerializer
 )
 from base.utils.category_utils import get_descendant_ids
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +51,10 @@ class ItemSearchViewSet(BaseReadOnlyViewSet):
     ordering_fields   = ['price_cents', 'name']
     ordering          = ['-price_cents']
     search_field      = 'search_vector'
+
+    @method_decorator(ratelimit(key="ip", rate="10/m", block=True))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @action(detail=False, methods=['GET'])
     def autocomplete(self, request):
@@ -130,6 +138,28 @@ class ItemDetailsViewSet(BaseReadOnlyViewSet):
     serializer_class   = ItemDetailsSerializer
     filterset_fields   = ['currency', 'seller', 'categories']
     lookup_field = 'slug'
+    API_CACHE_VERSION = "v1"
+
+    def retrieve(self, request, *args, **kwargs):
+        slug = kwargs.get(self.lookup_field or "slug")
+        ttl = settings.CACHE_TTL["ITEM_DETAIL"]  # e.g., 60–120s
+
+        def produce():
+            instance = self.get_object()
+            ser = self.get_serializer(instance)
+            return ser.data
+
+        # Shared for all users (no personalization here)
+        data, hit = get_or_set_json(
+            ["itemdetails", slug, "detail", self.API_CACHE_VERSION],
+            producer=produce,
+            ttl=ttl,
+            vary_user_id=None,
+        )
+        resp = Response(data)
+        resp["X-Cache"] = "HIT" if hit else "MISS"
+        return resp
+
 
 
 class UserOrderHistoryViewSet(BaseReadOnlyViewSet):
