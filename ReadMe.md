@@ -200,16 +200,6 @@ If collaboration is opened in the future, contribution guidelines will be added.
 
 ---
 
-Here’s a more **approachable and humanized** version of the **“About the Author”** section for your README:
-
----
-
-You're absolutely right — in a professional README, especially one meant to showcase your full-stack skills, the emphasis should be on your **technical experience** and **career pivot**, not the kitchen.
-
-Here’s a **refined version** that acknowledges your past without dwelling on it, and puts the spotlight on your **QA experience**, **education**, and **dev strengths**:
-
----
-
 ## 👤 About the Author
 
 Hi! I’m **Bar Ziv** (also known as Vizarb) — a full-stack developer with a solid foundation in QA engineering and a passion for backend systems, databases, and scalable architecture.
